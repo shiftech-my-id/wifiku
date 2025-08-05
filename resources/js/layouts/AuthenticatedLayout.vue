@@ -1,5 +1,5 @@
 <script setup>
-import { defineComponent, onMounted, ref, watch } from "vue";
+import { defineComponent, onMounted, ref, watch, computed } from "vue";
 import { router, usePage } from "@inertiajs/vue3";
 import { useQuasar } from "quasar";
 
@@ -14,7 +14,13 @@ const leftDrawerOpen = ref(
   JSON.parse(localStorage.getItem(LEFT_DRAWER_STORAGE_KEY))
 );
 const isDropdownOpen = ref(false);
-const toggleLeftDrawer = () => (leftDrawerOpen.value = !leftDrawerOpen.value);
+
+const isToggleHovered = ref(!true);
+const showAsHoverButton = computed(() => $q.screen.gt.sm);
+const toggleLeftDrawer = () => {
+  leftDrawerOpen.value = !leftDrawerOpen.value;
+  isToggleHovered.value = false;
+};
 
 watch(leftDrawerOpen, (newValue) => {
   localStorage.setItem(LEFT_DRAWER_STORAGE_KEY, newValue);
@@ -39,10 +45,27 @@ onMounted(() => {
           v-if="!leftDrawerOpen"
           flat
           dense
+          round
           aria-label="Menu"
           @click="toggleLeftDrawer"
+          @mouseenter="isToggleHovered = true"
+          @mouseleave="isToggleHovered = false"
         >
-          <q-icon class="material-symbols-outlined">dock_to_right</q-icon>
+          <template v-if="showAsHoverButton">
+            <q-icon
+              v-if="isToggleHovered"
+              class="material-symbols-outlined"
+              name="dock_to_right"
+            />
+            <q-avatar v-else size="32px">
+              <img src="/assets/img/app-logo-wifi.png" alt="Logo" />
+            </q-avatar>
+            <q-tooltip> Buka Menu </q-tooltip>
+          </template>
+
+          <template v-else>
+            <q-icon name="menu" />
+          </template>
         </q-btn>
         <slot name="left-button"></slot>
         <q-toolbar-title
@@ -134,17 +157,98 @@ onMounted(() => {
             </q-item-section>
           </q-item>
           <q-separator />
+          <q-expansion-item
+            v-if="
+              $page.props.auth.user.role == $CONSTANTS.USER_ROLE_ADMIN ||
+              $page.props.auth.user.role == $CONSTANTS.USER_ROLE_CASHIER
+            "
+            icon="request_quote"
+            label="Laporan"
+            :default-opened="
+              $page.url.startsWith('/admin/sales-orders') ||
+              $page.url.startsWith('/admin/customers')
+            "
+          >
+
+            <q-item
+              clickable
+              v-ripple
+              :active="$page.url.startsWith('/app/transactions')"
+              @click="router.get(route('app.transaction.index'))"
+            >
+              <q-item-section avatar>
+                <q-icon name="receipt" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>Lap.Laba Rugi</q-item-label>
+              </q-item-section>
+            </q-item>
+
+            <q-item
+              clickable
+              v-ripple
+              :active="$page.url.startsWith('/app/transactions')"
+              @click="router.get(route('app.transaction.index'))"
+            >
+              <q-item-section avatar>
+                <q-icon name="receipt" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>Lap.Penagihan</q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-item
+              clickable
+              v-ripple
+              :active="$page.url.startsWith('/app/transactions')"
+              @click="router.get(route('app.transaction.index'))"
+            >
+              <q-item-section avatar>
+                <q-icon name="receipt" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>Lap.Pembayaran tagihan</q-item-label>
+              </q-item-section>
+            </q-item>
+
+            <q-item
+              clickable
+              v-ripple
+              :active="$page.url.startsWith('/app/transactions')"
+              @click="router.get(route('app.transaction.index'))"
+            >
+              <q-item-section avatar>
+                <q-icon name="receipt" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>Lap.Biaya Oprasional</q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-expansion-item>
+          <q-separator />
+
+          <q-expansion-item
+          v-if="
+              $page.props.auth.user.role == $CONSTANTS.USER_ROLE_ADMIN ||
+              $page.props.auth.user.role == $CONSTANTS.USER_ROLE_CASHIER
+            "
+            icon="credit_score"
+            label="Tagihan"
+            :default-opened="
+              $page.url.startsWith('/admin/sales-orders') ||
+              $page.url.startsWith('/admin/customers')
+            ">
           <q-item
             clickable
             v-ripple
-            :active="$page.url.startsWith('/app/transactions')"
-            @click="router.get(route('app.transaction.index'))"
+            :active="$page.url.startsWith('/app/transaction-categories')"
+            @click="router.get(route('app.transaction-category.index'))"
           >
             <q-item-section avatar>
-              <q-icon name="sync_alt" />
+              <q-icon name="credit_score" />
             </q-item-section>
             <q-item-section>
-              <q-item-label>Transaksi</q-item-label>
+              <q-item-label>Tagihan</q-item-label>
             </q-item-section>
           </q-item>
           <q-item
@@ -154,12 +258,15 @@ onMounted(() => {
             @click="router.get(route('app.transaction-category.index'))"
           >
             <q-item-section avatar>
-              <q-icon name="category" />
+              <q-icon name="bolt" />
             </q-item-section>
             <q-item-section>
-              <q-item-label>Kategori</q-item-label>
+              <q-item-label>Generate</q-item-label>
             </q-item-section>
           </q-item>
+          </q-expansion-item>
+          <q-separator />
+
           <q-item
             clickable
             v-ripple
@@ -167,26 +274,38 @@ onMounted(() => {
             @click="router.get(route('app.party.index'))"
           >
             <q-item-section avatar>
-              <q-icon name="partner_exchange" />
+              <q-icon name="diversity_3" />
             </q-item-section>
             <q-item-section>
-              <q-item-label>Pihak-pihak</q-item-label>
+              <q-item-label>Pelanggan</q-item-label>
             </q-item-section>
           </q-item>
           <q-separator />
-          <!-- <q-item
+          <q-item
             clickable
             v-ripple
             :active="$page.url.startsWith('/app/settings/users')"
             @click="router.get(route('app.user.index'))"
           >
             <q-item-section avatar>
-              <q-icon name="group" />
+              <q-icon name="construction" />
             </q-item-section>
             <q-item-section>
-              <q-item-label>Pengguna</q-item-label>
+              <q-item-label>Layanan</q-item-label>
             </q-item-section>
-          </q-item> -->
+          </q-item>
+          <q-separator />
+          <q-expansion-item
+                    v-if="
+              $page.props.auth.user.role == $CONSTANTS.USER_ROLE_ADMIN ||
+              $page.props.auth.user.role == $CONSTANTS.USER_ROLE_CASHIER
+            "
+            icon="business_center"
+            label="Biaya Oprasional"
+            :default-opened="
+              $page.url.startsWith('/admin/sales-orders') ||
+              $page.url.startsWith('/admin/customers')
+            ">
           <q-item
             clickable
             v-ripple
@@ -194,27 +313,81 @@ onMounted(() => {
             @click="router.get(route('app.profile.edit'))"
           >
             <q-item-section avatar>
-              <q-icon name="manage_accounts" />
+              <q-icon name="business_center" />
             </q-item-section>
             <q-item-section>
-              <q-item-label>Profil Saya</q-item-label>
+              <q-item-label>Biaya Oprasional</q-item-label>
             </q-item-section>
           </q-item>
+                    <q-item
+            clickable
+            v-ripple
+            :active="$page.url.startsWith('/app/settings/profile')"
+            @click="router.get(route('app.profile.edit'))"
+          >
+            <q-item-section avatar>
+              <q-icon name="category" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Kategori Biaya</q-item-label>
+            </q-item-section>
+          </q-item>
+          </q-expansion-item>
+          <q-separator />
+
+          <q-expansion-item
+                    v-if="
+              $page.props.auth.user.role == $CONSTANTS.USER_ROLE_ADMIN ||
+              $page.props.auth.user.role == $CONSTANTS.USER_ROLE_CASHIER
+            "
+            icon="tune"
+            label="Sistem""
+            :default-opened="
+              $page.url.startsWith('/admin/sales-orders') ||
+              $page.url.startsWith('/admin/customers')
+            ">
 
           <q-item
             clickable
-            v-close-popup
             v-ripple
-            style="color: inherit"
-            :href="route('app.auth.logout')"
+            :active="$page.url.startsWith('/app/settings/profile')"
+            @click="router.get(route('app.profile.edit'))"
           >
+            <q-item-section avatar>
+              <q-icon name="person" />
+            </q-item-section>
             <q-item-section>
-              <q-item-label
-                ><q-icon name="logout" class="q-mr-sm" />Keluar</q-item-label
-              >
+              <q-item-label>Pengguna</q-item-label>
             </q-item-section>
           </q-item>
-
+                    <q-item
+            clickable
+            v-ripple
+            :active="$page.url.startsWith('/app/settings/profile')"
+            @click="router.get(route('app.profile.edit'))"
+          >
+            <q-item-section avatar>
+              <q-icon name="diversity_2" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Grup Pengguna</q-item-label>
+            </q-item-section>
+          </q-item>
+                    <q-item
+            clickable
+            v-ripple
+            :active="$page.url.startsWith('/app/settings/profile')"
+            @click="router.get(route('app.profile.edit'))"
+          >
+            <q-item-section avatar>
+              <q-icon name="settings" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Setting</q-item-label>
+            </q-item-section>
+          </q-item>
+          </q-expansion-item>
+          <q-separator />
           <div class="absolute-bottom text-grey-6 q-pa-md">
             &copy; 2025 -
             {{ $config.APP_NAME + " v" + $config.APP_VERSION_STR }}

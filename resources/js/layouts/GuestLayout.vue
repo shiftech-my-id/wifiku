@@ -22,7 +22,7 @@ defineComponent({
         <q-toolbar-title align="center">
           <q-avatar square size="auto" style="padding: 0">
             <img
-              src="/assets/img/app-logo-white.png"
+              src="/assets/img/app-logo-wifi.png"
               style="
                 height: auto;
                 width: auto;
