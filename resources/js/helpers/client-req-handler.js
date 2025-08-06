@@ -7,9 +7,9 @@ const _scrollToFirstError = () => {
   const firstErrorKey = Object.keys(page.props.errors)[0];
   if (firstErrorKey) {
     setTimeout(() => {
-      const errorElement = document.querySelector('.q-field--error input');
+      const errorElement = document.querySelector(".q-field--error input");
       if (errorElement) {
-        errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        errorElement.scrollIntoView({ behavior: "smooth", block: "center" });
         errorElement.focus();
       }
     }, 0);
@@ -20,44 +20,38 @@ export function handleSubmit(data) {
   const { form, url, onSuccess, onError, method, forceFormData } = data;
 
   form.clearErrors();
-  form[method ?? 'post'](url,
-    {
-      preserveScroll: true,
-      forceFormData: forceFormData ?? false,
-      onSuccess: (response) => {
-        if (typeof onSuccess === 'function') {
-          onSuccess(response);
-        }
 
-        // Notify.create({
-        //   message: response.message || 'Berhasil disimpan',
-        //   icon: "info",
-        //   color: "positive",
-        //   actions: [
-        //     { icon: "close", color: "white", round: true, dense: true },
-        //   ],
-        // });
-      },
-      onError: (error) => {
-        if (typeof onError === 'function') {
-          onError(error);
-        }
+  const options = {
+    preserveScroll: true,
+    forceFormData: forceFormData ?? false,
+    onError: (error) => {
+      if (typeof onError === "function") {
+        onError(error);
+      }
 
-        _scrollToFirstError();
-        if (!error || typeof (error.response?.data) === 'object' || error.message === undefined || error.message?.length === 0)
-          return;
+      _scrollToFirstError();
+      if (
+        !error ||
+        typeof error.response?.data === "object" ||
+        error.message === undefined ||
+        error.message?.length === 0
+      )
+        return;
 
-        Notify.create({
-          message: error.message,
-          icon: "info",
-          color: "negative",
-          actions: [
-            { icon: "close", color: "white", round: true, dense: true },
-          ],
-        });
-      },
-    }
-  );
+      Notify.create({
+        message: error.message,
+        icon: "info",
+        color: "negative",
+        actions: [{ icon: "close", color: "white", round: true, dense: true }],
+      });
+    },
+  };
+
+  if (typeof onSuccess === "function") {
+    options.onSuccess = onSuccess;
+  }
+
+  form[method ?? "post"](url, options);
 }
 
 export function handleDelete(data) {

@@ -7,7 +7,7 @@ import { useQuasar } from "quasar";
 import { usePageStorage } from "@/composables/usePageStorage";
 
 const storage = usePageStorage("transaction-category");
-const title = "Kategori";
+const title = "Kategori Biaya";
 const $q = useQuasar();
 const showFilter = ref(storage.get("show-filter", false));
 const rows = ref([]);
@@ -96,7 +96,7 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
         icon="add"
         dense
         color="primary"
-        @click="router.get(route('app.transaction-category.add'))"
+        @click="router.get(route('app.cost-category.add'))"
       />
       <q-btn
         class="q-ml-sm"

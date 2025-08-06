@@ -22,7 +22,7 @@ const tab = ref("main");
           color="grey-7"
           flat
           rounded
-          @click="router.get(route('app.party.index'))"
+          @click="router.get(route('app.customer.index'))"
         />
       </div>
     </template>
@@ -33,7 +33,7 @@ const tab = ref("main");
           dense
           color="primary"
           @click="
-            router.get(route('app.party.edit', { id: page.props.data.id }))
+            router.get(route('app.customer.edit', { id: page.props.data.id }))
           "
         />
       </div>
@@ -46,7 +46,7 @@ const tab = ref("main");
               <q-tabs v-model="tab" align="left">
                 <q-tab name="main" label="Info Utama" />
                 <q-tab name="historyBill" label="Riwayat Tagihan" />
-                <q-tab name="historyAktivation" label="Riwayat Aktivasi" />
+                <q-tab name="historyAktivation" label="Riwayat" />
               </q-tabs>
               <q-tab-panels v-model="tab">
                 <q-tab-panel name="main">
@@ -55,7 +55,9 @@ const tab = ref("main");
                 <q-tab-panel name="historyBill">
                   <bill-history />
                 </q-tab-panel>
-
+                <q-tab-panel name="historyBill">
+                  <bill-history />
+                </q-tab-panel>
                 <q-tab-panel name="historyActivation">
                   <activation-history />
                 </q-tab-panel>

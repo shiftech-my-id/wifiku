@@ -213,7 +213,7 @@ onMounted(() => {
             clickable
             v-ripple
             :active="$page.url.startsWith('/app/parties')"
-            @click="router.get(route('app.party.index'))"
+            @click="router.get(route('app.customer.index'))"
           >
             <q-item-section avatar>
               <q-icon name="diversity_3" />
@@ -284,7 +284,7 @@ onMounted(() => {
             icon="business_center"
             label="Biaya Oprasional"
             :default-opened="
-              $page.url.startsWith('/admin/sales-orders') ||
+              $page.url.startsWith('/admin/cost') ||
               $page.url.startsWith('/admin/customers')
             "
           >
@@ -293,7 +293,7 @@ onMounted(() => {
               clickable
               v-ripple
               :active="$page.url.startsWith('/app/settings/profile')"
-              @click="router.get(route('app.profile.edit'))"
+              @click="router.get(route('app.cost.index'))"
             >
               <q-item-section avatar>
                 <q-icon name="business_center" />
@@ -307,7 +307,7 @@ onMounted(() => {
               clickable
               v-ripple
               :active="$page.url.startsWith('/app/settings/profile')"
-              @click="router.get(route('app.profile.edit'))"
+              @click="router.get(route('app.cost-category.index'))"
             >
               <q-item-section avatar>
                 <q-icon name="category" />

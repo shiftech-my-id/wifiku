@@ -86,7 +86,7 @@ const fetchItems = (props = null) => {
     filter,
     props,
     rows,
-    url: route("app.party.data"),
+    url: route("app.customer.data"),
     loading,
   });
 };
@@ -117,7 +117,7 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
         icon="add"
         dense
         color="primary"
-        @click="router.get(route('app.party.add'))"
+        @click="router.get(route('app.customer.add'))"
       />
       <q-btn
         class="q-ml-sm"
@@ -259,7 +259,6 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
 
             <q-td key="no_hp" :props="props"> {{ props.row.no_hp }} </q-td>
 
-
             <q-td key="action" :props="props">
               <div class="flex justify-end">
                 <q-btn
@@ -324,4 +323,3 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
     </div>
   </authenticated-layout>
 </template>
-

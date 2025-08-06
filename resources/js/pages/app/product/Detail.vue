@@ -46,18 +46,17 @@ const tab = ref("main");
               <q-tabs v-model="tab" align="left">
                 <q-tab name="main" label="Info Utama" />
                 <q-tab name="historyBill" label="Riwayat Tagihan" />
-                <q-tab name="historyAktivation" label="Riwayat Aktivasi" />
+                <q-tab name="historyAktivation" label="Riwayat Ak" />
               </q-tabs>
               <q-tab-panels v-model="tab">
                 <q-tab-panel name="main">
                   <main-info />
-
                 </q-tab-panel>
-                 <q-tab-panel name="historyBill">
+                <q-tab-panel name="historyBill">
                   <bill-history />
                 </q-tab-panel>
 
-                <q-tab-panel name="historyActivation" >
+                <q-tab-panel name="historyActivation">
                   <activation-history />
                 </q-tab-panel>
               </q-tab-panels>

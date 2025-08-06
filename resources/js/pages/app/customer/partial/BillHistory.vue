@@ -19,7 +19,7 @@ const pagination = ref({
   page: 1,
   rowsPerPage: 10,
   rowsNumber: 10,
-  sortBy: "bill_date",
+  sortBy: "customer_date",
   descending: true,
 });
 
@@ -32,10 +32,34 @@ const status_colors = {
 };
 
 const columns = [
-  { name: "bill_number", label: "Nomor Tagihan", field: "bill_number", align: "left", sortable: true },
-  { name: "bill_date", label: "Tgl. Tagihan", field: "bill_date", align: "left", sortable: true },
-  { name: "due_date", label: "Jatuh Tempo", field: "due_date", align: "left", sortable: true },
-  { name: "total_amount", label: "Jumlah", field: "total_amount", align: "right", sortable: true },
+  {
+    name: "customer_number",
+    label: "Nomor Tagihan",
+    field: "customer_number",
+    align: "left",
+    sortable: true,
+  },
+  {
+    name: "customer_date",
+    label: "Tgl. Tagihan",
+    field: "customer_date",
+    align: "left",
+    sortable: true,
+  },
+  {
+    name: "due_date",
+    label: "Jatuh Tempo",
+    field: "due_date",
+    align: "left",
+    sortable: true,
+  },
+  {
+    name: "total_amount",
+    label: "Jumlah",
+    field: "total_amount",
+    align: "right",
+    sortable: true,
+  },
   { name: "status", label: "Status", field: "status", align: "center" },
   { name: "action", align: "right" },
 ];
@@ -44,8 +68,8 @@ onMounted(() => fetchItems());
 
 const deleteItem = (row) =>
   handleDelete({
-    message: `Hapus tagihan ${row.bill_number}?`,
-    url: route("app.bill.delete", row.id),
+    message: `Hapus tagihan ${row.customer_number}?`,
+    url: route("app.customer.delete", row.id),
     fetchItemsCallback: fetchItems,
     loading,
   });
@@ -56,17 +80,17 @@ const fetchItems = (props = null) =>
     filter,
     props,
     rows,
-    url: route("app.bill.data"),
+    url: route("app.customer.data"),
     loading,
   });
 
 const onRowClicked = (row) =>
-  router.get(route("app.bill.detail", { id: row.id }));
+  router.get(route("app.customer.detail", { id: row.id }));
 
 const computedColumns = computed(() =>
   $q.screen.gt.sm
     ? columns
-    : columns.filter((col) => ["bill_number", "action"].includes(col.name))
+    : columns.filter((col) => ["customer_number", "action"].includes(col.name))
 );
 </script>
 
@@ -103,14 +127,17 @@ const computedColumns = computed(() =>
           class="cursor-pointer"
           @click="onRowClicked(props.row)"
         >
-          <q-td key="bill_number" :props="props">
-            <div>{{ props.row.bill_number }}</div>
+          <q-td key="customer_number" :props="props">
+            <div>{{ props.row.customer_number }}</div>
             <div v-if="$q.screen.lt.md" class="q-mt-sm q-gutter-xs">
               <div>
-                <q-icon name="event" /> Tgl: {{ formatDate(props.row.bill_date) }}
+                <q-icon name="event" /> Tgl:
+                {{ formatDate(props.row.customer_date) }}
               </div>
               <div>
-                <strong>{{ formatNumberWithSymbol(props.row.total_amount) }}</strong>
+                <strong>{{
+                  formatNumberWithSymbol(props.row.total_amount)
+                }}</strong>
               </div>
               <q-badge :color="status_colors[props.row.status]">
                 {{ props.row.status_label }}
@@ -118,8 +145,8 @@ const computedColumns = computed(() =>
             </div>
           </q-td>
 
-          <q-td key="bill_date" :props="props">
-            {{ formatDate(props.row.bill_date) }}
+          <q-td key="customer_date" :props="props">
+            {{ formatDate(props.row.customer_date) }}
           </q-td>
 
           <q-td key="due_date" :props="props">
@@ -132,7 +159,8 @@ const computedColumns = computed(() =>
 
           <q-td key="status" :props="props">
             <q-badge :color="status_colors[props.row.status]">
-              {{ props.row.status_label }} </q-badge>
+              {{ props.row.status_label }}
+            </q-badge>
           </q-td>
 
           <q-td key="action" :props="props">
@@ -144,9 +172,13 @@ const computedColumns = computed(() =>
                       clickable
                       v-ripple
                       v-close-popup
-                      @click.stop="router.get(route('app.bill.edit', props.row.id))"
+                      @click.stop="
+                        router.get(route('app.customer.edit', props.row.id))
+                      "
                     >
-                      <q-item-section avatar><q-icon name="edit" /></q-item-section>
+                      <q-item-section avatar
+                        ><q-icon name="edit"
+                      /></q-item-section>
                       <q-item-section>Edit</q-item-section>
                     </q-item>
                     <q-item
@@ -155,7 +187,9 @@ const computedColumns = computed(() =>
                       v-close-popup
                       @click.stop="deleteItem(props.row)"
                     >
-                      <q-item-section avatar><q-icon name="delete_forever" /></q-item-section>
+                      <q-item-section avatar
+                        ><q-icon name="delete_forever"
+                      /></q-item-section>
                       <q-item-section>Hapus</q-item-section>
                     </q-item>
                   </q-list>

@@ -76,7 +76,7 @@ const pagination = ref(
   storage.get("pagination", {
     page: 1,
     rowsPerPage: 10,
-    rowsNumber: 10,
+    rowsNumber: 10, 
     sortBy: "id",
     descending: true,
   })

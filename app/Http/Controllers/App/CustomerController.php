@@ -5,6 +5,7 @@ namespace App\Http\Controllers\App;
 use App\Http\Controllers\Controller;
 use App\Models\Customer;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Str;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -15,12 +16,12 @@ class CustomerController extends Controller
 {
     public function index()
     {
-        return inertia('app/customer/Index');
+        return inertia('customer/Index');
     }
 
     public function detail($id = 0)
     {
-        return inertia('app/customer/Detail', [
+        return inertia('customer/detail', [
             'data' => Customer::query([
                 'product:id,name',
             ])->findOrFail($id),
@@ -64,7 +65,7 @@ class CustomerController extends Controller
         $item = Customer::findOrFail($id);
         $item->id = null;
         $item->created_at = null;
-        return inertia('app/customer/Editor', [
+        return inertia('customer/Editor', [
             'data' => $item,
         ]);
     }
@@ -72,7 +73,7 @@ class CustomerController extends Controller
     public function editor($id = 0)
     {
         $item = $id ? Customer::findOrFail($id) : new Customer(['active' => true]);
-        return inertia('app/customer/Editor', [
+        return inertia('customer/Editor', [
             'data' => $item,
         ]);
     }
@@ -89,6 +90,13 @@ class CustomerController extends Controller
         ]);
 
         $item = !$request->id ? new Customer() : Customer::findOrFail($request->post('id', 0));
+
+            if (!$request->id) {
+        do {
+            $validated['code'] = 'CUST-' . strtoupper(Str::random(6));
+        } while (Customer::where('code', $validated['code'])->exists());
+    }
+
         $item->fill($validated);
         $item->save();
 

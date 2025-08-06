@@ -1,69 +1,183 @@
 <script setup>
-import { router, usePage } from "@inertiajs/vue3";
-import { ref } from "vue";
-import MainInfo from "./partial/MainInfo.vue";
-import ActivationHistory from "./partial/ActivationHistory.vue";
-import BillHistory from "./partial/BillHistory.vue";
+import { useForm, usePage } from "@inertiajs/vue3";
+import { handleSubmit } from "@/helpers/client-req-handler";
+import { scrollToFirstErrorField } from "@/helpers/utils";
+import { createOptions } from "@/helpers/options";
 
 const page = usePage();
-const title = "Detail Pelanggan";
-const tab = ref("main");
+const title = (!!page.props.data.id ? "Edit" : "Tambah") + " Pelanggan";
+const today = new Date().toLocaleDateString("en-CA");
+const form = useForm({
+  id: page.props.data.id,
+  company_id: page.props.data.company_id,
+  product_id: page.props.data.product_id,
+  code: page.props.data.code,
+  name: page.props.data.name,
+  wa: page.props.data.wa,
+  phone: page.props.data.phone,
+  id_card_number: page.props.data.id_card_number,
+  installation_date:page.props.data.installation_date || today.replaceAll("-", "/"),
+  type: page.props.data.type,
+  address: page.props.data.address,
+  notes: page.props.data.notes,
+  active: !!page.props.data.active,
+});
+
+const submit = () => handleSubmit({ form, url: route("app.customer.save") });
 </script>
 
 <template>
   <i-head :title="title" />
   <authenticated-layout>
     <template #title>{{ title }}</template>
-    <template #left-button>
-      <div class="q-gutter-sm">
-        <q-btn
-          icon="arrow_back"
-          densef
-          color="grey-7"
-          flat
-          rounded
-          @click="router.get(route('app.party.index'))"
-        />
-      </div>
-    </template>
-    <template #right-button>
-      <div class="q-gutter-sm">
-        <q-btn
-          icon="edit"
-          dense
-          color="primary"
-          @click="
-            router.get(route('app.party.edit', { id: page.props.data.id }))
-          "
-        />
-      </div>
-    </template>
     <q-page class="row justify-center">
-      <div class="col col-lg-6 q-pa-sm">
-        <div class="row">
+      <div class="col col-md-6 q-pa-sm">
+        <q-form
+          class="row q-col-gutter-md"
+          @submit.prevent="submit"
+          @validation-error="scrollToFirstErrorField"
+        >
           <q-card square flat bordered class="col">
-            <q-card-section>
-              <q-tabs v-model="tab" align="left">
-                <q-tab name="main" label="Info Utama" />
-                <q-tab name="historyBill" label="Riwayat Tagihan" />
-                <q-tab name="historyAktivation" label="Riwayat Aktivasi" />
-              </q-tabs>
-              <q-tab-panels v-model="tab">
-                <q-tab-panel name="main">
-                  <main-info />
+            <q-inner-loading :showing="form.processing">
+              <q-spinner size="50px" color="primary" />
+            </q-inner-loading>
+            <q-card-section class="q-pt-md">
+              <input type="hidden" name="id" v-model="form.id" />
 
-                </q-tab-panel>
-                 <q-tab-panel name="historyBill">
-                  <bill-history />
-                </q-tab-panel>
+              <q-input
+                v-if="form.id"
+                v-model="form.id"
+                label="Id Pelanggan"
+                readonly
+                disable
+              />
 
-                <q-tab-panel name="historyActivation" >
-                  <activation-history />
-                </q-tab-panel>
-              </q-tab-panels>
+              <q-input
+                autofocus
+                v-model.trim="form.name"
+                label="Nama"
+                lazy-rules
+                :error="!!form.errors.name"
+                :disable="form.processing"
+                :error-message="form.errors.name"
+                :rules="[(val) => !!val || 'Nama harus diisi.']"
+              />
+
+              <q-input
+                v-model="form.wa"
+                type="tel"
+                label="No WhatsApp"
+                lazy-rules
+                :disable="form.processing"
+                :error="!!form.errors.wa"
+                :error-message="form.errors.wa"
+              />
+
+              <q-input
+                v-model.trim="form.phone"
+                type="tel"
+                label="No Telepon"
+                lazy-rules
+                :disable="form.processing"
+                :error="!!form.errors.phone"
+                :error-message="form.errors.phone"
+              />
+
+              <q-input
+                v-model="form.id_card_number"
+                type="tel"
+                label="No KTP"
+                lazy-rules
+                :disable="form.processing"
+                :error="!!form.errors.id_card_number"
+                :error-message="form.errors.id_card_number"
+              />
+
+              <q-input
+                filled
+                v-model="form.installation_date"
+                label="Tanggal Pemasangan"
+                mask="date"
+                :rules="['date']"
+                :disable="form.processing"
+                :error="!!form.errors.installation_date"
+                :error-message="form.errors.installation_date"
+              >
+                <template v-slot:append>
+                  <q-icon name="event" class="cursor-pointer">
+                    <q-popup-proxy
+                      cover
+                      transition-show="scale"
+                      transition-hide="scale"
+                    >
+                      <q-date v-model="form.installation_date">
+                        <div class="row items-center justify-end">
+                          <q-btn
+                            v-close-popup
+                            label="Selesai"
+                            color="primary"
+                            flat
+                          />
+                        </div>
+                      </q-date>
+                    </q-popup-proxy>
+                  </q-icon>
+                </template>
+              </q-input>
+
+              <q-input
+                v-model.trim="form.address"
+                type="textarea"
+                autogrow
+                counter
+                maxlength="255"
+                label="Alamat"
+                lazy-rules
+                :disable="form.processing"
+                :error="!!form.errors.address"
+                :error-message="form.errors.address"
+              />
+
+              <q-input
+                v-model.trim="form.notes"
+                type="textarea"
+                autogrow
+                counter
+                maxlength="255"
+                label="Catatan"
+                lazy-rules
+                :disable="form.processing"
+                :error="!!form.errors.notes"
+                :error-message="form.errors.notes"
+              />
+
+              <div style="margin-left: -10px">
+                <q-checkbox
+                  class="full-width q-pl-none"
+                  v-model="form.active"
+                  :disable="form.processing"
+                  label="Aktif"
+                />
+              </div>
+            </q-card-section>
+
+            <q-card-section class="q-gutter-sm">
+              <q-btn
+                icon="save"
+                type="submit"
+                label="Simpan"
+                color="primary"
+                :disable="form.processing"
+              />
+              <q-btn
+                icon="cancel"
+                label="Batal"
+                :disable="form.processing"
+                @click="$goBack()"
+              />
             </q-card-section>
           </q-card>
-        </div>
+        </q-form>
       </div>
     </q-page>
   </authenticated-layout>
