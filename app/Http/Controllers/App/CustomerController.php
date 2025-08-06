@@ -4,11 +4,9 @@ namespace App\Http\Controllers\App;
 
 use App\Http\Controllers\Controller;
 use App\Models\Customer;
-use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Nette\NotImplementedException;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -23,9 +21,8 @@ class CustomerController extends Controller
     public function detail($id = 0)
     {
         return inertia('app/customer/Detail', [
-            'data' => Customer::with([
-                'created_by_user:id,name',
-                'updated_by_user:id,name',
+            'data' => Customer::query([
+                'product:id,name',
             ])->findOrFail($id),
         ]);
     }

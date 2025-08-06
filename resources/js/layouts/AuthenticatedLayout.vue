@@ -111,7 +111,7 @@ onMounted(() => {
             v-model="isDropdownOpen"
             class="profile-btn text-bold"
             flat
-            :label="$config.APP_NAME"
+            :label="page.props.auth.company?.name"
             style="
               justify-content: space-between;
               flex-grow: 1;
@@ -128,7 +128,9 @@ onMounted(() => {
                   <q-item-label>
                     <div class="text-bold">{{ page.props.auth.user.name }}</div>
                     <div class="text-grey-8 text-caption">
-                      {{ page.props.auth.user.email }}
+                      {{ page.props.auth.user.username }}@{{
+                        page.props.auth.company?.code
+                      }}
                     </div>
                   </q-item-label>
                 </q-item-section>

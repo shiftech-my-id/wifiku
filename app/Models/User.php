@@ -60,4 +60,9 @@ class User extends Authenticatable
         $this->last_activity_datetime = now();
         $this->save();
     }
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class, 'company_id');
+    }
 }

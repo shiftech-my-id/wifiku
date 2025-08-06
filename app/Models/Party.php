@@ -38,12 +38,12 @@ class Party extends BaseModel
         return self::where('active', 1)->where('user_id', Auth::id())->count();
     }
 
-    public function created_by_user()
+    public function createdBy()
     {
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function updated_by_user()
+    public function updatedBy()
     {
         return $this->belongsTo(User::class, 'updated_by');
     }

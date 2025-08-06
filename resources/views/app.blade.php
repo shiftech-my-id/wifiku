@@ -21,8 +21,8 @@
     window.CONFIG.APP_VERSION = {{ config('app.version', 0x010000) }};
     window.CONFIG.APP_VERSION_STR = "{{ config('app.version_str', '1.0.0') }}";
     window.CONSTANTS = <?= json_encode([
-          'PARTY_TYPES' => \App\Models\Party::Types,
-          'TRANSACTION_TYPES' => \App\Models\Transaction::Types,
+          //   'PARTY_TYPES' => \App\Models\Party::Types,
+          //   'TRANSACTION_TYPES' => \App\Models\Transaction::Types,
       ]) ?>;
     @if (!!env('APP_DEMO'))
       window.CONFIG.APP_DEMO = 1

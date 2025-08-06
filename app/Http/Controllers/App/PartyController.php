@@ -24,8 +24,8 @@ class PartyController extends Controller
     {
         return inertia('app/party/Detail', [
             'data' => Party::with([
-                'created_by_user:id,name',
-                'updated_by_user:id,name',
+                'createdBy:id,name',
+                'updatedBy:id,name',
             ])->findOrFail($id),
         ]);
     }

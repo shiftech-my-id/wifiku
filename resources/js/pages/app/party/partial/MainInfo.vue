@@ -57,16 +57,16 @@ const page = usePage();
         <td>
           {{ dateTimeFromNow(page.props.data.created_at) }} -
           {{ formatDatetime(page.props.data.created_at) }}
-          <!-- <template v-if="page.props.data.created_by_user">
+          <!-- <template v-if="page.props.data.createdBy">
             oleh
             <my-link
               :href="
                 route('app.user.detail', {
-                  id: page.props.data.created_by_user.id,
+                  id: page.props.data.createdBy.id,
                 })
               "
             >
-              {{ page.props.data.created_by_user.email }}
+              {{ page.props.data.createdBy.email }}
             </my-link>
           </template> -->
         </td>
@@ -77,16 +77,16 @@ const page = usePage();
         <td>
           {{ dateTimeFromNow(page.props.data.updated_at) }} -
           {{ formatDatetime(page.props.data.updated_at) }}
-          <!-- <template v-if="page.props.data.updated_by_user">
+          <!-- <template v-if="page.props.data.updatedBy">
             oleh
             <my-link
               :href="
                 route('app.user.detail', {
-                  id: page.props.data.updated_by_user.id,
+                  id: page.props.data.updatedBy.id,
                 })
               "
             >
-              {{ page.props.data.updated_by_user.email }}
+              {{ page.props.data.updatedBy.email }}
             </my-link>
           </template> -->
         </td>

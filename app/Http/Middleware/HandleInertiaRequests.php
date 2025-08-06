@@ -34,14 +34,15 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             'auth' => [
-                'user' => $user ? [
+                'user' => $user ?? [
                     'id' => $user->id,
-                    'company_name' => Setting::value('company_name', 'My Company'),
+                    'company_name' => $user->company?->name,
                     'name' => $user->name,
                     'username' => $user->email,
                     'role' => $user->role,
                     'email' => $user->email,
-                ] : null,
+                ],
+                'company' => $user->company ?? null,
             ],
             'flash' => [
                 'info' => $request->session()->get('message'),
