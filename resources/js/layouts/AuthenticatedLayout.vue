@@ -197,76 +197,47 @@ onMounted(() => {
             </q-item-section>
           </q-item>
           <q-separator />
-          <q-expansion-item
-            v-if="
-              $page.props.auth.user.role == $CONSTANTS.USER_ROLE_ADMIN ||
-              $page.props.auth.user.role == $CONSTANTS.USER_ROLE_CASHIER
-            "
-            icon="request_quote"
-            label="Laporan"
-            :default-opened="$page.url.startsWith('/app/transactions')"
+          <q-item
+            clickable
+            v-ripple
+            :active="$page.url.startsWith('/app/parties')"
+            @click="router.get(route('app.party.index'))"
           >
-            <q-item
-              class="subnav"
-              clickable
-              v-ripple
-              :active="$page.url.startsWith('/app/transactions')"
-              @click="router.get(route('app.transaction.index'))"
-            >
-              <q-item-section avatar>
-                <q-icon name="receipt" />
-              </q-item-section>
-              <q-item-section>
-                <q-item-label>Lap.Laba Rugi</q-item-label>
-              </q-item-section>
-            </q-item>
+            <q-item-section avatar>
+              <q-icon name="request_quote" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Laporan</q-item-label>
+            </q-item-section>
+          </q-item>
 
-            <q-item
-              class="subnav"
-              clickable
-              v-ripple
-              :active="$page.url.startsWith('/app/transactions')"
-              @click="router.get(route('app.transaction.index'))"
-            >
-              <q-item-section avatar>
-                <q-icon name="receipt" />
-              </q-item-section>
-              <q-item-section>
-                <q-item-label>Lap.Penagihan</q-item-label>
-              </q-item-section>
-            </q-item>
-            <q-item
-              class="subnav"
-              clickable
-              v-ripple
-              :active="$page.url.startsWith('/app/transactions')"
-              @click="router.get(route('app.transaction.index'))"
-            >
-              <q-item-section avatar>
-                <q-icon name="receipt" />
-              </q-item-section>
-              <q-item-section>
-                <q-item-label>Lap.Pembayaran tagihan</q-item-label>
-              </q-item-section>
-            </q-item>
-
-            <q-item
-              class="subnav"
-              clickable
-              v-ripple
-              :active="$page.url.startsWith('/app/transactions')"
-              @click="router.get(route('app.transaction.index'))"
-            >
-              <q-item-section avatar>
-                <q-icon name="receipt" />
-              </q-item-section>
-              <q-item-section>
-                <q-item-label>Lap.Biaya Oprasional</q-item-label>
-              </q-item-section>
-            </q-item>
-          </q-expansion-item>
+          <q-item
+            clickable
+            v-ripple
+            :active="$page.url.startsWith('/app/parties')"
+            @click="router.get(route('app.party.index'))"
+          >
+            <q-item-section avatar>
+              <q-icon name="diversity_3" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Pelanggan</q-item-label>
+            </q-item-section>
+          </q-item>
+          <q-item
+            clickable
+            v-ripple
+            :active="$page.url.startsWith('/app/settings/users')"
+            @click="router.get(route('app.transaction.index'))"
+          >
+            <q-item-section avatar>
+              <q-icon name="construction" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Layanan</q-item-label>
+            </q-item-section>
+          </q-item>
           <q-separator />
-
           <q-expansion-item
             v-if="
               $page.props.auth.user.role == $CONSTANTS.USER_ROLE_ADMIN ||
@@ -307,6 +278,7 @@ onMounted(() => {
               </q-item-section>
             </q-item>
           </q-expansion-item>
+<<<<<<< HEAD
           <q-separator />
 
           <q-item
@@ -337,6 +309,8 @@ onMounted(() => {
             </q-item-section>
           </q-item>
           <q-separator />
+=======
+>>>>>>> 517b0d3e0298977875dc81c33bf7c06217c40cef
           <q-expansion-item
             v-if="
               $page.props.auth.user.role == $CONSTANTS.USER_ROLE_ADMIN ||
@@ -378,7 +352,6 @@ onMounted(() => {
               </q-item-section>
             </q-item>
           </q-expansion-item>
-          <q-separator />
 
           <q-expansion-item
             v-if="
