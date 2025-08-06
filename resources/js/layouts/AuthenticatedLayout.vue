@@ -278,7 +278,7 @@ onMounted(() => {
               </q-item-section>
             </q-item>
           </q-expansion-item>
-<<<<<<< HEAD
+
           <q-separator />
 
           <q-item
@@ -309,8 +309,7 @@ onMounted(() => {
             </q-item-section>
           </q-item>
           <q-separator />
-=======
->>>>>>> 517b0d3e0298977875dc81c33bf7c06217c40cef
+
           <q-expansion-item
             v-if="
               $page.props.auth.user.role == $CONSTANTS.USER_ROLE_ADMIN ||

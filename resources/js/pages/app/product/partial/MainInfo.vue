@@ -1,8 +1,5 @@
 <script setup>
-import {
-  dateTimeFromNow,
-  formatDatetime,
-} from "@/helpers/formatter";
+import { dateTimeFromNow, formatDatetime } from "@/helpers/formatter";
 import { usePage } from "@inertiajs/vue3";
 
 const page = usePage();
@@ -56,10 +53,7 @@ const page = usePage();
         <td>Dibuat</td>
         <td>:</td>
         <td>
-<<<<<<< HEAD:resources/js/pages/app/product/partial/MainInfo.vue
-          {{ dateTimeFromNow(page.props.data.created_at) }} -
-          {{ formatDatetime(page.props.data.created_at) }}
-          <!-- <template v-if="page.props.data.createdBy">
+          <template v-if="page.props.data.createdBy">
             oleh
             <my-link
               :href="
@@ -70,26 +64,16 @@ const page = usePage();
             >
               {{ page.props.data.createdBy.email }}
             </my-link>
-          </template> -->
-=======
-          {{ dateTimeFromNow(page.props.data.created_datetime) }} -
-          {{ formatDatetime(page.props.data.created_datetime) }}
->>>>>>> 517b0d3e0298977875dc81c33bf7c06217c40cef:resources/js/pages/app/party/partial/MainInfo.vue
+          </template>
         </td>
       </tr>
       <tr v-if="page.props.data.updated_at">
         <td>Diperbarui</td>
         <td>:</td>
         <td>
-<<<<<<< HEAD:resources/js/pages/app/product/partial/MainInfo.vue
           {{ dateTimeFromNow(page.props.data.updated_at) }} -
           {{ formatDatetime(page.props.data.updated_at) }}
-          <!-- <template v-if="page.props.data.updatedBy">
-=======
-          {{ dateTimeFromNow(page.props.data.updated_datetime) }} -
-          {{ formatDatetime(page.props.data.updated_datetime) }}
-          <template v-if="page.props.data.updated_by_user">
->>>>>>> 517b0d3e0298977875dc81c33bf7c06217c40cef:resources/js/pages/app/party/partial/MainInfo.vue
+          <template v-if="page.props.data.updatedBy">
             oleh
             <my-link
               :href="
