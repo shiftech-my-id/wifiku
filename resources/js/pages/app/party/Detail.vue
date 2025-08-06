@@ -2,10 +2,11 @@
 import { router, usePage } from "@inertiajs/vue3";
 import { ref } from "vue";
 import MainInfo from "./partial/MainInfo.vue";
-//import OrderHistory from "./partial/OrderHistory.vue";
+import ActivationHistory from "./partial/ActivationHistory.vue";
+import BillHistory from "./partial/BillHistory.vue";
 
 const page = usePage();
-const title = "Rincian Pihak";
+const title = "Detail Pelanggan";
 const tab = ref("main");
 </script>
 
@@ -17,7 +18,7 @@ const tab = ref("main");
       <div class="q-gutter-sm">
         <q-btn
           icon="arrow_back"
-          dense
+          densef
           color="grey-7"
           flat
           rounded
@@ -44,15 +45,21 @@ const tab = ref("main");
             <q-card-section>
               <q-tabs v-model="tab" align="left">
                 <q-tab name="main" label="Info Utama" />
-                <!-- <q-tab name="history" label="Riwayat PO" /> -->
+                <q-tab name="historyBill" label="Riwayat Tagihan" />
+                <q-tab name="historyAktivation" label="Riwayat Aktivasi" />
               </q-tabs>
               <q-tab-panels v-model="tab">
                 <q-tab-panel name="main">
                   <main-info />
+
                 </q-tab-panel>
-                <!-- <q-tab-panel name="history" class="q-pa-none q-pt-sm">
-                  <order-history class="q-pa-none q-ma-none" />
-                </q-tab-panel> -->
+                 <q-tab-panel name="historyBill">
+                  <bill-history />
+                </q-tab-panel>
+
+                <q-tab-panel name="historyActivation" >
+                  <activation-history />
+                </q-tab-panel>
               </q-tab-panels>
             </q-card-section>
           </q-card>
