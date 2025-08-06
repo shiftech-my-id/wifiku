@@ -83,42 +83,30 @@ const pagination = ref(
 );
 
 const columns = [
+
   {
-    name: "datetime",
-    label: "Waktu",
-    field: "datetime",
-    align: "left",
-    sortable: true,
-  },
-  {
-    name: "party",
-    label: "Pihak",
+    name: "nama_layanan",
+    label: "Nama Layanan",
     field: "party",
     align: "left",
   },
   {
     name: "type",
-    label: "Jenis",
+    label: "Biaya",
     field: "type",
     align: "left",
   },
   {
     name: "category",
-    label: "Kategori",
+    label: "Pelanggan",
     field: "category",
     align: "left",
   },
   {
     name: "amount",
-    label: "Jumlah (Rp.)",
+    label: "Deskripsi",
     field: "amount",
     align: "right",
-  },
-  {
-    name: "notes",
-    label: "Keterangan",
-    field: "notes",
-    align: "left",
   },
   {
     name: "action",
@@ -266,7 +254,7 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
           <q-select
             v-model="filter.party_id"
             :options="parties"
-            label="Pihak"
+            label="Nama Layanan"
             dense
             class="custom-select col-xs-6 col-sm-2"
             map-options
@@ -288,7 +276,7 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
           <q-select
             v-model="filter.type"
             :options="types"
-            label="Jenis"
+            label="Biaya"
             dense
             class="custom-select col-xs-6 col-sm-2"
             map-options
@@ -357,18 +345,6 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
                 <div>
                   <q-icon name="category" />
                   {{ $CONSTANTS.TRANSACTION_TYPES[props.row.type] }}
-                </div>
-                <div>
-                  <q-icon name="money" />
-                  <span
-                    :class="props.row.amount >= 0 ? 'text-green' : 'text-red'"
-                  >
-                    Rp.
-                    {{ formatNumberWithSymbol(props.row.amount) }}
-                  </span>
-                </div>
-                <div v-if="props.row.notes">
-                  <q-icon name="notes" /> {{ props.row.notes }}
                 </div>
               </template>
             </q-td>
