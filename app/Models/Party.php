@@ -40,12 +40,12 @@ class Party extends BaseModel
 
     public function created_by_user()
     {
-        return $this->belongsTo(User::class, 'created_by_uid');
+        return $this->belongsTo(User::class, 'created_by');
     }
 
     public function updated_by_user()
     {
-        return $this->belongsTo(User::class, 'updated_by_uid');
+        return $this->belongsTo(User::class, 'updated_by');
     }
 
     public function user()

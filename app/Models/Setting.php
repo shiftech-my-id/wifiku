@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
-class Setting extends BaseModel
+class Setting extends Model
 {
     protected $fillable = [
         'user_id',

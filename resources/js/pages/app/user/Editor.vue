@@ -4,7 +4,7 @@ import { createOptions } from "@/helpers/options";
 import { validateUsername } from "@/helpers/validations";
 import { useForm, usePage } from "@inertiajs/vue3";
 
-const roles = createOptions(window.CONSTANTS.USER_ROLES);
+const roles = createOptions([]);
 const page = usePage();
 const title = !!page.props.data.id ? "Edit Pengguna" : "Tambah Pengguna";
 const form = useForm({
@@ -12,7 +12,7 @@ const form = useForm({
   name: page.props.data.name,
   email: page.props.data.email,
   password: "",
-  role: !!page.props.data.role ? page.props.data.role : roles[0].value,
+  role: !!page.props.data.role,
   active: !!page.props.data.active,
 });
 

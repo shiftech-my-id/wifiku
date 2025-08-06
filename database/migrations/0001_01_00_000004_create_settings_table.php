@@ -16,11 +16,11 @@ return new class extends Migration
             $table->string('key')->primary();
             $table->text('value');
 
-            $table->datetime('created_datetime')->nullable();
-            $table->datetime('updated_datetime')->nullable();
+            $table->datetime('created_at')->nullable();
+            $table->datetime('updated_at')->nullable();
 
-            $table->foreignId('created_by_uid')->nullable()->constrained('users')->nullOnDelete();
-            $table->foreignId('updated_by_uid')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
 
             $table->unique(['user_id', 'key']);
         });

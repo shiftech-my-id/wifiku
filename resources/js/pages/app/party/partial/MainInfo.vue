@@ -51,12 +51,12 @@ const page = usePage();
         <td>:</td>
         <td>{{ page.props.data.notes }}</td>
       </tr>
-      <tr v-if="page.props.data.created_datetime">
+      <tr v-if="page.props.data.created_at">
         <td>Dibuat</td>
         <td>:</td>
         <td>
-          {{ dateTimeFromNow(page.props.data.created_datetime) }} -
-          {{ formatDatetime(page.props.data.created_datetime) }}
+          {{ dateTimeFromNow(page.props.data.created_at) }} -
+          {{ formatDatetime(page.props.data.created_at) }}
           <!-- <template v-if="page.props.data.created_by_user">
             oleh
             <my-link
@@ -71,12 +71,12 @@ const page = usePage();
           </template> -->
         </td>
       </tr>
-      <tr v-if="page.props.data.updated_datetime">
+      <tr v-if="page.props.data.updated_at">
         <td>Diperbarui</td>
         <td>:</td>
         <td>
-          {{ dateTimeFromNow(page.props.data.updated_datetime) }} -
-          {{ formatDatetime(page.props.data.updated_datetime) }}
+          {{ dateTimeFromNow(page.props.data.updated_at) }} -
+          {{ formatDatetime(page.props.data.updated_at) }}
           <!-- <template v-if="page.props.data.updated_by_user">
             oleh
             <my-link

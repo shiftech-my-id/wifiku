@@ -6,6 +6,7 @@ use App\Http\Controllers\App\PartyController;
 use App\Http\Controllers\App\ProfileController;
 use App\Http\Controllers\App\TransactionCategoryController;
 use App\Http\Controllers\App\TransactionController;
+use App\Http\Controllers\App\UserController as AppUserController;
 use App\Http\Controllers\Admin\UserController;
 
 use App\Http\Middleware\Auth;
@@ -75,21 +76,33 @@ Route::middleware([Auth::class])->group(function () {
             Route::get('export', [PartyController::class, 'export'])->name('app.party.export');
         });
 
+        Route::prefix('users')->group(function () {
+            Route::get('', [AppUserController::class, 'index'])->name('app.user.index');
+            Route::get('data', [AppUserController::class, 'data'])->name('app.user.data');
+            Route::get('add', [AppUserController::class, 'editor'])->name('app.user.add');
+            Route::get('edit/{id}', [AppUserController::class, 'editor'])->name('app.user.edit');
+            Route::get('duplicate/{id}', [AppUserController::class, 'duplicate'])->name('app.user.duplicate');
+            Route::post('save', [AppUserController::class, 'save'])->name('app.user.save');
+            Route::post('delete/{id}', [AppUserController::class, 'delete'])->name('app.user.delete');
+            Route::get('detail/{id}', [AppUserController::class, 'detail'])->name('app.user.detail');
+            Route::get('export', [AppUserController::class, 'export'])->name('app.user.export');
+        });
+
         Route::prefix('settings')->group(function () {
             Route::get('profile/edit', [ProfileController::class, 'edit'])->name('app.profile.edit');
             Route::post('profile/update', [ProfileController::class, 'update'])->name('app.profile.update');
             Route::post('profile/update-password', [ProfileController::class, 'updatePassword'])->name('app.profile.update-password');
 
             Route::prefix('users')->group(function () {
-                Route::get('', [UserController::class, 'index'])->name('app.user.index');
-                Route::get('data', [UserController::class, 'data'])->name('app.user.data');
-                Route::get('add', [UserController::class, 'editor'])->name('app.user.add');
-                Route::get('edit/{id}', [UserController::class, 'editor'])->name('app.user.edit');
-                Route::get('duplicate/{id}', [UserController::class, 'duplicate'])->name('app.user.duplicate');
-                Route::post('save', [UserController::class, 'save'])->name('app.user.save');
-                Route::post('delete/{id}', [UserController::class, 'delete'])->name('app.user.delete');
-                Route::get('detail/{id}', [UserController::class, 'detail'])->name('app.user.detail');
-                Route::get('export', [UserController::class, 'export'])->name('app.user.export');
+                Route::get('', [UserController::class, 'index'])->name('admin.user.index');
+                Route::get('data', [UserController::class, 'data'])->name('admin.user.data');
+                Route::get('add', [UserController::class, 'editor'])->name('admin.user.add');
+                Route::get('edit/{id}', [UserController::class, 'editor'])->name('admin.user.edit');
+                Route::get('duplicate/{id}', [UserController::class, 'duplicate'])->name('admin.user.duplicate');
+                Route::post('save', [UserController::class, 'save'])->name('admin.user.save');
+                Route::post('delete/{id}', [UserController::class, 'delete'])->name('admin.user.delete');
+                Route::get('detail/{id}', [UserController::class, 'detail'])->name('admin.user.detail');
+                Route::get('export', [UserController::class, 'export'])->name('admin.user.export');
             });
         });
     });

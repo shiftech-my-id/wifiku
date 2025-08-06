@@ -14,9 +14,13 @@ class DatabaseSeeder extends Seeder
     {
         DB::transaction(function () {
             $this->call([
+                CompanySeeder::class,
                 UserSeeder::class,
-                PartySeeder::class,
-                TransactionCategorySeeder::class,
+                ProductSeeder::class,
+                CustomerSeeder::class,
+                CostCategorySeeder::class,
+                // PartySeeder::class,
+                // TransactionCategorySeeder::class,
             ]);
         });
     }

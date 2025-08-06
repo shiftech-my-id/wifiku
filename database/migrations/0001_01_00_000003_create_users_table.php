@@ -14,8 +14,10 @@ return new class extends Migration
 
         Schema::create('users', function (Blueprint $table) {
             $table->id();
+            // company_id ditambahkan setelah table companies di buat , ada di migration script create_companies_table
             $table->string('email');
             $table->string('name');
+            $table->string('username'); // unik untuk masing-masing company, by default root akun punya nama admin
             $table->string('google_id', 100)->nullable();
             $table->string('password');
             $table->boolean('active')->default(false);

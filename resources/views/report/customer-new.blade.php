@@ -20,14 +20,14 @@
         <tr>
           <td align="right">{{ $index + 1 }}</td>
           <td>{{ $item->id }}</td>
-          <td>{{ $item->created_datetime }}</td>
+          <td>{{ $item->created_at }}</td>
           <td>
             {{ $item->name }} - {{ $item->company }} - {{ $item->business_type }}
             <br />{{ $item->phone }}
             @if ($item->address)
-            <br /> {{ $item->address }}
+              <br /> {{ $item->address }}
             @endif
-          </td>          
+          </td>
           <td>{{ $item->assigned_user_id ? $item->assigned_user->name : '-' }}</td>
           <td>{{ $item->active ? 'Aktif' : 'Tidak Aktif' }}</td>
           <td>{{ $item->notes }}</td>

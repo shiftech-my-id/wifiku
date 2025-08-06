@@ -12,7 +12,7 @@ const storage = usePageStorage("users");
 
 const roles = [
   { value: "all", label: "Semua" },
-  ...createOptions(window.CONSTANTS.USER_ROLES),
+  // ...createOptions(window.CONSTANTS.USER_ROLES),
 ];
 
 const statuses = [

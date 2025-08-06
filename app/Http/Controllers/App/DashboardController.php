@@ -38,7 +38,7 @@ class DashboardController extends Controller
         //         $countClosing = Closing::whereBetween('date', [$monthStart, $monthEnd])
         //             ->count();
 
-        //         $countNewCustomer = Customer::whereBetween('created_datetime', [$monthStart, $monthEnd])
+        //         $countNewCustomer = Customer::whereBetween('created_at', [$monthStart, $monthEnd])
         //             ->count();
 
         //         $sum_closing = Closing::whereBetween('date', [$monthStart, $monthEnd])
@@ -65,7 +65,7 @@ class DashboardController extends Controller
         //         $countClosing = Closing::whereDate('date', $current->format('Y-m-d'))
         //             ->count();
 
-        //         $countNewCustomer = Customer::whereDate('created_datetime', $current->format('Y-m-d'))
+        //         $countNewCustomer = Customer::whereDate('created_at', $current->format('Y-m-d'))
         //             ->count();
 
         //         $sum_closing = Closing::whereDate('date', $current->format('Y-m-d'))

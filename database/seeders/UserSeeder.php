@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -17,13 +16,17 @@ class UserSeeder extends Seeder
         $users = [
             [
                 'id' => 1,
+                'username' => 'admin',
                 'name' => 'Fahmi Fauzi Rahman',
                 'email' => 'fahmi@example.com',
+                'company_id' => 1,
             ],
             [
                 'id' => 2,
+                'username' => 'admin',
                 'name' => 'John Doe',
                 'email' => 'john@example.com',
+                'company_id' => 2,
             ],
         ];
 

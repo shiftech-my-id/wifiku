@@ -8,9 +8,9 @@ const page = usePage();
 const rows = page.props.data.recent_customers;
 const columns = [
   {
-    name: "created_datetime",
+    name: "created_at",
     label: "Ditambahkan",
-    field: "created_datetime",
+    field: "created_at",
     align: "left",
   },
   { name: "name", label: "Nama", field: "name", align: "left" },
@@ -24,7 +24,7 @@ const onRowClicked = (row) =>
 const computedColumns = computed(() =>
   $q.screen.gt.sm
     ? columns
-    : columns.filter((col) => ["created_datetime"].includes(col.name))
+    : columns.filter((col) => ["created_at"].includes(col.name))
 );
 </script>
 <template>
@@ -63,13 +63,9 @@ const computedColumns = computed(() =>
               class="cursor-pointer"
               @click="onRowClicked(props.row)"
             >
-              <q-td key="created_datetime" :props="props" class="wrap-column">
+              <q-td key="created_at" :props="props" class="wrap-column">
                 <div>
-                  {{
-                    $dayjs(props.row.created_datetime).format(
-                      "D MMMM YYYY HH:mm"
-                    )
-                  }}
+                  {{ $dayjs(props.row.created_at).format("D MMMM YYYY HH:mm") }}
                 </div>
                 <template v-if="$q.screen.lt.md">
                   <div>
