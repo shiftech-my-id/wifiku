@@ -4,8 +4,8 @@ namespace App\Http\Controllers\App;
 
 use App\Http\Controllers\Controller;
 use App\Models\Party;
-use App\Models\Transaction;
-use App\Models\TransactionCategory;
+use App\Models\Cost;
+use App\Models\CostCategory;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -14,14 +14,14 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
-class TransactionController extends Controller
+class CostController extends Controller
 {
 
     public function index()
     {
-        return inertia('app/transaction/Index', [
+        return inertia('app/cost/Index', [
             'parties' => Party::query()->orderBy('name', 'asc')->get(),
-            'categories' => TransactionCategory::query()->orderBy('name', 'asc')->get()
+            'categories' => CostCategory::query()->orderBy('name', 'asc')->get()
         ]);
     }
 
@@ -31,7 +31,7 @@ class TransactionController extends Controller
         $orderType = $request->get('order_type', 'desc');
         $filter = $request->get('filter', []);
 
-        $q = Transaction::with(['party', 'category']);
+        $q = Cost::with(['party', 'category']);
 
         if (!empty($filter['search'])) {
             $q->where(function ($q) use ($filter) {
@@ -68,23 +68,23 @@ class TransactionController extends Controller
 
     public function editor($id = 0)
     {
-        $item = $id ? Transaction::findOrFail($id) : new Transaction(['datetime' => Carbon::now()]);
+        $item = $id ? Cost::findOrFail($id) : new Cost(['datetime' => Carbon::now()]);
         $item->amount = abs($item->amount);
-        return inertia('app/transaction/Editor', [
+        return inertia('app/cost/Editor', [
             'data' => $item,
             'parties' => Party::query()->orderBy('name', 'asc')->get(),
-            'categories' => TransactionCategory::query()->orderBy('name', 'asc')->get()
+            'categories' => CostCategory::query()->orderBy('name', 'asc')->get()
         ]);
     }
 
     public function save(Request $request)
     {
         $validated = $request->validate([
-            'id'          => 'nullable|exists:transactions,id', // tambahkan ini
+            'id'          => 'nullable|exists:costs,id', // tambahkan ini
             'party_id'    => 'required|exists:parties,id',
-            'category_id' => 'required|exists:transaction_categories,id',
+            'category_id' => 'required|exists:cost_categories,id',
             'datetime'    => 'required|date',
-            'type'        => 'required|in:' . implode(',', array_keys(Transaction::Types)),
+            'type'        => 'required|in:' . implode(',', array_keys(Cost::Types)),
             'amount'      => 'required|numeric|min:0.01',
             'notes'       => 'nullable|string|max:255',
         ]);
@@ -92,25 +92,25 @@ class TransactionController extends Controller
         $validated['notes'] = $validated['notes'] ?? '';
         $normalizedAmount = abs($validated['amount']);
 
-        if (Transaction::isPositiveTransaction($validated['type'])) {
+        if (Cost::isPositiveCost($validated['type'])) {
             $normalizedAmount = +$normalizedAmount;
-        } elseif (Transaction::isNegativeTransaction($validated['type'])) {
+        } elseif (Cost::isNegativeCost($validated['type'])) {
             $normalizedAmount = -$normalizedAmount;
         }
 
-        DB::beginTransaction();
+        DB::beginCost();
         try {
             $party = Party::findOrFail($validated['party_id']);
 
             if (!empty($validated['id'])) {
                 // Mode edit
-                $existingTx = Transaction::findOrFail($validated['id']);
+                $existingTx = Cost::findOrFail($validated['id']);
 
                 // Rollback saldo dari transaksi lama
                 $party->balance -= $existingTx->amount;
 
                 // Kalkulasi transaksi baru
-                if ($validated['type'] === Transaction::Type_Adjustment) {
+                if ($validated['type'] === Cost::Type_Adjustment) {
                     $adjustmentDelta = $normalizedAmount - $party->balance;
 
                     if (abs($adjustmentDelta) < 1e-6) {
@@ -131,11 +131,11 @@ class TransactionController extends Controller
                 $party->save();
 
                 DB::commit();
-                return redirect(route('app.transaction.index'))
+                return redirect(route('app.cost.index'))
                     ->with('success', "Transaksi $existingTx->id telah diperbarui.");
             } else {
                 // Mode create
-                if ($validated['type'] === Transaction::Type_Adjustment) {
+                if ($validated['type'] === Cost::Type_Adjustment) {
                     $adjustmentDelta = $normalizedAmount - $party->balance;
 
                     if (abs($adjustmentDelta) < 1e-6) {
@@ -150,15 +150,15 @@ class TransactionController extends Controller
                     $party->balance += $normalizedAmount;
                 }
 
-                $transaction = new Transaction();
-                $transaction->fill($validated);
-                $transaction->save();
+                $cost = new Cost();
+                $cost->fill($validated);
+                $cost->save();
 
                 $party->save();
 
                 DB::commit();
-                return redirect(route('app.transaction.index'))
-                    ->with('success', "Transaksi $transaction->id telah disimpan.");
+                return redirect(route('app.cost.index'))
+                    ->with('success', "Transaksi $cost->id telah disimpan.");
             }
         } catch (\Throwable $e) {
             DB::rollBack();
@@ -170,9 +170,9 @@ class TransactionController extends Controller
 
     public function delete($id)
     {
-        $item = Transaction::findOrFail($id);
+        $item = Cost::findOrFail($id);
 
-        DB::beginTransaction();
+        DB::beginCost();
         try {
             $party = $item->party;
             $party->balance -= $item->amount; // bisa positif atau negatif
@@ -199,12 +199,12 @@ class TransactionController extends Controller
      */
     public function export(Request $request)
     {
-        $items = Transaction::orderBy('datetime', 'desc')->get();
+        $items = Cost::orderBy('datetime', 'desc')->get();
         $title = 'Daftar Transaksi';
         $filename = $title . ' - ' . env('APP_NAME') . Carbon::now()->format('dmY_His');
 
         if ($request->get('format') == 'pdf') {
-            $pdf = Pdf::loadView('export.transaction-list-pdf', compact('items', 'title'));
+            $pdf = Pdf::loadView('export.cost-list-pdf', compact('items', 'title'));
             return $pdf->download($filename . '.pdf');
         }
 
@@ -227,7 +227,7 @@ class TransactionController extends Controller
                 $sheet->setCellValue('A' . $row, $item->id);
                 $sheet->setCellValue('B' . $row, $item->datetime);
                 $sheet->setCellValue('C' . $row, $item->party?->name);
-                $sheet->setCellValue('D' . $row, Transaction::Types[$item->type]);
+                $sheet->setCellValue('D' . $row, Cost::Types[$item->type]);
                 $sheet->setCellValue('E' . $row, $item->category?->name);
                 $sheet->setCellValue('F' . $row, $item->amount);
                 $sheet->setCellValue('G' . $row, $item->notes);

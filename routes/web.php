@@ -2,13 +2,13 @@
 
 use App\Http\Controllers\App\AuthController;
 use App\Http\Controllers\App\DashboardController;
-use App\Http\Controllers\App\PartyController;
+use App\Http\Controllers\App\CustomerController;
 use App\Http\Controllers\App\ProfileController;
-use App\Http\Controllers\App\TransactionCategoryController;
-use App\Http\Controllers\App\TransactionController;
+use App\Http\Controllers\App\CostCategoryController;
+use App\Http\Controllers\App\CostController;
 use App\Http\Controllers\App\UserController as AppUserController;
 use App\Http\Controllers\Admin\UserController;
-
+use App\Http\Controllers\App\ProductController;
 use App\Http\Middleware\Auth;
 use App\Http\Middleware\NonAuthenticated;
 use Illuminate\Support\Facades\Route;
@@ -42,38 +42,50 @@ Route::middleware([Auth::class])->group(function () {
             return inertia('app/About');
         })->name('app.about');
 
-        Route::prefix('transactions')->group(function () {
-            Route::get('', [TransactionController::class, 'index'])->name('app.transaction.index');
-            Route::get('data', [TransactionController::class, 'data'])->name('app.transaction.data');
-            Route::get('add', [TransactionController::class, 'editor'])->name('app.transaction.add');
-            Route::get('edit/{id}', [TransactionController::class, 'editor'])->name('app.transaction.edit');
-            Route::get('detail/{id}', [TransactionController::class, 'detail'])->name('app.transaction.detail');
-            Route::post('save', [TransactionController::class, 'save'])->name('app.transaction.save');
-            Route::post('delete/{id}', [TransactionController::class, 'delete'])->name('app.transaction.delete');
-            Route::get('export', [TransactionController::class, 'export'])->name('app.transaction.export');
+        Route::prefix('costs')->group(function () {
+            Route::get('', [CostController::class, 'index'])->name('app.cost.index');
+            Route::get('data', [CostController::class, 'data'])->name('app.cost.data');
+            Route::get('add', [CostController::class, 'editor'])->name('app.cost.add');
+            Route::get('edit/{id}', [CostController::class, 'editor'])->name('app.cost.edit');
+            Route::get('detail/{id}', [CostController::class, 'detail'])->name('app.cost.detail');
+            Route::post('save', [CostController::class, 'save'])->name('app.cost.save');
+            Route::post('delete/{id}', [CostController::class, 'delete'])->name('app.cost.delete');
+            Route::get('export', [CostController::class, 'export'])->name('app.cost.export');
         });
 
-        Route::prefix('transaction-categories')->group(function () {
-            Route::get('', [TransactionCategoryController::class, 'index'])->name('app.transaction-category.index');
-            Route::get('data', [TransactionCategoryController::class, 'data'])->name('app.transaction-category.data');
-            Route::get('add', [TransactionCategoryController::class, 'editor'])->name('app.transaction-category.add');
-            Route::get('duplicate/{id}', [TransactionCategoryController::class, 'duplicate'])->name('app.transaction-category.duplicate');
-            Route::get('edit/{id}', [TransactionCategoryController::class, 'editor'])->name('app.transaction-category.edit');
-            Route::post('save', [TransactionCategoryController::class, 'save'])->name('app.transaction-category.save');
-            Route::post('delete/{id}', [TransactionCategoryController::class, 'delete'])->name('app.transaction-category.delete');
-            Route::get('export', [TransactionCategoryController::class, 'export'])->name('app.transaction-category.export');
+        Route::prefix('cost-categories')->group(function () {
+            Route::get('', [CostCategoryController::class, 'index'])->name('app.cost-category.index');
+            Route::get('data', [CostCategoryController::class, 'data'])->name('app.cost-category.data');
+            Route::get('add', [CostCategoryController::class, 'editor'])->name('app.cost-category.add');
+            Route::get('duplicate/{id}', [CostCategoryController::class, 'duplicate'])->name('app.cost-category.duplicate');
+            Route::get('edit/{id}', [CostCategoryController::class, 'editor'])->name('app.cost-category.edit');
+            Route::post('save', [CostCategoryController::class, 'save'])->name('app.cost-category.save');
+            Route::post('delete/{id}', [CostCategoryController::class, 'delete'])->name('app.cost-category.delete');
+            Route::get('export', [CostCategoryController::class, 'export'])->name('app.cost-category.export');
         });
 
-        Route::prefix('parties')->group(function () {
-            Route::get('', [PartyController::class, 'index'])->name('app.party.index');
-            Route::get('data', [PartyController::class, 'data'])->name('app.party.data');
-            Route::get('add', [PartyController::class, 'editor'])->name('app.party.add');
-            Route::get('duplicate/{id}', [PartyController::class, 'duplicate'])->name('app.party.duplicate');
-            Route::get('edit/{id}', [PartyController::class, 'editor'])->name('app.party.edit');
-            Route::post('save', [PartyController::class, 'save'])->name('app.party.save');
-            Route::post('delete/{id}', [PartyController::class, 'delete'])->name('app.party.delete');
-            Route::get('detail/{id}', [PartyController::class, 'detail'])->name('app.party.detail');
-            Route::get('export', [PartyController::class, 'export'])->name('app.party.export');
+        Route::prefix('customers')->group(function () {
+            Route::get('', [CustomerController::class, 'index'])->name('app.customer.index');
+            Route::get('data', [CustomerController::class, 'data'])->name('app.customer.data');
+            Route::get('add', [CustomerController::class, 'editor'])->name('app.customer.add');
+            Route::get('duplicate/{id}', [CustomerController::class, 'duplicate'])->name('app.customer.duplicate');
+            Route::get('edit/{id}', [CustomerController::class, 'editor'])->name('app.customer.edit');
+            Route::post('save', [CustomerController::class, 'save'])->name('app.customer.save');
+            Route::post('delete/{id}', [CustomerController::class, 'delete'])->name('app.customer.delete');
+            Route::get('detail/{id}', [CustomerController::class, 'detail'])->name('app.customer.detail');
+            Route::get('export', [CustomerController::class, 'export'])->name('app.customer.export');
+        });
+
+        Route::prefix('products')->group(function () {
+            Route::get('', [ProductController::class, 'index'])->name('app.product.index');
+            Route::get('data', [ProductController::class, 'data'])->name('app.product.data');
+            Route::get('add', [ProductController::class, 'editor'])->name('app.product.add');
+            Route::get('duplicate/{id}', [ProductController::class, 'duplicate'])->name('app.product.duplicate');
+            Route::get('edit/{id}', [ProductController::class, 'editor'])->name('app.product.edit');
+            Route::post('save', [ProductController::class, 'save'])->name('app.product.save');
+            Route::post('delete/{id}', [ProductController::class, 'delete'])->name('app.product.delete');
+            Route::get('detail/{id}', [ProductController::class, 'detail'])->name('app.product.detail');
+            Route::get('export', [ProductController::class, 'export'])->name('app.product.export');
         });
 
         Route::prefix('users')->group(function () {
