@@ -6,7 +6,7 @@ import { createOptions } from "@/helpers/options";
 
 const page = usePage();
 const title = (!!page.props.data.id ? "Edit" : "Tambah") + " Pelanggan";
-const types = createOptions(window.CONSTANTS.PARTY_TYPES);
+// const types = createOptions(window.CONSTANTS.PARTY_TYPES);
 const today = new Date().toLocaleDateString("en-CA");
 const form = useForm({
   id: page.props.data.id,
@@ -22,7 +22,7 @@ const form = useForm({
   active: !!page.props.data.active,
 });
 
-const submit = () => handleSubmit({ form, url: route("app.party.save") });
+const submit = () => handleSubmit({ form, url: route("app.customer.save") });
 </script>
 
 <template>
