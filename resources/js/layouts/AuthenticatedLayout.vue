@@ -11,26 +11,31 @@ const LEFT_DRAWER_STORAGE_KEY = "advanta-report.layout.left-drawer-open";
 const $q = useQuasar();
 const page = usePage();
 const leftDrawerOpen = ref(
-  JSON.parse(localStorage.getItem(LEFT_DRAWER_STORAGE_KEY))
+  JSON.parse(localStorage.getItem(LEFT_DRAWER_STORAGE_KEY) || "false")
 );
 const isDropdownOpen = ref(false);
 
-const isToggleHovered = ref(!true);
+const isToggleHovered = ref(false);
 const showAsHoverButton = computed(() => $q.screen.gt.sm);
 const toggleLeftDrawer = () => {
   leftDrawerOpen.value = !leftDrawerOpen.value;
   isToggleHovered.value = false;
 };
 
+const isAdminOrCashier = computed(() => {
+  const userRole = page.props.auth.user.role;
+  const CONSTANTS = page.props.constants;
+  return (
+    userRole === CONSTANTS.USER_ROLE_ADMIN ||
+    userRole === CONSTANTS.USER_ROLE_CASHIER
+  );
+});
+
 watch(leftDrawerOpen, (newValue) => {
   localStorage.setItem(LEFT_DRAWER_STORAGE_KEY, newValue);
 });
 
 onMounted(() => {
-  leftDrawerOpen.value = JSON.parse(
-    localStorage.getItem(LEFT_DRAWER_STORAGE_KEY)
-  );
-
   if ($q.screen.lt.md) {
     leftDrawerOpen.value = false;
   }
@@ -115,7 +120,7 @@ onMounted(() => {
             :class="{ 'profile-btn-active': isDropdownOpen }"
           >
             <q-list id="profile-btn-popup" style="color: #444">
-              <q-item @click="router.get(route('app.profile.edit'))" clickable>
+              <q-item>
                 <q-avatar style="margin-left: -15px"
                   ><q-icon name="person"
                 /></q-avatar>
@@ -126,6 +131,39 @@ onMounted(() => {
                       {{ page.props.auth.user.email }}
                     </div>
                   </q-item-label>
+                </q-item-section>
+              </q-item>
+              <q-separator />
+              <q-item
+                v-close-popup
+                class="subnav"
+                clickable
+                v-ripple
+                :active="$page.url.startsWith('/admin/settings/profile')"
+                @click="router.get(route('admin.profile.edit'))"
+              >
+                <q-item-section>
+                  <q-item-label
+                    ><q-icon name="manage_accounts" class="q-mr-sm" />
+                    {{ $t("my_profile") }}</q-item-label
+                  >
+                </q-item-section>
+              </q-item>
+              <q-item
+                v-close-popup
+                class="subnav"
+                clickable
+                v-ripple
+                :active="
+                  $page.url.startsWith('/admin/settings/company-profile')
+                "
+                @click="router.get(route('admin.company-profile.edit'))"
+              >
+                <q-item-section>
+                  <q-item-label
+                    ><q-icon name="home_work" class="q-mr-sm" />
+                    {{ $t("company_profile") }}</q-item-label
+                  >
                 </q-item-section>
               </q-item>
             </q-list>
@@ -164,13 +202,10 @@ onMounted(() => {
             "
             icon="request_quote"
             label="Laporan"
-            :default-opened="
-              $page.url.startsWith('/admin/sales-orders') ||
-              $page.url.startsWith('/admin/customers')
-            "
+            :default-opened="$page.url.startsWith('/app/transactions')"
           >
-
             <q-item
+              class="subnav"
               clickable
               v-ripple
               :active="$page.url.startsWith('/app/transactions')"
@@ -185,6 +220,7 @@ onMounted(() => {
             </q-item>
 
             <q-item
+              class="subnav"
               clickable
               v-ripple
               :active="$page.url.startsWith('/app/transactions')"
@@ -198,6 +234,7 @@ onMounted(() => {
               </q-item-section>
             </q-item>
             <q-item
+              class="subnav"
               clickable
               v-ripple
               :active="$page.url.startsWith('/app/transactions')"
@@ -212,6 +249,7 @@ onMounted(() => {
             </q-item>
 
             <q-item
+              class="subnav"
               clickable
               v-ripple
               :active="$page.url.startsWith('/app/transactions')"
@@ -228,42 +266,44 @@ onMounted(() => {
           <q-separator />
 
           <q-expansion-item
-          v-if="
+            v-if="
               $page.props.auth.user.role == $CONSTANTS.USER_ROLE_ADMIN ||
               $page.props.auth.user.role == $CONSTANTS.USER_ROLE_CASHIER
             "
             icon="credit_score"
             label="Tagihan"
             :default-opened="
-              $page.url.startsWith('/admin/sales-orders') ||
-              $page.url.startsWith('/admin/customers')
-            ">
-          <q-item
-            clickable
-            v-ripple
-            :active="$page.url.startsWith('/app/transaction-categories')"
-            @click="router.get(route('app.transaction-category.index'))"
+              $page.url.startsWith('/app/transaction-categories')
+            "
           >
-            <q-item-section avatar>
-              <q-icon name="credit_score" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Tagihan</q-item-label>
-            </q-item-section>
-          </q-item>
-          <q-item
-            clickable
-            v-ripple
-            :active="$page.url.startsWith('/app/transaction-categories')"
-            @click="router.get(route('app.transaction-category.index'))"
-          >
-            <q-item-section avatar>
-              <q-icon name="bolt" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Generate</q-item-label>
-            </q-item-section>
-          </q-item>
+            <q-item
+              class="subnav"
+              clickable
+              v-ripple
+              :active="$page.url.startsWith('/app/transaction-categories')"
+              @click="router.get(route('app.transaction-category.index'))"
+            >
+              <q-item-section avatar>
+                <q-icon name="credit_score" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>Tagihan</q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-item
+              class="subnav"
+              clickable
+              v-ripple
+              :active="$page.url.startsWith('/app/transaction-categories')"
+              @click="router.get(route('app.transaction-category.index'))"
+            >
+              <q-item-section avatar>
+                <q-icon name="bolt" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>Generate</q-item-label>
+              </q-item-section>
+            </q-item>
           </q-expansion-item>
           <q-separator />
 
@@ -296,7 +336,7 @@ onMounted(() => {
           </q-item>
           <q-separator />
           <q-expansion-item
-                    v-if="
+            v-if="
               $page.props.auth.user.role == $CONSTANTS.USER_ROLE_ADMIN ||
               $page.props.auth.user.role == $CONSTANTS.USER_ROLE_CASHIER
             "
@@ -305,87 +345,93 @@ onMounted(() => {
             :default-opened="
               $page.url.startsWith('/admin/sales-orders') ||
               $page.url.startsWith('/admin/customers')
-            ">
-          <q-item
-            clickable
-            v-ripple
-            :active="$page.url.startsWith('/app/settings/profile')"
-            @click="router.get(route('app.profile.edit'))"
+            "
           >
-            <q-item-section avatar>
-              <q-icon name="business_center" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Biaya Oprasional</q-item-label>
-            </q-item-section>
-          </q-item>
-                    <q-item
-            clickable
-            v-ripple
-            :active="$page.url.startsWith('/app/settings/profile')"
-            @click="router.get(route('app.profile.edit'))"
-          >
-            <q-item-section avatar>
-              <q-icon name="category" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Kategori Biaya</q-item-label>
-            </q-item-section>
-          </q-item>
+            <q-item
+              class="subnav"
+              clickable
+              v-ripple
+              :active="$page.url.startsWith('/app/settings/profile')"
+              @click="router.get(route('app.profile.edit'))"
+            >
+              <q-item-section avatar>
+                <q-icon name="business_center" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>Biaya Oprasional</q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-item
+              class="subnav"
+              clickable
+              v-ripple
+              :active="$page.url.startsWith('/app/settings/profile')"
+              @click="router.get(route('app.profile.edit'))"
+            >
+              <q-item-section avatar>
+                <q-icon name="category" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>Kategori Biaya</q-item-label>
+              </q-item-section>
+            </q-item>
           </q-expansion-item>
           <q-separator />
 
           <q-expansion-item
-                    v-if="
+            v-if="
               $page.props.auth.user.role == $CONSTANTS.USER_ROLE_ADMIN ||
               $page.props.auth.user.role == $CONSTANTS.USER_ROLE_CASHIER
             "
             icon="tune"
-            label="Sistem""
+            label="Sistem"
             :default-opened="
               $page.url.startsWith('/admin/sales-orders') ||
               $page.url.startsWith('/admin/customers')
-            ">
-
-          <q-item
-            clickable
-            v-ripple
-            :active="$page.url.startsWith('/app/settings/profile')"
-            @click="router.get(route('app.profile.edit'))"
+            "
           >
-            <q-item-section avatar>
-              <q-icon name="person" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Pengguna</q-item-label>
-            </q-item-section>
-          </q-item>
-                    <q-item
-            clickable
-            v-ripple
-            :active="$page.url.startsWith('/app/settings/profile')"
-            @click="router.get(route('app.profile.edit'))"
-          >
-            <q-item-section avatar>
-              <q-icon name="diversity_2" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Grup Pengguna</q-item-label>
-            </q-item-section>
-          </q-item>
-                    <q-item
-            clickable
-            v-ripple
-            :active="$page.url.startsWith('/app/settings/profile')"
-            @click="router.get(route('app.profile.edit'))"
-          >
-            <q-item-section avatar>
-              <q-icon name="settings" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Setting</q-item-label>
-            </q-item-section>
-          </q-item>
+            <q-item
+              class="subnav"
+              clickable
+              v-ripple
+              :active="$page.url.startsWith('/app/settings/profile')"
+              @click="router.get(route('app.profile.edit'))"
+            >
+              <q-item-section avatar>
+                <q-icon name="person" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>Pengguna</q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-item
+              class="subnav"
+              clickable
+              v-ripple
+              :active="$page.url.startsWith('/app/settings/profile')"
+              @click="router.get(route('app.profile.edit'))"
+            >
+              <q-item-section avatar>
+                <q-icon name="diversity_2" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>Grup Pengguna</q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-item
+              class="subnav"
+              clickable
+              v-ripple
+              :active="$page.url.startsWith('/app/settings/profile')"
+              @click="router.get(route('app.profile.edit'))"
+            >
+              <q-item-section avatar>
+                <q-icon name="settings" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>Setting</q-item-label>
+              </q-item-section>
+            </q-item>
           </q-expansion-item>
           <q-separator />
           <div class="absolute-bottom text-grey-6 q-pa-md">
