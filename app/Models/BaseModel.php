@@ -18,51 +18,91 @@ abstract class BaseModel extends Model
     {
         parent::boot();
 
-        // Optional: auto-scope untuk user_id
-        static::addGlobalScope('user', function ($query) {
-            if (Auth::check() && Schema::hasColumn((new static)->getTable(), 'user_id')) {
-                $query->where('user_id', Auth::id());
+        // GLOBAL SCOPE: company_id
+        static::addGlobalScope('company', function ($query) {
+            if (Auth::check() && static::hasColumn('company_id')) {
+                $query->where('company_id', Auth::user()->company_id);
             }
         });
 
+        // // Optional: auto-scope untuk user_id
+        // static::addGlobalScope('user', function ($query) {
+        //     if (Auth::check() && Schema::hasColumn((new static)->getTable(), 'user_id')) {
+        //         $query->where('user_id', Auth::id());
+        //     }
+        // });
+
         static::creating(function ($model) {
-            if (Schema::hasColumn($model->getTable(), 'created_at')) {
-                $model->created_at = now();
+            $now = now();
+            $auth = Auth::user();
+
+            if ($auth) {
+                if ($model->hasColumn('user_id')) {
+                    $model->user_id = $auth->id;
+                }
+
+                if ($model->hasColumn('created_by')) {
+                    $model->created_by = $auth->id;
+                }
+
+                if ($model->hasColumn('company_id')) {
+                    $model->company_id = $auth->company_id;
+                }
             }
 
-            if (Schema::hasColumn($model->getTable(), 'created_by') && Auth::check()) {
-                $model->created_by = Auth::id();
-            }
-
-            if (Schema::hasColumn($model->getTable(), 'user_id') && Auth::check()) {
-                $model->user_id = Auth::id();
+            if ($model->hasColumn('created_at')) {
+                $model->created_at = $now;
             }
         });
 
         static::updating(function ($model) {
-            if (Schema::hasColumn($model->getTable(), 'updated_at')) {
-                $model->updated_at = now();
+            $now = now();
+            $auth = Auth::user();
+
+            if ($model->hasColumn('updated_at')) {
+                $model->updated_at = $now;
             }
 
-            if (Schema::hasColumn($model->getTable(), 'updated_by') && Auth::check()) {
-                $model->updated_by = Auth::id();
+            if ($auth && $model->hasColumn('updated_by')) {
+                $model->updated_by = $auth->id;
             }
         });
 
         static::deleting(function ($model) {
             if ($model->usesSoftDeletes()) {
-                if (Schema::hasColumn($model->getTable(), 'deleted_at')) {
-                    $model->deleted_at = now();
+                $now = now();
+                $auth = Auth::user();
+
+                $changed = false;
+
+                if ($model->hasColumn('deleted_at')) {
+                    $model->deleted_at = $now;
+                    $changed = true;
                 }
 
-                if (Schema::hasColumn($model->getTable(), 'deleted_by') && Auth::check()) {
-                    $model->deleted_by = Auth::id();
+                if ($auth && $model->hasColumn('deleted_by')) {
+                    $model->deleted_by = $auth->id;
+                    $changed = true;
                 }
 
-                // Penting: simpan perubahan deleted_*
-                $model->save();
+                if ($changed) {
+                    $model->save();
+                }
             }
         });
+    }
+
+    protected static function hasColumn(string $column): bool
+    {
+        static $columnsCache = [];
+
+        $table = (new static)->getTable();
+
+        if (!isset($columnsCache[$table])) {
+            $columnsCache[$table] = \Illuminate\Support\Facades\Schema::getColumnListing($table);
+        }
+
+        return in_array($column, $columnsCache[$table]);
     }
 
     protected function usesSoftDeletes(): bool

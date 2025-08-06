@@ -31,7 +31,7 @@ class CostController extends Controller
         $orderType = $request->get('order_type', 'desc');
         $filter = $request->get('filter', []);
 
-        $q = Cost::with(['party', 'category']);
+        $q = Cost::with(['company', 'category']);
 
         if (!empty($filter['search'])) {
             $q->where(function ($q) use ($filter) {
