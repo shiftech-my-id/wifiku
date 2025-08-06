@@ -16,12 +16,12 @@ import processFlashMessage from "@/helpers/flash-message";
 import MyLink from "@/components/MyLink.vue";
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime'
-import 'dayjs/locale/id'; // Import the Indonesian locale
+import 'dayjs/locale/id';
 import i18n from './i18n';
-
+import GlobalPlugin from '@/plugins';
 
 dayjs.extend(relativeTime)
-// Set Indonesian as the global locale
+
 dayjs.locale('id');
 
 createInertiaApp({
@@ -48,18 +48,8 @@ createInertiaApp({
       .component('guest-layout', GuestLayout)
       .component('authenticated-layout', AuthenticatedLayout);
 
-    VueApp.config.globalProperties.$dayjs = dayjs;
-    VueApp.config.globalProperties.$config = window.CONFIG;
-    VueApp.config.globalProperties.$CONSTANTS = window.CONSTANTS;
-    VueApp.config.globalProperties.$goBack = () => {
-      if (window.history.length > 1) {
-        window.history.back();
-      } else {
-        // import('@inertiajs/inertia').then(({ Inertia }) => {
-        //   Inertia.visit('/dashboard'); // Ganti fallback ini sesuai kebutuhan
-        // });
-      }
-    };
+    VueApp.use(GlobalPlugin);
+
     VueApp.mount(el);
   },
   progress: {

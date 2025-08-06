@@ -4,6 +4,9 @@ import vue from "@vitejs/plugin-vue";
 import { quasar, transformAssetUrls } from "@quasar/vite-plugin";
 
 export default defineConfig({
+  server: {
+    port: 9000,
+  },
   build: {
     rollupOptions: {
       output: {
