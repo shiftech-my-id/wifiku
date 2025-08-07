@@ -13,16 +13,16 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
-class PartyController extends Controller
+class CustomerController extends Controller
 {
     public function index()
     {
-        return inertia('app/party/Index');
+        return inertia('app/customer/Index');
     }
 
     public function detail($id = 0)
     {
-        return inertia('app/party/Detail', [
+        return inertia('app/customer/Detail', [
             'data' => Party::with([
                 'createdBy:id,name',
                 'updatedBy:id,name',
@@ -67,7 +67,7 @@ class PartyController extends Controller
         $item = Party::findOrFail($id);
         $item->id = null;
         $item->created_at = null;
-        return inertia('app/party/Editor', [
+        return inertia('app/customer/Editor', [
             'data' => $item,
         ]);
     }
@@ -75,7 +75,7 @@ class PartyController extends Controller
     public function editor($id = 0)
     {
         $item = $id ? Party::findOrFail($id) : new Party(['active' => true]);
-        return inertia('app/party/Editor', [
+        return inertia('app/customer/Editor', [
             'data' => $item,
         ]);
     }
@@ -95,7 +95,7 @@ class PartyController extends Controller
         $item->fill($validated);
         $item->save();
 
-        return redirect(route('app.party.detail', ['id' => $item->id]))->with('success', "Pelanggan $item->name telah disimpan.");
+        return redirect(route('app.customer.detail', ['id' => $item->id]))->with('success', "Pelanggan $item->name telah disimpan.");
     }
 
     public function delete($id)
@@ -119,7 +119,7 @@ class PartyController extends Controller
         $filename = $title . ' - ' . env('APP_NAME') . Carbon::now()->format('dmY_His');
 
         if ($request->get('format') == 'pdf') {
-            $pdf = Pdf::loadView('export.party-list-pdf', compact('items', 'title'))
+            $pdf = Pdf::loadView('export.customer-list-pdf', compact('items', 'title'))
                 ->setPaper('a4', 'landscape');
             return $pdf->download($filename . '.pdf');
         }

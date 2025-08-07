@@ -22,7 +22,7 @@ class CostCategoryController extends Controller
 
     public function data(Request $request)
     {
-        $orderBy = $request->get('order_by', 'date');
+        $orderBy = $request->get('order_by', 'name');
         $orderType = $request->get('order_type', 'desc');
         $filter = $request->get('filter', []);
 
