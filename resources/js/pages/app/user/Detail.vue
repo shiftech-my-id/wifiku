@@ -1,5 +1,5 @@
 <script setup>
-import { router, usePage } from "@inertiajs/vue3";
+import { usePage } from "@inertiajs/vue3";
 
 const page = usePage();
 const title = "Rincian Pengguna";
@@ -9,15 +9,26 @@ const title = "Rincian Pengguna";
   <i-head :title="title" />
   <authenticated-layout>
     <template #title>{{ title }}</template>
+    <template #left-button>
+      <div class="q-gutter-sm">
+        <q-btn
+          icon="arrow_back"
+          dense
+          color="grey-7"
+          flat
+          rounded
+          @click="$inertia.get(route('admin.user.index'))"
+        />
+      </div>
+    </template>
     <template #right-button>
       <div class="q-gutter-sm">
         <q-btn
           icon="edit"
           dense
           color="primary"
-          :disable="$page.props.auth.user.role != $CONSTANTS.USER_ROLE_ADMIN"
           @click="
-            router.get(route('app.user.edit', { id: page.props.data.id }))
+            $inertia.get(route('admin.user.edit', { id: page.props.data.id }))
           "
         />
       </div>
@@ -35,7 +46,7 @@ const title = "Rincian Pengguna";
                   <tr>
                     <td style="width: 125px">ID Pengguna</td>
                     <td style="width: 1px">:</td>
-                    <td>{{ page.props.data.email }}</td>
+                    <td>{{ page.props.data.username }}</td>
                   </tr>
                   <tr>
                     <td>Nama Pengguna</td>
@@ -47,25 +58,23 @@ const title = "Rincian Pengguna";
                     <td>:</td>
                     <td>{{ $CONSTANTS.USER_ROLES[page.props.data.role] }}</td>
                   </tr>
-                  <tr v-if="page.props.data.created_at">
+                  <tr>
                     <td>Dibuat</td>
                     <td>:</td>
                     <td>
-                      {{ $dayjs(page.props.data.created_at).fromNow() }} -
                       {{
-                        $dayjs(page.props.data.created_at).format(
+                        $dayjs(page.props.data.created_datetime).format(
                           "DD MMMM YY HH:mm:ss"
                         )
                       }}
                     </td>
                   </tr>
-                  <tr v-if="page.props.data.updated_at">
+                  <tr>
                     <td>Diperbarui</td>
                     <td>:</td>
                     <td>
-                      {{ $dayjs(page.props.data.updated_at).fromNow() }} -
                       {{
-                        $dayjs(page.props.data.updated_at).format(
+                        $dayjs(page.props.data.updated_datetime).format(
                           "DD MMMM YY HH:mm:ss"
                         )
                       }}
@@ -75,18 +84,13 @@ const title = "Rincian Pengguna";
                     <td>Terakhir login</td>
                     <td>:</td>
                     <td>
-                      <template v-if="page.props.data.last_login_datetime">
-                        {{
-                          $dayjs(page.props.data.last_login_datetime).fromNow()
-                        }}
-                        -
-                        {{
-                          $dayjs(page.props.data.last_login_datetime).format(
-                            "DD MMMM YY HH:mm:ss"
-                          )
-                        }}
-                      </template>
-                      <template v-else> Belum pernah login </template>
+                      {{
+                        page.props.data.last_login_datetime
+                          ? $dayjs(page.props.data.last_login_datetime).format(
+                              "DD MMMM YYYY HH:mm:ss"
+                            )
+                          : "Belum pernah login"
+                      }}
                     </td>
                   </tr>
                   <tr v-if="page.props.data.last_activity_datetime">
@@ -94,16 +98,11 @@ const title = "Rincian Pengguna";
                     <td>:</td>
                     <td>
                       {{
-                        $dayjs(page.props.data.last_activity_datetime).fromNow()
-                      }}
-                      -
-                      {{
                         $dayjs(page.props.data.last_activity_datetime).format(
-                          "DD MMMM YY HH:mm:ss"
+                          "DD MMMM YYYY HH:mm:ss"
                         )
                       }}
-                      <br />Jenis aktifitas:
-                      {{ page.props.data.last_activity_description }}
+                      <br />{{ page.props.data.last_activity_description }}
                     </td>
                   </tr>
                 </tbody>

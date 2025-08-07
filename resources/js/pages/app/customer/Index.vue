@@ -1,3 +1,5 @@
+
+<!-- TODO: tolong cek apakah ada yang salah dari kode saya?  -->
 <script setup>
 import { computed, onMounted, reactive, ref, watch } from "vue";
 import { router } from "@inertiajs/vue3";
@@ -7,7 +9,7 @@ import { usePageStorage } from "@/composables/usePageStorage";
 import { createOptions } from "@/helpers/options";
 import { formatNumberWithSymbol } from "@/helpers/formatter";
 
-const storage = usePageStorage("party");
+const storage = usePageStorage("customer");
 const title = "Pelanggan";
 const showFilter = ref(storage.get("show-filter", false));
 const rows = ref([]);
@@ -15,6 +17,7 @@ const loading = ref(true);
 
 const filter = reactive(
   storage.get("filter", {
+    search: "",
     status: "all",
     type: "all",
     ...getQueryParams(),
@@ -42,7 +45,7 @@ const columns = [
   {
     name: "layanan",
     label: "Layanan",
-    field: "layanan",
+    field: (row) => row.service?.name || '-',
     align: "left",
     sortable: true,
   },
@@ -50,7 +53,7 @@ const columns = [
     name: "no_hp",
     label: "No Hp",
     field: "no_hp",
-    align: "right",
+    align: "left",
     sortable: true,
   },
 
@@ -74,11 +77,12 @@ onMounted(() => {
 
 const deleteItem = (row) =>
   handleDelete({
-    message: `Hapus pihak ${row.name}?`,
-    url: route("app.party.delete", row.id),
+    message: `Hapus pelanggan ${row.name}?`,
+    url: route("app.customer.delete", row.id),
     fetchItemsCallback: fetchItems,
     loading,
   });
+
 
 const fetchItems = (props = null) => {
   handleFetchItems({
@@ -86,22 +90,23 @@ const fetchItems = (props = null) => {
     filter,
     props,
     rows,
-    url: route("app.customer.data"),
+    url: route("app.customer.data"), // Pastikan ini endpoint yang benar
     loading,
   });
 };
-
 const onFilterChange = () => fetchItems();
 const onRowClicked = (row) =>
-  router.get(route("app.party.detail", { id: row.id }));
+  router.get(route("app.customer.detail", { id: row.id }));
 
 const computedColumns = computed(() => {
   return columns;
 });
 
-watch(showFilter, () => storage.set("show-filter", showFilter.value), {
-  deep: true,
+watch(() => filter.search, () => {
+    onFilterChange();
 });
+
+watch(showFilter, () => storage.set("show-filter", showFilter.value));
 watch(filter, () => storage.set("filter", filter), { deep: true });
 watch(pagination, () => storage.set("pagination", pagination.value), {
   deep: true,
@@ -145,7 +150,7 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
               clickable
               v-ripple
               v-close-popup
-              :href="route('app.party.export', { format: 'pdf' })"
+              :href="route('app.customer.export', { format: 'pdf' })"
             >
               <q-item-section avatar>
                 <q-icon name="picture_as_pdf" color="red-9" />
@@ -156,7 +161,7 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
               clickable
               v-ripple
               v-close-popup
-              :href="route('app.party.export', { format: 'excel' })"
+              :href="route('app.customer.export', { format: 'excel' })"
             >
               <q-item-section avatar>
                 <q-icon name="csv" color="green-9" />
@@ -280,7 +285,7 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
                         v-ripple
                         v-close-popup
                         @click.stop="
-                          router.get(route('app.party.duplicate', props.row.id))
+                          router.get(route('app.customer.duplicate', props.row.id))
                         "
                       >
                         <q-item-section avatar>
@@ -293,7 +298,7 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
                         v-ripple
                         v-close-popup
                         @click.stop="
-                          router.get(route('app.party.edit', props.row.id))
+                          router.get(route('app.customer.edit', props.row.id))
                         "
                       >
                         <q-item-section avatar>

@@ -198,8 +198,8 @@ onMounted(() => {
           <q-item
             clickable
             v-ripple
-            :active="$page.url.startsWith('/app/parties')"
-            @click="router.get(route('app.party.index'))"
+            :active="$page.url.startsWith('/app/laporan')"
+            @click="router.get(route('app.Laporan.index'))"
           >
             <q-item-section avatar>
               <q-icon name="request_quote" />
@@ -225,7 +225,7 @@ onMounted(() => {
           <q-item
             clickable
             v-ripple
-            :active="$page.url.startsWith('/app/settings/users')"
+            :active="$page.url.startsWith('/app/product')"
             @click="router.get(route('app.product.index'))"
           >
             <q-item-section avatar>
@@ -282,17 +282,17 @@ onMounted(() => {
               $page.props.auth.user.role == $CONSTANTS.USER_ROLE_CASHIER
             "
             icon="business_center"
-            label="Biaya Oprasional"
+            label="Oprasional"
             :default-opened="
-              $page.url.startsWith('app/admin/cost') ||
-              $page.url.startsWith('app/admin/customers')
+              $page.url.startsWith('app/cost') ||
+              $page.url.startsWith('app/cost-category')
             "
           >
             <q-item
               class="subnav"
               clickable
               v-ripple
-              :active="$page.url.startsWith('/app/settings/profile')"
+              :active="$page.url.startsWith('/app/cost')"
               @click="router.get(route('app.cost.index'))"
             >
               <q-item-section avatar>
@@ -306,7 +306,7 @@ onMounted(() => {
               class="subnav"
               clickable
               v-ripple
-              :active="$page.url.startsWith('/app/settings/profile')"
+              :active="$page.url.startsWith('/app/cost-category')"
               @click="router.get(route('app.cost-category.index'))"
             >
               <q-item-section avatar>
@@ -326,16 +326,15 @@ onMounted(() => {
             icon="tune"
             label="Sistem"
             :default-opened="
-              $page.url.startsWith('/admin/sales-orders') ||
-              $page.url.startsWith('/admin/customers')
+              $page.url.startsWith('/admin/sales-orders')
             "
           >
             <q-item
               class="subnav"
               clickable
               v-ripple
-              :active="$page.url.startsWith('/app/settings/profile')"
-              @click="router.get(route('app.profile.edit'))"
+              :active="$page.url.startsWith('/app/user')"
+              @click="router.get(route('app.user.edit'))"
             >
               <q-item-section avatar>
                 <q-icon name="person" />
@@ -348,7 +347,7 @@ onMounted(() => {
               class="subnav"
               clickable
               v-ripple
-              :active="$page.url.startsWith('/app/settings/profile')"
+              :active="$page.url.startsWith('/app/profile')"
               @click="router.get(route('app.profile.edit'))"
             >
               <q-item-section avatar>

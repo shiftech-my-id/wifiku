@@ -2,17 +2,14 @@
 import { computed, onMounted, reactive, ref, watch } from "vue";
 import { router, usePage } from "@inertiajs/vue3";
 import { handleDelete, handleFetchItems } from "@/helpers/client-req-handler";
-import { getQueryParams } from "@/helpers/utils";
 import { useQuasar } from "quasar";
-import { createMonthOptions, createYearOptions } from "@/helpers/options";
-import { formatDatetime, formatNumberWithSymbol } from "@/helpers/formatter";
-import { usePageStorage } from "@/composables/usePageStorage";
+import dayjs from "dayjs";
+import { formatNumber } from "@/helpers/formatter";
 
-const storage = usePageStorage("transaction");
-const title = "Transaksi";
+const title = "Biaya Operasional";
 const page = usePage();
 const $q = useQuasar();
-const showFilter = ref(storage.get("show-filter", false));
+const showFilter = ref(false);
 const rows = ref([]);
 const loading = ref(true);
 
@@ -20,99 +17,83 @@ const currentYear = new Date().getFullYear();
 const currentMonth = new Date().getMonth() + 1;
 
 const years = [
-  { label: "Semua Tahun", value: "all" },
+  { label: "Semua Tahun", value: null },
   { label: `${currentYear}`, value: currentYear },
-  ...createYearOptions(currentYear - 2, currentYear - 1).reverse(),
 ];
 
 const months = [
-  { value: "all", label: "Semua Bulan" },
-  ...createMonthOptions(),
+  { value: null, label: "Semua Bulan" },
 ];
 
-const categories = [
-  { value: "all", label: "Semua Kategori" },
-  ...page.props.categories.map((cat) => {
-    return {
-      label: cat.name,
-      value: cat.id,
-    };
-  }),
-];
+const filter = reactive({
+  search: "",
+  category_id: "all",
+  company_id: "all",
+  year: currentYear,
+  month: currentMonth,
+  // ...
+});
 
-const parties = [
-  { value: "all", label: "Semua Pihak" },
-  ...page.props.parties.map((party) => {
-    return {
-      label: party.name,
-      value: party.id,
-    };
-  }),
-];
-
-const types = [
-  { value: "all", label: "Semua Jenis" },
-  ...Object.entries(window.CONSTANTS.TRANSACTION_TYPES).map(
-    ([value, label]) => ({
-      value,
-      label,
-    })
-  ),
-];
-
-const filter = reactive(
-  storage.get("filter", {
-    search: "",
-    category_id: "all",
-    party_id: "all",
-    type: "all",
-    year: currentYear,
-    month: currentMonth,
-    ...getQueryParams(),
-  })
-);
-
-const pagination = ref(
-  storage.get("pagination", {
-    page: 1,
-    rowsPerPage: 10,
-    rowsNumber: 10, 
-    sortBy: "id",
-    descending: true,
-  })
-);
+const pagination = ref({
+  page: 1,
+  rowsPerPage: 10,
+  rowsNumber: 10,
+  sortBy: "datetime",
+  descending: true,
+});
 
 const columns = [
-
   {
-    name: "nama_layanan",
-    label: "Nama Layanan",
-    field: "party",
+    name: "datetime",
+    label: "Tanggal & Waktu",
+    field: "datetime",
     align: "left",
+    sortable: true,
   },
   {
-    name: "type",
-    label: "Biaya",
-    field: "type",
+    name: "company",
+    label: "Perusahaan",
+    field: (row) => row.company?.name,
     align: "left",
+    sortable: false,
   },
   {
     name: "category",
-    label: "Pelanggan",
-    field: "category",
+    label: "Kategori",
+    field: (row) => row.category?.name,
     align: "left",
+    sortable: false,
+  },
+  {
+    name: "notes",
+    label: "Catatan",
+    field: "notes",
+    align: "left",
+    sortable: true,
   },
   {
     name: "amount",
-    label: "Deskripsi",
+    label: "Jumlah (Rp.)",
     field: "amount",
     align: "right",
+    sortable: true,
   },
   {
     name: "action",
+    label: "",
     align: "right",
   },
 ];
+
+const categories = ref([
+  { value: "all", label: "Semua Kategori" },
+  ...(page.props.categories || []).map((c) => ({ label: c.name, value: c.id })),
+]);
+
+const companies = ref([
+  { value: "all", label: "Semua Perusahaan" },
+  ...(page.props.companies || []).map((c) => ({ label: c.name, value: c.id })),
+]);
 
 onMounted(() => {
   fetchItems();
@@ -120,8 +101,8 @@ onMounted(() => {
 
 const deleteItem = (row) =>
   handleDelete({
-    message: `Hapus transaksi #-${row.id}?`,
-    url: route("app.transaction.delete", row.id),
+    message: `Hapus biaya sebesar ${formatNumber(row.amount)} pada tanggal ${dayjs(row.datetime).format("DD/MM/YYYY")}?`, // <- Pesan lebih informatif
+    url: route("app.cost.delete", row.id),
     fetchItemsCallback: fetchItems,
     loading,
   });
@@ -132,7 +113,7 @@ const fetchItems = (props = null) => {
     filter,
     props,
     rows,
-    url: route("app.transaction.data"),
+    url: route("app.cost.data"),
     loading,
   });
 };
@@ -143,9 +124,7 @@ const onFilterChange = () => {
 
 const computedColumns = computed(() => {
   if ($q.screen.gt.sm) return columns;
-  return columns.filter(
-    (col) => col.name === "datetime" || col.name === "action"
-  );
+  return columns.filter((col) => col.name === "datetime" || col.name === "action");
 });
 
 watch(
@@ -156,14 +135,6 @@ watch(
     }
   }
 );
-
-watch(showFilter, () => storage.set("show-filter", showFilter.value), {
-  deep: true,
-});
-watch(filter, () => storage.set("filter", filter), { deep: true });
-watch(pagination, () => storage.set("pagination", pagination.value), {
-  deep: true,
-});
 </script>
 
 <template>
@@ -175,7 +146,7 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
         icon="add"
         dense
         color="primary"
-        @click="router.get(route('app.transaction.add'))"
+        @click="router.get(route('app.cost.add'))"
       />
       <q-btn
         class="q-ml-sm"
@@ -184,47 +155,8 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
         dense
         @click="showFilter = !showFilter"
       />
-      <q-btn
-        icon="file_export"
-        dense
-        class="q-ml-sm"
-        color="grey"
-        style=""
-        @click.stop
-      >
-        <q-menu
-          anchor="bottom right"
-          self="top right"
-          transition-show="scale"
-          transition-hide="scale"
-        >
-          <q-list style="width: 200px">
-            <q-item
-              clickable
-              v-ripple
-              v-close-popup
-              :href="route('app.transaction.export', { format: 'pdf' })"
-            >
-              <q-item-section avatar>
-                <q-icon name="picture_as_pdf" color="red-9" />
-              </q-item-section>
-              <q-item-section>Export PDF</q-item-section>
-            </q-item>
-            <q-item
-              clickable
-              v-ripple
-              v-close-popup
-              :href="route('app.transaction.export', { format: 'excel' })"
-            >
-              <q-item-section avatar>
-                <q-icon name="csv" color="green-9" />
-              </q-item-section>
-              <q-item-section>Export Excel</q-item-section>
-            </q-item>
-          </q-list>
-        </q-menu>
-      </q-btn>
     </template>
+
     <template #header v-if="showFilter">
       <q-toolbar class="filter-bar">
         <div class="row q-col-gutter-xs items-center q-pa-sm full-width">
@@ -234,7 +166,7 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
             label="Tahun"
             dense
             outlined
-            class="custom-select col-xs-6 col-sm-2"
+            class="col-xs-6 col-sm-2"
             emit-value
             map-options
             @update:model-value="onFilterChange"
@@ -245,18 +177,18 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
             label="Bulan"
             dense
             outlined
-            class="custom-select col-xs-6 col-sm-2"
+            class="col-xs-6 col-sm-2"
             emit-value
             map-options
             :disable="filter.year === null"
             @update:model-value="onFilterChange"
           />
           <q-select
-            v-model="filter.party_id"
-            :options="parties"
-            label="Nama Layanan"
+            v-model="filter.company_id"
+            :options="companies"
+            label="Perusahaan"
             dense
-            class="custom-select col-xs-6 col-sm-2"
+            class="col-xs-12 col-sm-3"
             map-options
             emit-value
             outlined
@@ -267,18 +199,7 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
             :options="categories"
             label="Kategori"
             dense
-            class="custom-select col-xs-6 col-sm-2"
-            map-options
-            emit-value
-            outlined
-            @update:model-value="onFilterChange"
-          />
-          <q-select
-            v-model="filter.type"
-            :options="types"
-            label="Biaya"
-            dense
-            class="custom-select col-xs-6 col-sm-2"
+            class="col-xs-12 col-sm-3"
             map-options
             emit-value
             outlined
@@ -290,8 +211,9 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
             dense
             debounce="300"
             v-model="filter.search"
-            placeholder="Cari"
+            placeholder="Cari di catatan..."
             clearable
+            @update:model-value="onFilterChange"
           >
             <template v-slot:append>
               <q-icon name="search" />
@@ -300,8 +222,10 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
         </div>
       </q-toolbar>
     </template>
+
     <div class="q-pa-sm">
       <q-table
+        class="full-height-table"
         flat
         bordered
         square
@@ -309,7 +233,6 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
         row-key="id"
         virtual-scroll
         v-model:pagination="pagination"
-        :filter="filter.search"
         :loading="loading"
         :columns="computedColumns"
         :rows="rows"
@@ -317,110 +240,57 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
         @request="fetchItems"
         binary-state-sort
       >
-        <template v-slot:loading>
-          <q-inner-loading showing color="red" />
-        </template>
-        <template v-slot:no-data="{ icon, message, filter }">
-          <div class="full-width row flex-center text-grey-8 q-gutter-sm">
-            <span>
-              {{ message }}
-              {{ filter ? " with term " + filter : "" }}</span
-            >
-          </div>
-        </template>
         <template v-slot:body="props">
           <q-tr :props="props">
             <q-td key="datetime" :props="props" class="wrap-column">
-              <div>
-                <q-icon v-if="!$q.screen.gt.sm" name="calendar_today" />
-                {{ formatDatetime(props.row.datetime) }}
+              <div class="flex items-center q-gutter-xs">
+                <q-icon name="event" />
+                <div>{{ dayjs(props.row.datetime).format("DD/MM/YY HH:mm") }}</div>
               </div>
               <template v-if="!$q.screen.gt.sm">
-                <div v-if="props.row.party">
-                  <q-icon name="person" /> {{ props.row.party.name }}
+                <div v-if="props.row.company" class="text-caption text-grey-8">
+                  <q-icon name="business" size="xs" /> {{ props.row.company.name }}
                 </div>
-                <div v-if="props.row.category">
-                  <q-icon name="category" /> {{ props.row.category.name }}
+                <div v-if="props.row.category" class="text-caption text-grey-8">
+                  <q-icon name="category" size="xs" /> {{ props.row.category.name }}
+                </div>
+                <div v-if="props.row.notes">
+                  <q-icon name="notes" size="xs" /> {{ props.row.notes }}
                 </div>
                 <div>
-                  <q-icon name="category" />
-                  {{ $CONSTANTS.TRANSACTION_TYPES[props.row.type] }}
+                  <q-icon name="paid" size="xs" /> Rp.
+                  {{ formatNumber(props.row.amount) }}
                 </div>
               </template>
             </q-td>
-            <q-td key="party" :props="props">
-              {{ props.row.party?.name }}
+
+            <q-td key="company" :props="props">
+              {{ props.row.company?.name || "-" }}
             </q-td>
-            <q-td key="type" :props="props">
-              {{ $CONSTANTS.TRANSACTION_TYPES[props.row.type] }}
-            </q-td>
+
             <q-td key="category" :props="props">
-              {{ props.row.category?.name }}
+              {{ props.row.category?.name || "-" }}
             </q-td>
-            <q-td
-              key="amount"
-              :props="props"
-              style="text-align: right"
-              :class="props.row.amount >= 0 ? 'text-green' : 'text-red'"
-            >
-              {{ formatNumberWithSymbol(props.row.amount) }}
-            </q-td>
+
             <q-td key="notes" :props="props">
-              {{ props.row.notes }}
+              <div class="wrap-column">{{ props.row.notes || "-" }}</div>
             </q-td>
+
+            <q-td key="amount" :props="props" style="text-align: right">
+              {{ formatNumber(props.row.amount) }}
+            </q-td>
+
             <q-td key="action" :props="props">
               <div class="flex justify-end">
-                <q-btn
-                  icon="more_vert"
-                  dense
-                  flat
-                  style="height: 40px; width: 30px"
-                  @click.stop
-                >
-                  <q-menu
-                    anchor="bottom right"
-                    self="top right"
-                    transition-show="scale"
-                    transition-hide="scale"
-                  >
-                    <q-item
-                      clickable
-                      v-ripple
-                      v-close-popup
-                      @click.stop="
-                        router.get(
-                          route('app.transaction.duplicate', props.row.id)
-                        )
-                      "
-                    >
-                      <q-item-section avatar>
-                        <q-icon name="file_copy" />
-                      </q-item-section>
-                      <q-item-section> Duplikat </q-item-section>
-                    </q-item>
-                    <q-item
-                      clickable
-                      v-ripple
-                      v-close-popup
-                      @click.stop="
-                        router.get(route('app.transaction.edit', props.row.id))
-                      "
-                    >
-                      <q-item-section avatar>
-                        <q-icon name="edit" />
-                      </q-item-section>
-                      <q-item-section>Edit</q-item-section>
-                    </q-item>
-                    <q-list style="width: 200px">
-                      <q-item
-                        @click.stop="deleteItem(props.row)"
-                        clickable
-                        v-ripple
-                        v-close-popup
-                      >
-                        <q-item-section avatar>
-                          <q-icon name="delete_forever" />
-                        </q-item-section>
+                <q-btn icon="more_vert" dense flat>
+                  <q-menu auto-close anchor="bottom right" self="top right">
+                    <q-list dense>
+                      <q-item clickable @click="router.get(route('app.cost.edit', props.row.id))">
+                        <q-item-section avatar><q-icon name="edit" /></q-item-section>
+                        <q-item-section>Edit</q-item-section>
+                      </q-item>
+                      <q-item clickable @click="deleteItem(props.row)">
+                        <q-item-section avatar><q-icon name="delete" /></q-item-section>
                         <q-item-section>Hapus</q-item-section>
                       </q-item>
                     </q-list>

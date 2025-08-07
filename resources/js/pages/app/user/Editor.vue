@@ -1,35 +1,43 @@
 <script setup>
 import { handleSubmit } from "@/helpers/client-req-handler";
-import { createOptions } from "@/helpers/options";
 import { validateUsername } from "@/helpers/validations";
-import { useForm, usePage } from "@inertiajs/vue3";
+import { router, useForm, usePage } from "@inertiajs/vue3";
 
-const roles = createOptions([]);
+const roles = create_options(window.CONSTANTS.USER_ROLES);
 const page = usePage();
 const title = !!page.props.data.id ? "Edit Pengguna" : "Tambah Pengguna";
 const form = useForm({
   id: page.props.data.id,
   name: page.props.data.name,
-  email: page.props.data.email,
+  username: page.props.data.username,
   password: "",
-  role: !!page.props.data.role,
+  role: !!page.props.data.role ? page.props.data.role : roles[0].value,
   active: !!page.props.data.active,
 });
 
-const submit = () => handleSubmit({ form, url: route("app.user.save") });
+const submit = () => handleSubmit({ form, url: route("admin.user.save") });
 </script>
 
 <template>
   <i-head :title="title" />
   <authenticated-layout>
     <template #title>{{ title }}</template>
+    <template #left-button>
+      <div class="q-gutter-sm">
+        <q-btn
+          icon="arrow_back"
+          dense
+          color="grey-7"
+          flat
+          rounded
+          @click="$inertia.get(route('admin.user.index'))"
+        />
+      </div>
+    </template>
     <div class="row justify-center">
-      <div class="col col-md-6 q-pa-sm">
+      <div class="col col-lg-6 q-pa-sm">
         <q-form class="row" @submit.prevent="submit">
           <q-card square flat bordered class="col">
-            <q-inner-loading :showing="form.processing">
-              <q-spinner size="50px" color="primary" />
-            </q-inner-loading>
             <q-card-section class="q-pt-none">
               <input type="hidden" name="id" v-model="form.id" />
               <q-input
@@ -45,13 +53,13 @@ const submit = () => handleSubmit({ form, url: route("app.user.save") });
                 ]"
               />
               <q-input
-                v-model.trim="form.email"
+                v-model.trim="form.username"
                 type="text"
                 label="ID Pengguna"
                 lazy-rules
                 :disable="form.processing"
-                :error="!!form.errors.email"
-                :error-message="form.errors.email"
+                :error="!!form.errors.username"
+                :error-message="form.errors.username"
                 :rules="[
                   (val) =>
                     (val && val.length > 0) || 'ID Pengguna harus diisi.',
@@ -67,12 +75,9 @@ const submit = () => handleSubmit({ form, url: route("app.user.save") });
                 :error="!!form.errors.password"
                 :error-message="form.errors.password"
               />
-              <p v-if="form.id" class="text-subtitle text-grey-8 q-pt-none">
-                Isi jika ingin mengatur ulang sandi.
-              </p>
               <q-select
                 v-model="form.role"
-                label="Role"
+                label="Hak Akses"
                 :options="roles"
                 map-options
                 emit-value
@@ -107,7 +112,7 @@ const submit = () => handleSubmit({ form, url: route("app.user.save") });
                 label="Batal"
                 class="text-black"
                 :disable="form.processing"
-                @click="$goBack()"
+                @click="router.get(route('admin.user.index'))"
               />
             </q-card-section>
           </q-card>
