@@ -16,12 +16,12 @@ class CustomerController extends Controller
 {
     public function index()
     {
-        return inertia('customer/Index');
+        return inertia('app/customer/Index');
     }
 
     public function detail($id = 0)
     {
-        return inertia('customer/detail', [
+        return inertia('app/customer/detail', [
             'data' => Customer::query([
                 'product:id,name',
             ])->findOrFail($id),
@@ -65,7 +65,7 @@ class CustomerController extends Controller
         $item = Customer::findOrFail($id);
         $item->id = null;
         $item->created_at = null;
-        return inertia('customer/Editor', [
+        return inertia('app/customer/Editor', [
             'data' => $item,
         ]);
     }
@@ -73,7 +73,7 @@ class CustomerController extends Controller
     public function editor($id = 0)
     {
         $item = $id ? Customer::findOrFail($id) : new Customer(['active' => true]);
-        return inertia('customer/Editor', [
+        return inertia('app/customer/Editor', [
             'data' => $item,
         ]);
     }

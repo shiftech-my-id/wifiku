@@ -17,42 +17,43 @@ const _scrollToFirstError = () => {
 };
 
 export function handleSubmit(data) {
-  const { form, url, onSuccess, onError, method, forceFormData } = data;
+  const { form, url } = data;
 
   form.clearErrors();
 
-  const options = {
+  form.post(url, {
     preserveScroll: true,
-    forceFormData: forceFormData ?? false,
-    onError: (error) => {
-      if (typeof onError === "function") {
-        onError(error);
+    onSuccess: (page) => {
+      if (page.props.flash && page.props.flash.success) {
+        Notify.create({
+          message: page.props.flash.success,
+          icon: "check_circle",
+          color: "positive",
+          actions: [
+            { icon: "close", color: "white", round: true, dense: true },
+          ],
+        });
       }
-
-      _scrollToFirstError();
-      if (
-        !error ||
-        typeof error.response?.data === "object" ||
-        error.message === undefined ||
-        error.message?.length === 0
-      )
-        return;
-
-      Notify.create({
-        message: error.message,
-        icon: "info",
-        color: "negative",
-        actions: [{ icon: "close", color: "white", round: true, dense: true }],
-      });
     },
-  };
+    onError: (errors) => {
+      _scrollToFirstError();
 
-  if (typeof onSuccess === "function") {
-    options.onSuccess = onSuccess;
-  }
+      const firstErrorMessage = Object.values(errors)[0];
 
-  form[method ?? "post"](url, options);
+      if (firstErrorMessage) {
+        Notify.create({
+          message: firstErrorMessage,
+          icon: "error",
+          color: "negative",
+          actions: [
+            { icon: "close", color: "white", round: true, dense: true },
+          ],
+        });
+      }
+    },
+  });
 }
+
 
 export function handleDelete(data) {
   const { message, url, fetchItemsCallback, loading } = data;

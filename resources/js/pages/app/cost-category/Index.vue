@@ -6,7 +6,7 @@ import { getQueryParams } from "@/helpers/utils";
 import { useQuasar } from "quasar";
 import { usePageStorage } from "@/composables/usePageStorage";
 
-const storage = usePageStorage("transaction-category");
+const storage = usePageStorage("cost-category");
 const title = "Kategori Biaya";
 const $q = useQuasar();
 const showFilter = ref(storage.get("show-filter", false));
@@ -56,7 +56,7 @@ onMounted(() => {
 const deleteItem = (row) =>
   handleDelete({
     message: `Hapus Kategori ${row.name}?`,
-    url: route("app.transaction-category.delete", row.id),
+    url: route("app.cost-category.delete", row.id),
     fetchItemsCallback: fetchItems,
     loading,
   });
@@ -67,7 +67,7 @@ const fetchItems = (props = null) => {
     filter,
     props,
     rows,
-    url: route("app.transaction-category.data"),
+    url: route("app.cost-category.data"),
     loading,
   });
 };
@@ -124,9 +124,7 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
               clickable
               v-ripple
               v-close-popup
-              :href="
-                route('app.transaction-category.export', { format: 'pdf' })
-              "
+              :href="route('app.cost-category.export', { format: 'pdf' })"
             >
               <q-item-section avatar>
                 <q-icon name="picture_as_pdf" color="red-9" />
@@ -137,9 +135,7 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
               clickable
               v-ripple
               v-close-popup
-              :href="
-                route('app.transaction-category.export', { format: 'excel' })
-              "
+              :href="route('app.cost-category.export', { format: 'excel' })"
             >
               <q-item-section avatar>
                 <q-icon name="csv" color="green-9" />
@@ -231,10 +227,7 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
                         v-close-popup
                         @click.stop="
                           router.get(
-                            route(
-                              'app.transaction-category.duplicate',
-                              props.row.id
-                            )
+                            route('app.cost-category.duplicate', props.row.id)
                           )
                         "
                       >
@@ -249,7 +242,7 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
                         v-close-popup
                         @click.stop="
                           router.get(
-                            route('app.transaction-category.edit', props.row.id)
+                            route('app.cost-category.edit', props.row.id)
                           )
                         "
                       >

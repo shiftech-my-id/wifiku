@@ -212,7 +212,7 @@ onMounted(() => {
           <q-item
             clickable
             v-ripple
-            :active="$page.url.startsWith('/app/parties')"
+            :active="$page.url.startsWith('/app/customer')"
             @click="router.get(route('app.customer.index'))"
           >
             <q-item-section avatar>
@@ -284,8 +284,8 @@ onMounted(() => {
             icon="business_center"
             label="Biaya Oprasional"
             :default-opened="
-              $page.url.startsWith('/admin/cost') ||
-              $page.url.startsWith('/admin/customers')
+              $page.url.startsWith('app/admin/cost') ||
+              $page.url.startsWith('app/admin/customers')
             "
           >
             <q-item

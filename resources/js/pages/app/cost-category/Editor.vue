@@ -13,7 +13,7 @@ const form = useForm({
 });
 
 const submit = () =>
-  handleSubmit({ form, url: route("app.transaction-category.save") });
+  handleSubmit({ form, url: route("app.cost-category.save") });
 </script>
 
 <template>
@@ -67,7 +67,7 @@ const submit = () =>
                 icon="cancel"
                 label="Batal"
                 :disable="form.processing"
-                @click="router.get(route('app.transaction-category.index'))"
+                @click="router.get(route('app.cost-category.index'))"
               />
             </q-card-section>
           </q-card>

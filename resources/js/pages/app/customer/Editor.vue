@@ -3,6 +3,7 @@ import { useForm, usePage } from "@inertiajs/vue3";
 import { handleSubmit } from "@/helpers/client-req-handler";
 import { scrollToFirstErrorField } from "@/helpers/utils";
 import { createOptions } from "@/helpers/options";
+import DatePicker from "@/components/DatePicker.vue";
 
 const page = usePage();
 const title = (!!page.props.data.id ? "Edit" : "Tambah") + " Pelanggan";
@@ -16,7 +17,8 @@ const form = useForm({
   wa: page.props.data.wa,
   phone: page.props.data.phone,
   id_card_number: page.props.data.id_card_number,
-  installation_date:page.props.data.installation_date || today.replaceAll("-", "/"),
+  installation_date:
+    page.props.data.installation_date || today.replaceAll("-", "/"),
   type: page.props.data.type,
   address: page.props.data.address,
   notes: page.props.data.notes,
@@ -93,37 +95,13 @@ const submit = () => handleSubmit({ form, url: route("app.customer.save") });
                 :error-message="form.errors.id_card_number"
               />
 
-              <q-input
-                filled
+              <date-picker
                 v-model="form.installation_date"
                 label="Tanggal Pemasangan"
-                mask="date"
-                :rules="['date']"
                 :disable="form.processing"
                 :error="!!form.errors.installation_date"
                 :error-message="form.errors.installation_date"
-              >
-                <template v-slot:append>
-                  <q-icon name="event" class="cursor-pointer">
-                    <q-popup-proxy
-                      cover
-                      transition-show="scale"
-                      transition-hide="scale"
-                    >
-                      <q-date v-model="form.installation_date">
-                        <div class="row items-center justify-end">
-                          <q-btn
-                            v-close-popup
-                            label="Selesai"
-                            color="primary"
-                            flat
-                          />
-                        </div>
-                      </q-date>
-                    </q-popup-proxy>
-                  </q-icon>
-                </template>
-              </q-input>
+              />
 
               <q-input
                 v-model.trim="form.address"
