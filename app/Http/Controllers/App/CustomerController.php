@@ -5,6 +5,7 @@ namespace App\Http\Controllers\App;
 use App\Http\Controllers\Controller;
 use App\Models\Customer;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Str;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -20,7 +21,7 @@ class CustomerController extends Controller
 
     public function detail($id = 0)
     {
-        return inertia('app/customer/Detail', [
+        return inertia('app/customer/detail', [
             'data' => Customer::query([
                 'product:id,name',
             ])->findOrFail($id),
@@ -89,6 +90,13 @@ class CustomerController extends Controller
         ]);
 
         $item = !$request->id ? new Customer() : Customer::findOrFail($request->post('id', 0));
+
+            if (!$request->id) {
+        do {
+            $validated['code'] = 'CUST-' . strtoupper(Str::random(6));
+        } while (Customer::where('code', $validated['code'])->exists());
+    }
+
         $item->fill($validated);
         $item->save();
 

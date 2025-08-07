@@ -111,7 +111,7 @@ onMounted(() => {
             v-model="isDropdownOpen"
             class="profile-btn text-bold"
             flat
-            :label="page.props.auth.company?.name"
+            :label="$config.APP_NAME"
             style="
               justify-content: space-between;
               flex-grow: 1;
@@ -128,9 +128,7 @@ onMounted(() => {
                   <q-item-label>
                     <div class="text-bold">{{ page.props.auth.user.name }}</div>
                     <div class="text-grey-8 text-caption">
-                      {{ page.props.auth.user.username }}@{{
-                        page.props.auth.company?.code
-                      }}
+                      {{ page.props.auth.user.email }}
                     </div>
                   </q-item-label>
                 </q-item-section>
@@ -214,8 +212,8 @@ onMounted(() => {
           <q-item
             clickable
             v-ripple
-            :active="$page.url.startsWith('/app/parties')"
-            @click="router.get(route('app.party.index'))"
+            :active="$page.url.startsWith('/app/customer')"
+            @click="router.get(route('app.customer.index'))"
           >
             <q-item-section avatar>
               <q-icon name="diversity_3" />
@@ -228,7 +226,7 @@ onMounted(() => {
             clickable
             v-ripple
             :active="$page.url.startsWith('/app/settings/users')"
-            @click="router.get(route('app.transaction.index'))"
+            @click="router.get(route('app.product.index'))"
           >
             <q-item-section avatar>
               <q-icon name="construction" />
@@ -278,38 +276,6 @@ onMounted(() => {
               </q-item-section>
             </q-item>
           </q-expansion-item>
-
-          <q-separator />
-
-          <q-item
-            clickable
-            v-ripple
-            :active="$page.url.startsWith('/app/customers')"
-            @click="router.get(route('app.customer.index'))"
-          >
-            <q-item-section avatar>
-              <q-icon name="diversity_3" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Pelanggan</q-item-label>
-            </q-item-section>
-          </q-item>
-          <q-separator />
-          <q-item
-            clickable
-            v-ripple
-            :active="$page.url.startsWith('/app/products')"
-            @click="router.get(route('app.product.index'))"
-          >
-            <q-item-section avatar>
-              <q-icon name="construction" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Layanan</q-item-label>
-            </q-item-section>
-          </q-item>
-          <q-separator />
-
           <q-expansion-item
             v-if="
               $page.props.auth.user.role == $CONSTANTS.USER_ROLE_ADMIN ||
@@ -318,8 +284,8 @@ onMounted(() => {
             icon="business_center"
             label="Biaya Oprasional"
             :default-opened="
-              $page.url.startsWith('/admin/sales-orders') ||
-              $page.url.startsWith('/admin/customers')
+              $page.url.startsWith('app/admin/cost') ||
+              $page.url.startsWith('app/admin/customers')
             "
           >
             <q-item
@@ -327,7 +293,7 @@ onMounted(() => {
               clickable
               v-ripple
               :active="$page.url.startsWith('/app/settings/profile')"
-              @click="router.get(route('app.profile.edit'))"
+              @click="router.get(route('app.cost.index'))"
             >
               <q-item-section avatar>
                 <q-icon name="business_center" />
@@ -341,7 +307,7 @@ onMounted(() => {
               clickable
               v-ripple
               :active="$page.url.startsWith('/app/settings/profile')"
-              @click="router.get(route('app.profile.edit'))"
+              @click="router.get(route('app.cost-category.index'))"
             >
               <q-item-section avatar>
                 <q-icon name="category" />
@@ -368,8 +334,8 @@ onMounted(() => {
               class="subnav"
               clickable
               v-ripple
-              :active="$page.url.startsWith('/app/users')"
-              @click="router.get(route('app.user.index'))"
+              :active="$page.url.startsWith('/app/settings/profile')"
+              @click="router.get(route('app.profile.edit'))"
             >
               <q-item-section avatar>
                 <q-icon name="person" />
@@ -382,8 +348,8 @@ onMounted(() => {
               class="subnav"
               clickable
               v-ripple
-              :active="$page.url.startsWith('/app/user-groups')"
-              @click="router.get(route('app.user-group.index'))"
+              :active="$page.url.startsWith('/app/settings/profile')"
+              @click="router.get(route('app.profile.edit'))"
             >
               <q-item-section avatar>
                 <q-icon name="diversity_2" />
@@ -396,8 +362,8 @@ onMounted(() => {
               class="subnav"
               clickable
               v-ripple
-              :active="$page.url.startsWith('/app/settings')"
-              @click="router.get(route('app.settings.index'))"
+              :active="$page.url.startsWith('/app/settings/profile')"
+              @click="router.get(route('app.profile.edit'))"
             >
               <q-item-section avatar>
                 <q-icon name="settings" />

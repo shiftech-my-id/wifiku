@@ -20,6 +20,7 @@ class CostController extends Controller
     public function index()
     {
         return inertia('app/cost/Index', [
+            //eror
             'parties' => Party::query()->orderBy('name', 'asc')->get(),
             'categories' => CostCategory::query()->orderBy('name', 'asc')->get()
         ]);

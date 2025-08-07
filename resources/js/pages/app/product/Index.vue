@@ -1,22 +1,73 @@
 <script setup>
 import { computed, onMounted, reactive, ref, watch } from "vue";
-import { router } from "@inertiajs/vue3";
+import { router, usePage } from "@inertiajs/vue3";
 import { handleDelete, handleFetchItems } from "@/helpers/client-req-handler";
 import { getQueryParams } from "@/helpers/utils";
+import { useQuasar } from "quasar";
+import { createMonthOptions, createYearOptions } from "@/helpers/options";
+import { formatDatetime, formatNumberWithSymbol } from "@/helpers/formatter";
 import { usePageStorage } from "@/composables/usePageStorage";
-import { createOptions } from "@/helpers/options";
-import { formatNumberWithSymbol } from "@/helpers/formatter";
 
-const storage = usePageStorage("party");
-const title = "Pelanggan";
+const storage = usePageStorage("product");
+const title = "Layanan";
+const page = usePage();
+const $q = useQuasar();
 const showFilter = ref(storage.get("show-filter", false));
 const rows = ref([]);
 const loading = ref(true);
 
+const currentYear = new Date().getFullYear();
+const currentMonth = new Date().getMonth() + 1;
+
+const years = [
+  { label: "Semua Tahun", value: "all" },
+  { label: `${currentYear}`, value: currentYear },
+  ...createYearOptions(currentYear - 2, currentYear - 1).reverse(),
+];
+
+const months = [
+  { value: "all", label: "Semua Bulan" },
+  ...createMonthOptions(),
+];
+
+// const categories = [
+//   { value: "all", label: "Semua Kategori" },
+//   ...page.props.categories.map((cat) => {
+//     return {
+//       label: cat.name,
+//       value: cat.id,
+//     };
+//   }),
+// ];
+
+// const parties = [
+//   { value: "all", label: "Semua Pihak" },
+//   ...page.props.parties.map((party) => {
+//     return {
+//       label: party.name,
+//       value: party.id,
+//     };
+//   }),
+// ];
+
+// const types = [
+//   { value: "all", label: "Semua Jenis" },
+//   ...Object.entries(window.CONSTANTS.TRANSACTION_TYPES).map(
+//     ([value, label]) => ({
+//       value,
+//       label,
+//     })
+//   ),
+// ];
+
 const filter = reactive(
   storage.get("filter", {
-    status: "all",
+    search: "",
+    category_id: "all",
+    party_id: "all",
     type: "all",
+    year: currentYear,
+    month: currentMonth,
     ...getQueryParams(),
   })
 );
@@ -26,46 +77,41 @@ const pagination = ref(
     page: 1,
     rowsPerPage: 10,
     rowsNumber: 10,
-    sortBy: "name",
-    descending: false,
+    sortBy: "id",
+    descending: true,
   })
 );
 
 const columns = [
+
   {
-    name: "name",
-    label: "Nama Pelanggan",
-    field: "name",
+    name: "nama_layanan",
+    label: "Nama Layanan",
+    field: "party",
     align: "left",
-    sortable: true,
   },
   {
-    name: "layanan",
-    label: "Layanan",
-    field: "layanan",
+    name: "type",
+    label: "Biaya",
+    field: "type",
     align: "left",
-    sortable: true,
   },
   {
-    name: "no_hp",
-    label: "No Hp",
-    field: "no_hp",
+    name: "category",
+    label: "Pelanggan",
+    field: "category",
+    align: "left",
+  },
+  {
+    name: "amount",
+    label: "Deskripsi",
+    field: "amount",
     align: "right",
-    sortable: true,
   },
-
-  { name: "action", label: "", align: "right" },
-];
-
-const statuses = [
-  { value: "all", label: "Semua" },
-  { value: "active", label: "Aktif" },
-  { value: "inactive", label: "Tidak Aktif" },
-];
-
-const types = [
-  { value: "all", label: "Semua" },
-  ...createOptions(window.CONSTANTS.PARTY_TYPES),
+  {
+    name: "action",
+    align: "right",
+  },
 ];
 
 onMounted(() => {
@@ -74,8 +120,8 @@ onMounted(() => {
 
 const deleteItem = (row) =>
   handleDelete({
-    message: `Hapus pihak ${row.name}?`,
-    url: route("app.party.delete", row.id),
+    message: `Hapus transaksi #-${row.id}?`,
+    url: route("app.product.delete", row.id),
     fetchItemsCallback: fetchItems,
     loading,
   });
@@ -86,18 +132,30 @@ const fetchItems = (props = null) => {
     filter,
     props,
     rows,
-    url: route("app.party.data"),
+    url: route("app.product.data"),
     loading,
   });
 };
 
-const onFilterChange = () => fetchItems();
-const onRowClicked = (row) =>
-  router.get(route("app.party.detail", { id: row.id }));
+const onFilterChange = () => {
+  fetchItems();
+};
 
 const computedColumns = computed(() => {
-  return columns;
+  if ($q.screen.gt.sm) return columns;
+  return columns.filter(
+    (col) => col.name === "datetime" || col.name === "action"
+  );
 });
+
+watch(
+  () => filter.year,
+  (newVal) => {
+    if (newVal === null) {
+      filter.month = null;
+    }
+  }
+);
 
 watch(showFilter, () => storage.set("show-filter", showFilter.value), {
   deep: true,
@@ -117,7 +175,7 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
         icon="add"
         dense
         color="primary"
-        @click="router.get(route('app.party.add'))"
+        @click="router.get(route('app.product.add'))"
       />
       <q-btn
         class="q-ml-sm"
@@ -145,7 +203,7 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
               clickable
               v-ripple
               v-close-popup
-              :href="route('app.party.export', { format: 'pdf' })"
+              :href="route('app.product.export', { format: 'pdf' })"
             >
               <q-item-section avatar>
                 <q-icon name="picture_as_pdf" color="red-9" />
@@ -156,7 +214,7 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
               clickable
               v-ripple
               v-close-popup
-              :href="route('app.party.export', { format: 'excel' })"
+              :href="route('app.product.export', { format: 'excel' })"
             >
               <q-item-section avatar>
                 <q-icon name="csv" color="green-9" />
@@ -171,24 +229,56 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
       <q-toolbar class="filter-bar">
         <div class="row q-col-gutter-xs items-center q-pa-sm full-width">
           <q-select
-            class="custom-select col-xs-12 col-sm-2"
-            style="min-width: 150px"
-            v-model="filter.status"
-            :options="statuses"
-            label="Status"
+            v-model="filter.year"
+            :options="years"
+            label="Tahun"
             dense
+            outlined
+            class="custom-select col-xs-6 col-sm-2"
+            emit-value
+            map-options
+            @update:model-value="onFilterChange"
+          />
+          <q-select
+            v-model="filter.month"
+            :options="months"
+            label="Bulan"
+            dense
+            outlined
+            class="custom-select col-xs-6 col-sm-2"
+            emit-value
+            map-options
+            :disable="filter.year === null"
+            @update:model-value="onFilterChange"
+          />
+          <q-select
+            v-model="filter.party_id"
+            :options="parties"
+            label="Nama Layanan"
+            dense
+            class="custom-select col-xs-6 col-sm-2"
             map-options
             emit-value
             outlined
             @update:model-value="onFilterChange"
           />
           <q-select
-            class="custom-select col-xs-12 col-sm-2"
-            style="min-width: 150px"
+            v-model="filter.category_id"
+            :options="categories"
+            label="Kategori"
+            dense
+            class="custom-select col-xs-6 col-sm-2"
+            map-options
+            emit-value
+            outlined
+            @update:model-value="onFilterChange"
+          />
+          <q-select
             v-model="filter.type"
             :options="types"
-            label="Jenis"
+            label="Biaya"
             dense
+            class="custom-select col-xs-6 col-sm-2"
             map-options
             emit-value
             outlined
@@ -230,36 +320,54 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
         <template v-slot:loading>
           <q-inner-loading showing color="red" />
         </template>
-
         <template v-slot:no-data="{ icon, message, filter }">
           <div class="full-width row flex-center text-grey-8 q-gutter-sm">
             <span>
               {{ message }}
-              {{ filter ? " with term " + filter : "" }}
-            </span>
+              {{ filter ? " with term " + filter : "" }}</span
+            >
           </div>
         </template>
-
         <template v-slot:body="props">
-          <q-tr
-            :props="props"
-            :class="!props.row.active ? 'bg-red-1' : ''"
-            class="cursor-pointer"
-            @click="onRowClicked(props.row)"
-          >
-            <q-td key="name" :props="props" class="wrap-column">
+          <q-tr :props="props">
+            <q-td key="datetime" :props="props" class="wrap-column">
               <div>
-                <q-icon
-                  :name="props.row.type == 'company' ? 'domain' : 'person'"
-                />
-                {{ props.row.name }}
+                <q-icon v-if="!$q.screen.gt.sm" name="calendar_today" />
+                {{ formatDatetime(props.row.datetime) }}
               </div>
+              <template v-if="!$q.screen.gt.sm">
+                <div v-if="props.row.party">
+                  <q-icon name="person" /> {{ props.row.party.name }}
+                </div>
+                <div v-if="props.row.category">
+                  <q-icon name="category" /> {{ props.row.category.name }}
+                </div>
+                <div>
+                  <q-icon name="category" />
+                  {{ $CONSTANTS.TRANSACTION_TYPES[props.row.type] }}
+                </div>
+              </template>
             </q-td>
-            <q-td key="layanan" :props="props"> {{ props.row.layanan }} </q-td>
-
-            <q-td key="no_hp" :props="props"> {{ props.row.no_hp }} </q-td>
-
-
+            <q-td key="party" :props="props">
+              {{ props.row.party?.name }}
+            </q-td>
+            <q-td key="type" :props="props">
+              {{ $CONSTANTS.TRANSACTION_TYPES[props.row.type] }}
+            </q-td>
+            <q-td key="category" :props="props">
+              {{ props.row.category?.name }}
+            </q-td>
+            <q-td
+              key="amount"
+              :props="props"
+              style="text-align: right"
+              :class="props.row.amount >= 0 ? 'text-green' : 'text-red'"
+            >
+              {{ formatNumberWithSymbol(props.row.amount) }}
+            </q-td>
+            <q-td key="notes" :props="props">
+              {{ props.row.notes }}
+            </q-td>
             <q-td key="action" :props="props">
               <div class="flex justify-end">
                 <q-btn
@@ -275,33 +383,35 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
                     transition-show="scale"
                     transition-hide="scale"
                   >
+                    <q-item
+                      clickable
+                      v-ripple
+                      v-close-popup
+                      @click.stop="
+                        router.get(
+                          route('app.product.duplicate', props.row.id)
+                        )
+                      "
+                    >
+                      <q-item-section avatar>
+                        <q-icon name="file_copy" />
+                      </q-item-section>
+                      <q-item-section> Duplikat </q-item-section>
+                    </q-item>
+                    <q-item
+                      clickable
+                      v-ripple
+                      v-close-popup
+                      @click.stop="
+                        router.get(route('app.product.edit', props.row.id))
+                      "
+                    >
+                      <q-item-section avatar>
+                        <q-icon name="edit" />
+                      </q-item-section>
+                      <q-item-section>Edit</q-item-section>
+                    </q-item>
                     <q-list style="width: 200px">
-                      <q-item
-                        clickable
-                        v-ripple
-                        v-close-popup
-                        @click.stop="
-                          router.get(route('app.party.duplicate', props.row.id))
-                        "
-                      >
-                        <q-item-section avatar>
-                          <q-icon name="file_copy" />
-                        </q-item-section>
-                        <q-item-section> Duplikat </q-item-section>
-                      </q-item>
-                      <q-item
-                        clickable
-                        v-ripple
-                        v-close-popup
-                        @click.stop="
-                          router.get(route('app.party.edit', props.row.id))
-                        "
-                      >
-                        <q-item-section avatar>
-                          <q-icon name="edit" />
-                        </q-item-section>
-                        <q-item-section>Edit</q-item-section>
-                      </q-item>
                       <q-item
                         @click.stop="deleteItem(props.row)"
                         clickable

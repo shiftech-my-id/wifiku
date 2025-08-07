@@ -27,9 +27,8 @@ const types = Object.entries(window.CONSTANTS.TRANSACTION_TYPES).map(
 
 const form = useForm({
   id: page.props.data.id,
-  party_id: page.props.data.party_id,
+  company_id: page.props.data.company_id,
   category_id: page.props.data.category_id,
-  type: page.props.data.type,
   datetime: dayjs(page.props.data.datetime).format("YYYY-MM-DD HH:mm:ss"),
   notes: page.props.data.notes,
   amount: parseFloat(page.props.data.amount),
@@ -69,51 +68,6 @@ const submit = () => handleSubmit({ form, url: route("app.transaction.save") });
                 label="Waktu"
                 :error="!!form.errors.datetime"
                 :disable="form.processing"
-              />
-              <q-select
-                autofocus
-                v-model="form.type"
-                label="Jenis"
-                :options="types"
-                map-options
-                emit-value
-                :error="!!form.errors.type"
-                :disable="form.processing"
-                :errorMessage="form.errors.type"
-              >
-              </q-select>
-              <q-select
-                class="custom-select"
-                v-model="form.party_id"
-                :label="form.type == 'debt' ? 'Dari' : 'Ke'"
-                :options="parties"
-                map-options
-                emit-value
-                :errorMessage="form.errors.party_id"
-                :error="!!form.errors.party_id"
-                :disable="form.processing"
-              />
-              <q-select
-                class="custom-select"
-                v-model="form.category_id"
-                label="Kategori"
-                :options="categories"
-                map-options
-                emit-value
-                :errorMessage="form.errors.category_id"
-                :error="!!form.errors.category_id"
-                :disable="form.processing"
-              />
-              <LocaleNumberInput
-                v-model:modelValue="form.amount"
-                :label="
-                  form.type == 'adjustment' ? 'Saldo Seharusnya' : 'Jumlah'
-                "
-                lazyRules
-                :disable="form.processing"
-                :error="!!form.errors.amount"
-                :errorMessage="form.errors.amount"
-                :rules="[]"
               />
               <q-input
                 v-model.trim="form.notes"

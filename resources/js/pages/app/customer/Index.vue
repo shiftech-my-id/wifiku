@@ -8,7 +8,7 @@ import { createOptions } from "@/helpers/options";
 import { formatNumberWithSymbol } from "@/helpers/formatter";
 
 const storage = usePageStorage("party");
-const title = "Pihak-pihak";
+const title = "Pelanggan";
 const showFilter = ref(storage.get("show-filter", false));
 const rows = ref([]);
 const loading = ref(true);
@@ -32,15 +32,29 @@ const pagination = ref(
 );
 
 const columns = [
-  { name: "name", label: "Nama", field: "name", align: "left", sortable: true },
   {
-    name: "balance",
-    label: "Utang / Piutang (Rp)",
-    field: "balance",
+    name: "name",
+    label: "Nama Pelanggan",
+    field: "name",
+    align: "left",
+    sortable: true,
+  },
+  {
+    name: "layanan",
+    label: "Layanan",
+    field: "layanan",
+    align: "left",
+    sortable: true,
+  },
+  {
+    name: "no_hp",
+    label: "No Hp",
+    field: "no_hp",
     align: "right",
     sortable: true,
   },
-  { name: "action", align: "right" },
+
+  { name: "action", label: "", align: "right" },
 ];
 
 const statuses = [
@@ -51,7 +65,7 @@ const statuses = [
 
 const types = [
   { value: "all", label: "Semua" },
-  ...createOptions(window.CONSTANTS.PARTY_TYPES),
+  // ...createOptions(window.CONSTANTS.PARTY_TYPES),
 ];
 
 onMounted(() => {
@@ -72,7 +86,7 @@ const fetchItems = (props = null) => {
     filter,
     props,
     rows,
-    url: route("app.party.data"),
+    url: route("app.customer.data"),
     loading,
   });
 };
@@ -103,7 +117,7 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
         icon="add"
         dense
         color="primary"
-        @click="router.get(route('app.party.add'))"
+        @click="router.get(route('app.customer.add'))"
       />
       <q-btn
         class="q-ml-sm"
@@ -241,13 +255,10 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
                 {{ props.row.name }}
               </div>
             </q-td>
-            <q-td
-              key="balance"
-              :props="props"
-              :class="props.row.balance >= 0 ? 'text-green' : 'text-red'"
-            >
-              {{ formatNumberWithSymbol(props.row.balance) }}
-            </q-td>
+            <q-td key="layanan" :props="props"> {{ props.row.layanan }} </q-td>
+
+            <q-td key="no_hp" :props="props"> {{ props.row.no_hp }} </q-td>
+
             <q-td key="action" :props="props">
               <div class="flex justify-end">
                 <q-btn
