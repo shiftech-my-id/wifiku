@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Auth;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -59,19 +60,20 @@ class CostCategoryController extends Controller
 
     public function save(Request $request)
     {
-        $item = $request->id ? CostCategory::findOrFail($request->id) : new CostCategory();
+        $item = $request->id
+            ? CostCategory::where('company_id', Auth::user()->company->id)->findOrFail($request->id)
+            : new CostCategory();
 
         $validated = $request->validate([
             'name' => [
                 'required',
                 'max:255',
                 Rule::unique('cost_categories', 'name')
-                    ->where(fn($query) => $query->where('user_id', auth()->id()))
-                    ->ignore($item->id),
+                    ->where(fn($query) => $query->where('company_id', Auth::user()->company->id))
+                    ->ignore($item->id, 'id'), // Lebih eksplisit
             ],
             'description' => 'nullable|max:1000',
         ]);
-
         $item->fill([
             'name' => $validated['name'],
             'description' => $validated['description'] ?? '',
@@ -79,11 +81,9 @@ class CostCategoryController extends Controller
 
         $item->save();
 
-        $messageKey = $request->id ? 'cost-category-updated' : 'cost-category-created';
-
         return redirect()
             ->route('app.cost-category.index')
-            ->with('success', __("messages.$messageKey", ['name' => $item->name]));
+            ->with('success', "Kategori $item->name telah disimpan.");
     }
 
     public function delete($id)
@@ -92,7 +92,7 @@ class CostCategoryController extends Controller
         $item->delete();
 
         return response()->json([
-            'message' => __('messages.cost-category-deleted', ['name' => $item->name])
+            'message' => "Kategori telah dihapus $item->name"
         ]);
     }
 

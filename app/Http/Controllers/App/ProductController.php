@@ -21,9 +21,8 @@ class ProductController extends Controller
     public function detail($id = 0)
     {
         return inertia('app/product/Detail', [
-            'data' => Product::query([
-                'product:id,name',
-            ])->findOrFail($id),
+            'data' => Product::query()
+                ->findOrFail($id),
         ]);
     }
 
@@ -38,18 +37,12 @@ class ProductController extends Controller
         if (!empty($filter['search'])) {
             $q->where(function ($q) use ($filter) {
                 $q->where('name', 'like', '%' . $filter['search'] . '%');
-                $q->orWhere('phone', 'like', '%' . $filter['search'] . '%');
-                $q->orWhere('address', 'like', '%' . $filter['search'] . '%');
-                $q->orWhere('notes', 'like', '%' . $filter['search'] . '%');
+                $q->orWhere('description', 'like', '%' . $filter['search'] . '%');
             });
         }
 
         if (!empty($filter['status']) && (in_array($filter['status'], ['active', 'inactive']))) {
             $q->where('active', '=', $filter['status'] == 'active' ? true : false);
-        }
-
-        if (!empty($filter['type']) && (in_array($filter['type'], array_keys(Product::Types)))) {
-            $q->where('type', '=', $filter['type']);
         }
 
         $q->orderBy($orderBy, $orderType);
@@ -80,19 +73,18 @@ class ProductController extends Controller
     public function save(Request $request)
     {
         $validated =  $request->validate([
-            'name'           => 'required|string|max:255',
-            'phone'          => 'nullable|string|max:50',
-            'type'           => 'nullable|string|max:255',
-            'address'        => 'nullable|string|max:500',
+            'name'           => 'required|string|max:50',
+            'description'    => 'nullable|string|max:100',
             'active'         => 'required|boolean',
-            'notes'          => 'nullable|string',
+            'bill_period'    => 'required|in:' . implode(',', array_keys(Product::BillPeriods)),
+            'price'          => 'required|numeric|min:0.01',
         ]);
 
         $item = !$request->id ? new Product() : Product::findOrFail($request->post('id', 0));
         $item->fill($validated);
         $item->save();
 
-        return redirect(route('app.product.detail', ['id' => $item->id]))->with('success', "Pelanggan $item->name telah disimpan.");
+        return redirect(route('app.product.detail', ['id' => $item->id]))->with('success', "Produk $item->name telah disimpan.");
     }
 
     public function delete($id)
@@ -101,7 +93,7 @@ class ProductController extends Controller
         $item->delete();
 
         return response()->json([
-            'message' => "Pihak $item->name telah dihapus."
+            'message' => "Produk $item->name telah dihapus."
         ]);
     }
 
