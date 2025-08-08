@@ -17,10 +17,8 @@ return new class extends Migration
             $table->string('name');
             $table->string('description')->default('');
             $table->string('bill_period')->default('monthly');
-            // $table->unsignedTinyInteger('notify_before')->default(7);
             $table->decimal('price', 10, 2)->default(0.);
             $table->boolean('active')->default(true);
-
             $table->createdUpdatedDeletedTimestamps();
         });
     }
@@ -33,3 +31,4 @@ return new class extends Migration
         Schema::dropIfExists('products');
     }
 };
+            // $table->unsignedTinyInteger('notify_before')->default(7);

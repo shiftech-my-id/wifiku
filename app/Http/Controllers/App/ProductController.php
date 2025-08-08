@@ -84,7 +84,7 @@ class ProductController extends Controller
         $item->fill($validated);
         $item->save();
 
-        return redirect(route('app.product.detail', ['id' => $item->id]))->with('success', "Produk $item->name telah disimpan.");
+        return redirect(route('app.product.detail', ['id' => $item->id]))->with('success', "Layanan $item->name telah disimpan.");
     }
 
     public function delete($id)
