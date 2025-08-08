@@ -101,7 +101,7 @@ onMounted(() => {
 
 const deleteItem = (row) =>
   handleDelete({
-    message: `Hapus biaya sebesar ${formatNumber(row.amount)} pada tanggal ${dayjs(row.datetime).format("DD/MM/YYYY")}?`, // <- Pesan lebih informatif
+    message: `Hapus biaya sebesar ${formatNumber(row.amount)} pada tanggal ${dayjs(row.datetime).format("DD/MM/YYYY")}?`,
     url: route("app.cost.delete", row.id),
     fetchItemsCallback: fetchItems,
     loading,
