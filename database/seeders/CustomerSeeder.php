@@ -16,14 +16,14 @@ class CustomerSeeder extends Seeder
             [
                 'id' => 1,
                 'company_id' => 1,
-                'code' => 'PL-0001',
+                'customer_id' => 1,
                 'name' => 'Yudi Heriadi',
                 'active' => true,
             ],
             [
                 'id' => 2,
                 'company_id' => 1,
-                'code' => 'PL-0002',
+                'customer_id' => 2,
                 'name' => 'Beni Sujana',
                 'active' => true,
             ],

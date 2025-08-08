@@ -8,6 +8,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -38,8 +39,12 @@ class CustomerController extends Controller
 
         if (!empty($filter['search'])) {
             $q->where(function ($q) use ($filter) {
+                $q->where('code', 'like', '%' . $filter['search'] . '%');
                 $q->where('name', 'like', '%' . $filter['search'] . '%');
+                $q->orWhere('id_card_number', 'like', '%' . $filter['search'] . '%');
+                $q->orWhere('email', 'like', '%' . $filter['search'] . '%');
                 $q->orWhere('phone', 'like', '%' . $filter['search'] . '%');
+                $q->orWhere('wa', 'like', '%' . $filter['search'] . '%');
                 $q->orWhere('address', 'like', '%' . $filter['search'] . '%');
                 $q->orWhere('notes', 'like', '%' . $filter['search'] . '%');
             });
@@ -47,10 +52,6 @@ class CustomerController extends Controller
 
         if (!empty($filter['status']) && (in_array($filter['status'], ['active', 'inactive']))) {
             $q->where('active', '=', $filter['status'] == 'active' ? true : false);
-        }
-
-        if (!empty($filter['type']) && (in_array($filter['type'], array_keys(Customer::Types)))) {
-            $q->where('type', '=', $filter['type']);
         }
 
         $q->orderBy($orderBy, $orderType);
@@ -81,21 +82,25 @@ class CustomerController extends Controller
     public function save(Request $request)
     {
         $validated =  $request->validate([
-            'name'           => 'required|string|max:255',
-            'phone'          => 'nullable|string|max:50',
-            'type'           => 'nullable|string|max:255',
-            'address'        => 'nullable|string|max:500',
-            'active'         => 'required|boolean',
-            'notes'          => 'nullable|string',
+            'name'              => 'required|string|max:255',
+            'id_card_number'    => 'nullable|string|max:100',
+            'email'             => 'nullable|email|max:255',
+            'phone'             => 'nullable|string|max:50',
+            'wa'                => 'nullable|string|max:50',
+            'address'           => 'nullable|string|max:500',
+            'active'            => 'required|boolean',
+            'balance'           => 'nullable|numeric|min:0',
+            'installation_date' => 'nullable|date',
+            'lat_long'          => 'nullable|string|max:100',
+            'notes'             => 'nullable|string',
+            'product_id'        => 'nullable|exists:products,id',
         ]);
 
         $item = !$request->id ? new Customer() : Customer::findOrFail($request->post('id', 0));
 
-            if (!$request->id) {
-        do {
-            $validated['code'] = 'CUST-' . strtoupper(Str::random(6));
-        } while (Customer::where('code', $validated['code'])->exists());
-    }
+        if (!$request->id) {
+            $validated['customer_id'] = Customer::getNextCustomerId(Auth::user()->company_id);
+        }
 
         $item->fill($validated);
         $item->save();
