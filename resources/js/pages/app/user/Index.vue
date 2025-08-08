@@ -1,18 +1,13 @@
 <script setup>
-import { computed, onMounted, reactive, ref, watch } from "vue";
+import { computed, onMounted, reactive, ref } from "vue";
 import { router, usePage } from "@inertiajs/vue3";
 import { handleFetchItems, handleDelete } from "@/helpers/client-req-handler";
-import { getQueryParams } from "@/helpers/utils";
 import i18n from "@/i18n";
 import { useQuasar } from "quasar";
-import { usePageStorage } from "@/composables/usePageStorage";
-import { createOptions } from "@/helpers/options";
-
-const storage = usePageStorage("users");
 
 const roles = [
   { value: "all", label: "Semua" },
-  // ...createOptions(window.CONSTANTS.USER_ROLES),
+  ...create_options(window.CONSTANTS.USER_ROLES),
 ];
 
 const statuses = [
@@ -27,41 +22,52 @@ const currentUser = page.props.auth.user;
 const title = i18n.global.t("users");
 const rows = ref([]);
 const loading = ref(true);
-const showFilter = ref(storage.get("show-filter", false));
+const showFilter = ref(false);
+const filter = reactive({
+  role: "all",
+  status: "active",
+  search: "",
+});
 
-const filter = reactive(
-  storage.get("filter", {
-    role: "all",
-    status: "active",
-    search: "",
-    ...getQueryParams(),
-  })
-);
-
-const pagination = ref(
-  storage.get("pagination", {
-    page: 1,
-    rowsPerPage: 10,
-    rowsNumber: 10,
-    sortBy: "username",
-    descending: false,
-  })
-);
+const pagination = ref({
+  page: 1,
+  rowsPerPage: 10,
+  rowsNumber: 10,
+  sortBy: "username",
+  descending: false,
+});
 
 const columns = [
   {
     name: "username",
-    label: "Username",
+    label: "ID Pengguna",
     field: "username",
     align: "left",
     sortable: true,
   },
-  { name: "name", label: "Nama", field: "name", align: "left", sortable: true },
-  { name: "role", label: "Role", field: "role", align: "center" },
-  { name: "action", align: "right" },
+  {
+    name: "name",
+    label: "Nama",
+    field: "name",
+    align: "left",
+    sortable: true,
+  },
+  {
+    name: "role",
+    label: "Hak Akses",
+    field: "role",
+    align: "center",
+    sortable: true,
+  },
+  {
+    name: "action",
+    align: "right",
+  },
 ];
 
-onMounted(() => fetchItems());
+onMounted(() => {
+  fetchItems();
+});
 
 const onFilterChange = () => fetchItems();
 
@@ -72,32 +78,24 @@ const fetchItems = (props = null) =>
     rows,
     loading,
     filter,
-    url: route("app.user.data"),
+    url: route("admin.user.data"),
   });
 
 const deleteItem = (row) =>
   handleDelete({
-    url: route("app.user.delete", row.id),
-    message: `Hapus pengguna ${row.email}?`,
+    url: route("admin.user.delete", row.id),
+    message: `Hapus pengguna ${row.username}?`,
     fetchItemsCallback: fetchItems,
     loading,
   });
 
-const computedColumns = computed(() =>
-  $q.screen.gt.sm
-    ? columns
-    : columns.filter((col) => ["username", "action"].includes(col.name))
-);
-
-const onRowClicked = (row) => router.get(route("app.user.detail", row.id));
-
-watch(filter, () => storage.set("filter", filter), { deep: true });
-watch(showFilter, () => storage.set("show-filter", showFilter.value), {
-  deep: true,
+const computedColumns = computed(() => {
+  if ($q.screen.gt.sm) return columns;
+  return columns.filter((col) => col.name === "username" || col.name === "action");
 });
-watch(pagination, () => storage.set("pagination", pagination.value), {
-  deep: true,
-});
+
+const onRowClicked = (row) => router.get(route("admin.user.detail", row.id));
+
 </script>
 
 <template>
@@ -109,8 +107,7 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
         icon="add"
         dense
         color="primary"
-        @click="router.get(route('app.user.add'))"
-        :disable="$page.props.auth.user.role != $CONSTANTS.USER_ROLE_ADMIN"
+        @click="router.get(route('admin.user.add'))"
       />
       <q-btn
         class="q-ml-sm"
@@ -119,46 +116,6 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
         dense
         @click="showFilter = !showFilter"
       />
-      <q-btn
-        icon="file_export"
-        dense
-        class="q-ml-sm"
-        color="grey"
-        style=""
-        @click.stop
-      >
-        <q-menu
-          anchor="bottom right"
-          self="top right"
-          transition-show="scale"
-          transition-hide="scale"
-        >
-          <q-list style="width: 200px">
-            <q-item
-              clickable
-              v-ripple
-              v-close-popup
-              :href="route('app.user.export', { format: 'pdf' })"
-            >
-              <q-item-section avatar>
-                <q-icon name="picture_as_pdf" color="red-9" />
-              </q-item-section>
-              <q-item-section>Export PDF</q-item-section>
-            </q-item>
-            <q-item
-              clickable
-              v-ripple
-              v-close-popup
-              :href="route('app.user.export', { format: 'excel' })"
-            >
-              <q-item-section avatar>
-                <q-icon name="csv" color="green-9" />
-              </q-item-section>
-              <q-item-section>Export Excel</q-item-section>
-            </q-item>
-          </q-list>
-        </q-menu>
-      </q-btn>
     </template>
     <template #header v-if="showFilter">
       <q-toolbar class="filter-bar">
@@ -205,6 +162,7 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
     </template>
     <div class="q-pa-sm">
       <q-table
+        class="full-height-table"
         flat
         bordered
         square
@@ -231,25 +189,12 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
         </template>
 
         <template v-slot:body="props">
-          <q-tr
-            :props="props"
-            :class="!props.row.active ? 'bg-red-1' : ''"
-            @click="onRowClicked(props.row)"
-            class="cursor-pointer"
-          >
+          <q-tr :props="props" :class="!props.row.active ? 'bg-red-1' : ''" @click="onRowClicked(props.row)" class="cursor-pointer">
             <q-td key="username" :props="props">
-              <div v-if="$q.screen.gt.sm">
-                {{ props.row.email }}
-              </div>
-              <div v-else>
-                <q-icon name="person" />
-                {{ props.row.name }} ({{ props.row.email }})
-              </div>
+              <div>{{ props.row.username }}</div>
               <template v-if="!$q.screen.gt.sm">
-                <div class="elipsis" style="max-width: 200px">
-                  <q-icon name="assignment_ind" /> Role:
-                  <span>{{ $CONSTANTS.USER_ROLES[props.row.role] }}</span>
-                </div>
+                <div><q-icon name="person"/> {{ props.row.name }}</div>
+                <div class="elipsis" style="max-width: 200px;"><q-icon name="group"/> <span>{{ $CONSTANTS.USER_ROLES[props.row.role] }}</span></div>
               </template>
             </q-td>
             <q-td key="name" :props="props">
@@ -258,14 +203,13 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
             <q-td key="role" :props="props" align="center">
               <span>{{ $CONSTANTS.USER_ROLES[props.row.role] }}</span>
             </q-td>
-            <q-td key="action" :props="props">
+            <q-td
+              key="action"
+              :props="props"
+            >
               <div class="flex justify-end">
                 <q-btn
-                  :disable="
-                    props.row.id == currentUser.id ||
-                    props.row.email == 'admin' ||
-                    $page.props.auth.user.role != $CONSTANTS.USER_ROLE_ADMIN
-                  "
+                  :disable="props.row.id == currentUser.id || props.row.username == 'admin'"
                   icon="more_vert"
                   dense
                   flat
@@ -283,9 +227,7 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
                         clickable
                         v-ripple
                         v-close-popup
-                        @click.stop="
-                          router.get(route('app.user.duplicate', props.row.id))
-                        "
+                        @click.stop="router.get(route('admin.user.duplicate', props.row.id))"
                       >
                         <q-item-section avatar>
                           <q-icon name="file_copy" />
@@ -296,16 +238,12 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
                         clickable
                         v-ripple
                         v-close-popup
-                        @click.stop="
-                          router.get(route('app.user.edit', props.row.id))
-                        "
+                        @click.stop="router.get(route('admin.user.edit', props.row.id))"
                       >
                         <q-item-section avatar>
                           <q-icon name="edit" />
                         </q-item-section>
-                        <q-item-section icon="edit">{{
-                          $t("edit_user")
-                        }}</q-item-section>
+                        <q-item-section icon="edit">{{ $t("edit_user") }}</q-item-section>
                       </q-item>
                       <q-item
                         @click.stop="deleteItem(props.row)"
