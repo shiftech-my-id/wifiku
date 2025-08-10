@@ -2,22 +2,26 @@
 import { useForm, usePage } from "@inertiajs/vue3";
 import { handleSubmit } from "@/helpers/client-req-handler";
 import { scrollToFirstErrorField } from "@/helpers/utils";
-import { createOptions } from "@/helpers/options";
 
 const page = usePage();
 const title = (!!page.props.data.id ? "Edit" : "Tambah") + " Layanan";
-// const types = createOptions(window.CONSTANTS.PARTY_TYPES);
-const today = new Date().toLocaleDateString("en-CA");
+
 const form = useForm({
-  id: page.props.data.id,
-  // company_id: page.props.data.company_id,
-  name: page.props.data.name,
-  description: page.props.data.description,
-  price: page.props.data.price,
-  active: page.props.data.active,
+  id: page.props.data.id ?? null,
+  company_id: page.props.data.company_id ?? null,
+  name: page.props.data.name ?? "",
+  description: page.props.data.description ?? "",
+  bill_period: page.props.data.bill_period ?? "monthly",
+  price: page.props.data.price ?? 0,
+  active: page.props.data.active ?? true,
 });
 
-const submit = () => handleSubmit({ form, url: route("app.customer.save") });
+const billPeriodOptions = [
+  { label: "Bulanan", value: "monthly" },
+  { label: "Tahunan", value: "yearly" }
+];
+
+const submit = () => handleSubmit({ form, url: route("app.product.save") });
 </script>
 
 <template>
@@ -35,13 +39,15 @@ const submit = () => handleSubmit({ form, url: route("app.customer.save") });
             <q-inner-loading :showing="form.processing">
               <q-spinner size="50px" color="primary" />
             </q-inner-loading>
+
             <q-card-section class="q-pt-md">
               <input type="hidden" name="id" v-model="form.id" />
+              <input type="hidden" name="company_id" v-model="form.company_id" />
 
               <q-input
                 autofocus
                 v-model.trim="form.name"
-                label="Nama"
+                label="Nama Layanan"
                 lazy-rules
                 :error="!!form.errors.name"
                 :disable="form.processing"
@@ -50,12 +56,35 @@ const submit = () => handleSubmit({ form, url: route("app.customer.save") });
               />
 
               <q-input
+                v-model.number="form.price"
+                type="number"
+                label="Harga"
+                prefix="Rp"
+                lazy-rules
+                :disable="form.processing"
+                :error="!!form.errors.price"
+                :error-message="form.errors.price"
+                :rules="[(val) => val >= 0 || 'Harga tidak boleh negatif.']"
+              />
+
+              <q-select
+                v-model="form.bill_period"
+                :options="billPeriodOptions"
+                label="Periode Tagihan"
+                emit-value
+                map-options
+                :disable="form.processing"
+                :error="!!form.errors.bill_period"
+                :error-message="form.errors.bill_period"
+              />
+
+              <q-input
                 v-model.trim="form.description"
                 type="textarea"
                 autogrow
                 counter
                 maxlength="255"
-                label="deskripsi"
+                label="Deskripsi"
                 lazy-rules
                 :disable="form.processing"
                 :error="!!form.errors.description"

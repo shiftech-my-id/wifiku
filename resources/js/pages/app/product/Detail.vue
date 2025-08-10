@@ -6,7 +6,7 @@ import ActivationHistory from "./partial/ActivationHistory.vue";
 import BillHistory from "./partial/BillHistory.vue";
 
 const page = usePage();
-const title = "Detail Pelanggan";
+const title = "Detail Layanan";
 const tab = ref("main");
 </script>
 
