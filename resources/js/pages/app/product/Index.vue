@@ -5,7 +5,7 @@ import { handleDelete, handleFetchItems } from "@/helpers/client-req-handler";
 import { getQueryParams } from "@/helpers/utils";
 import { useQuasar } from "quasar";
 import { createMonthOptions, createYearOptions } from "@/helpers/options";
-import { formatDatetime, formatNumberWithSymbol } from "@/helpers/formatter";
+// import { formatNumberWithSymbol } from "@/helpers/formatter";
 import { usePageStorage } from "@/composables/usePageStorage";
 
 const storage = usePageStorage("product");
@@ -17,7 +17,6 @@ const rows = ref([]);
 const loading = ref(true);
 
 const currentYear = new Date().getFullYear();
-const currentMonth = new Date().getMonth() + 1;
 
 const years = [
   { label: "Semua Tahun", value: "all" },
@@ -30,44 +29,28 @@ const months = [
   ...createMonthOptions(),
 ];
 
-// const categories = [
-//   { value: "all", label: "Semua Kategori" },
-//   ...page.props.categories.map((cat) => {
-//     return {
-//       label: cat.name,
-//       value: cat.id,
-//     };
-//   }),
-// ];
+const formatCurrency = (value) => {
+  if (value === null || value === undefined) return "";
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    minimumFractionDigits: 0, 
+    maximumFractionDigits: 0,
+  }).format(value);
+};
 
-// const parties = [
-//   { value: "all", label: "Semua Pihak" },
-//   ...page.props.parties.map((party) => {
-//     return {
-//       label: party.name,
-//       value: party.id,
-//     };
-//   }),
-// ];
-
-// const types = [
-//   { value: "all", label: "Semua Jenis" },
-//   ...Object.entries(window.CONSTANTS.TRANSACTION_TYPES).map(
-//     ([value, label]) => ({
-//       value,
-//       label,
-//     })
-//   ),
-// ];
+const bill_period = [
+  { value: "all", label: "Semua Periode" },
+  { value: "Bulanan", label: "Bulanan" },
+  { value: "Tahunan", label: "Tahunan" },
+  { value: "Sekali Bayar", label: "Sekali Bayar" },
+];
 
 const filter = reactive(
   storage.get("filter", {
     search: "",
-    category_id: "all",
-    party_id: "all",
-    type: "all",
-    year: currentYear,
-    month: currentMonth,
+    bill_period: "all",
+    active: "all",
     ...getQueryParams(),
   })
 );
@@ -83,35 +66,43 @@ const pagination = ref(
 );
 
 const columns = [
-
   {
-    name: "nama_layanan",
+    name: "name",
     label: "Nama Layanan",
-    field: "party",
+    field: "name",
     align: "left",
+    sortable: true,
   },
   {
-    name: "type",
-    label: "Biaya",
-    field: "type",
-    align: "left",
-  },
-  {
-    name: "category",
-    label: "Pelanggan",
-    field: "category",
-    align: "left",
-  },
-  {
-    name: "amount",
+    name: "description",
     label: "Deskripsi",
-    field: "amount",
-    align: "right",
+    field: "description",
+    align: "left",
+    sortable: true,
   },
   {
-    name: "action",
-    align: "right",
+    name: "bill_period",
+    label: "Periode Tagihan",
+    field: "bill_period",
+    align: "center",
+    sortable: true,
   },
+  {
+    name: "price",
+    label: "Biaya",
+    field: "price",
+    align: "right",
+    format: (val) => formatCurrency(val),
+    sortable: true,
+  },
+  {
+    name: "active",
+    label: "Status",
+    field: "active",
+    align: "right",
+    format: (val) => (val ? "Aktif" : "Nonaktif"),
+  },
+  { name: "action", align: "right" },
 ];
 
 onMounted(() => {
@@ -120,7 +111,7 @@ onMounted(() => {
 
 const deleteItem = (row) =>
   handleDelete({
-    message: `Hapus transaksi #-${row.id}?`,
+    message: `Hapus layanan "${row.name}"?`,
     url: route("app.product.delete", row.id),
     fetchItemsCallback: fetchItems,
     loading,
@@ -138,14 +129,13 @@ const fetchItems = (props = null) => {
 };
 
 const onFilterChange = () => {
+  pagination.value.page = 1;
   fetchItems();
 };
 
 const computedColumns = computed(() => {
   if ($q.screen.gt.sm) return columns;
-  return columns.filter(
-    (col) => col.name === "datetime" || col.name === "action"
-  );
+  return columns.filter((col) => col.name === "name" || col.name === "action");
 });
 
 watch(
@@ -184,46 +174,6 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
         dense
         @click="showFilter = !showFilter"
       />
-      <q-btn
-        icon="file_export"
-        dense
-        class="q-ml-sm"
-        color="grey"
-        style=""
-        @click.stop
-      >
-        <q-menu
-          anchor="bottom right"
-          self="top right"
-          transition-show="scale"
-          transition-hide="scale"
-        >
-          <q-list style="width: 200px">
-            <q-item
-              clickable
-              v-ripple
-              v-close-popup
-              :href="route('app.product.export', { format: 'pdf' })"
-            >
-              <q-item-section avatar>
-                <q-icon name="picture_as_pdf" color="red-9" />
-              </q-item-section>
-              <q-item-section>Export PDF</q-item-section>
-            </q-item>
-            <q-item
-              clickable
-              v-ripple
-              v-close-popup
-              :href="route('app.product.export', { format: 'excel' })"
-            >
-              <q-item-section avatar>
-                <q-icon name="csv" color="green-9" />
-              </q-item-section>
-              <q-item-section>Export Excel</q-item-section>
-            </q-item>
-          </q-list>
-        </q-menu>
-      </q-btn>
     </template>
     <template #header v-if="showFilter">
       <q-toolbar class="filter-bar">
@@ -237,6 +187,7 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
             class="custom-select col-xs-6 col-sm-2"
             emit-value
             map-options
+            clearable
             @update:model-value="onFilterChange"
           />
           <q-select
@@ -248,35 +199,15 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
             class="custom-select col-xs-6 col-sm-2"
             emit-value
             map-options
-            :disable="filter.year === null"
+            clearable
+            :disable="!filter.year || filter.year === 'all'"
             @update:model-value="onFilterChange"
           />
+
           <q-select
-            v-model="filter.party_id"
-            :options="parties"
-            label="Nama Layanan"
-            dense
-            class="custom-select col-xs-6 col-sm-2"
-            map-options
-            emit-value
-            outlined
-            @update:model-value="onFilterChange"
-          />
-          <q-select
-            v-model="filter.category_id"
-            :options="categories"
-            label="Kategori"
-            dense
-            class="custom-select col-xs-6 col-sm-2"
-            map-options
-            emit-value
-            outlined
-            @update:model-value="onFilterChange"
-          />
-          <q-select
-            v-model="filter.type"
-            :options="types"
-            label="Biaya"
+            v-model="filter.bill_period"
+            :options="bill_period"
+            label="Periode"
             dense
             class="custom-select col-xs-6 col-sm-2"
             map-options
@@ -290,7 +221,8 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
             dense
             debounce="300"
             v-model="filter.search"
-            placeholder="Cari"
+            placeholder="Cari nama atau deskripsi..."
+            @update:model-value="onFilterChange"
             clearable
           >
             <template v-slot:append>
@@ -307,9 +239,7 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
         square
         color="primary"
         row-key="id"
-        virtual-scroll
         v-model:pagination="pagination"
-        :filter="filter.search"
         :loading="loading"
         :columns="computedColumns"
         :rows="rows"
@@ -318,105 +248,106 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
         binary-state-sort
       >
         <template v-slot:loading>
-          <q-inner-loading showing color="red" />
+          <q-inner-loading showing color="primary" />
         </template>
-        <template v-slot:no-data="{ icon, message, filter }">
+        <template v-slot:no-data="{ message }">
           <div class="full-width row flex-center text-grey-8 q-gutter-sm">
-            <span>
-              {{ message }}
-              {{ filter ? " with term " + filter : "" }}</span
-            >
+            <span>{{ message }}</span>
           </div>
         </template>
+
         <template v-slot:body="props">
           <q-tr :props="props">
-            <q-td key="datetime" :props="props" class="wrap-column">
-              <div>
-                <q-icon v-if="!$q.screen.gt.sm" name="calendar_today" />
-                {{ formatDatetime(props.row.datetime) }}
-              </div>
-              <template v-if="!$q.screen.gt.sm">
-                <div v-if="props.row.party">
-                  <q-icon name="person" /> {{ props.row.party.name }}
+            <template v-if="$q.screen.gt.sm">
+              <q-td key="name" :props="props">
+                {{ props.row.name }}
+              </q-td>
+              <q-td key="description" :props="props">
+                {{ props.row.description }}
+              </q-td>
+              <q-td key="bill_period" :props="props">
+                {{ props.row.bill_period }}
+              </q-td>
+              <q-td key="price" :props="props">
+                {{ formatCurrency(props.row.price) }}
+              </q-td>
+              <q-td key="active" :props="props" class="text-center">
+                <q-badge
+                  :color="props.row.active ? 'positive' : 'negative'"
+                  text-color="white"
+                >
+                  {{ props.row.active ? "Aktif" : "Nonaktif" }}
+                </q-badge>
+              </q-td>
+            </template>
+
+            <template v-else>
+              <q-td key="name" :props="props">
+                <div class="text-weight-bold">{{ props.row.name }}</div>
+                <div v-if="props.row.bill_period" class="text-grey-8">
+                  <q-icon name="event_repeat" size="xs" />
+                  {{ props.row.bill_period }}
                 </div>
-                <div v-if="props.row.category">
-                  <q-icon name="category" /> {{ props.row.category.name }}
+                <div class="text-grey-8">
+                  <q-icon name="payments" size="xs" />
+                  {{ formatCurrency(props.row.price) }}
                 </div>
                 <div>
-                  <q-icon name="category" />
-                  {{ $CONSTANTS.TRANSACTION_TYPES[props.row.type] }}
+                  <q-badge
+                    :color="props.row.active ? 'positive' : 'negative'"
+                    text-color="white"
+                  >
+                    {{ props.row.active ? "Aktif" : "Nonaktif" }}
+                  </q-badge>
                 </div>
-              </template>
-            </q-td>
-            <q-td key="party" :props="props">
-              {{ props.row.party?.name }}
-            </q-td>
-            <q-td key="type" :props="props">
-              {{ $CONSTANTS.TRANSACTION_TYPES[props.row.type] }}
-            </q-td>
-            <q-td key="category" :props="props">
-              {{ props.row.category?.name }}
-            </q-td>
-            <q-td
-              key="amount"
-              :props="props"
-              style="text-align: right"
-              :class="props.row.amount >= 0 ? 'text-green' : 'text-red'"
-            >
-              {{ formatNumberWithSymbol(props.row.amount) }}
-            </q-td>
-            <q-td key="notes" :props="props">
-              {{ props.row.notes }}
-            </q-td>
+              </q-td>
+            </template>
+
             <q-td key="action" :props="props">
               <div class="flex justify-end">
-                <q-btn
-                  icon="more_vert"
-                  dense
-                  flat
-                  style="height: 40px; width: 30px"
-                  @click.stop
-                >
+                <q-btn icon="more_vert" dense flat round @click.stop>
                   <q-menu
                     anchor="bottom right"
                     self="top right"
                     transition-show="scale"
                     transition-hide="scale"
                   >
-                    <q-item
-                      clickable
-                      v-ripple
-                      v-close-popup
-                      @click.stop="
-                        router.get(
-                          route('app.product.duplicate', props.row.id)
-                        )
-                      "
-                    >
-                      <q-item-section avatar>
-                        <q-icon name="file_copy" />
-                      </q-item-section>
-                      <q-item-section> Duplikat </q-item-section>
-                    </q-item>
-                    <q-item
-                      clickable
-                      v-ripple
-                      v-close-popup
-                      @click.stop="
-                        router.get(route('app.product.edit', props.row.id))
-                      "
-                    >
-                      <q-item-section avatar>
-                        <q-icon name="edit" />
-                      </q-item-section>
-                      <q-item-section>Edit</q-item-section>
-                    </q-item>
-                    <q-list style="width: 200px">
+                    <q-list dense style="min-width: 150px">
+                      <q-item
+                        clickable
+                        v-ripple
+                        v-close-popup
+                        @click.stop="
+                          router.get(route('app.product.edit', props.row.id))
+                        "
+                      >
+                        <q-item-section avatar>
+                          <q-icon name="edit" />
+                        </q-item-section>
+                        <q-item-section>Edit</q-item-section>
+                      </q-item>
+                      <q-item
+                        clickable
+                        v-ripple
+                        v-close-popup
+                        @click.stop="
+                          router.get(
+                            route('app.product.duplicate', props.row.id)
+                          )
+                        "
+                      >
+                        <q-item-section avatar>
+                          <q-icon name="file_copy" />
+                        </q-item-section>
+                        <q-item-section> Duplikat </q-item-section>
+                      </q-item>
+                      <q-separator />
                       <q-item
                         @click.stop="deleteItem(props.row)"
                         clickable
                         v-ripple
                         v-close-popup
+                        class="text-negative"
                       >
                         <q-item-section avatar>
                           <q-icon name="delete_forever" />
