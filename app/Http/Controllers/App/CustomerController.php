@@ -4,6 +4,7 @@ namespace App\Http\Controllers\App;
 
 use App\Http\Controllers\Controller;
 use App\Models\Customer;
+use App\Models\Product;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
@@ -22,10 +23,8 @@ class CustomerController extends Controller
 
     public function detail($id = 0)
     {
-        return inertia('app/customer/detail', [
-            'data' => Customer::query([
-                'product:id,name',
-            ])->findOrFail($id),
+        return inertia('app/customer/Detail', [
+            'data' => Customer::findOrFail($id),
         ]);
     }
 
@@ -76,6 +75,7 @@ class CustomerController extends Controller
         $item = $id ? Customer::findOrFail($id) : new Customer(['active' => true]);
         return inertia('app/customer/Editor', [
             'data' => $item,
+            'products' => Product::where('active', '=', true)->orderBy('name')->get()
         ]);
     }
 
@@ -105,7 +105,8 @@ class CustomerController extends Controller
         $item->fill($validated);
         $item->save();
 
-        return redirect(route('app.customer.detail', ['id' => $item->id]))->with('success', "Pelanggan $item->name telah disimpan.");
+        return redirect(route('app.customer.detail', ['id' => $item->id]))
+            ->with('success', "Pelanggan $item->name telah disimpan.");
     }
 
     public function delete($id)

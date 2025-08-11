@@ -83,10 +83,10 @@ class CostController extends Controller
             $item->fill($validated);
             $item->save();
             return redirect(route('app.cost.index'))
-                ->with('success', "Transaksi $item->id telah disimpan.");
+                ->with('success', "Biaya Oprasional $item->id telah disimpan.");
         } catch (\Throwable $e) {
             report($e);
-            return back()->withErrors(['error' => 'Gagal menyimpan transaksi.']);
+            return back()->withErrors(['error' => 'Gagal menyimpan Biaya Oprasional.']);
         }
     }
 
@@ -97,12 +97,12 @@ class CostController extends Controller
             $item->delete();
 
             return response()->json([
-                'message' => "Transaksi #$item->id telah dihapus."
+                'message' => "Biaya Oprasional $item->id telah dihapus."
             ]);
         } catch (\Throwable $e) {
             report($e);
             return response()->json([
-                'message' => 'Gagal menghapus transaksi.'
+                'message' => 'Gagal menghapus Biaya Oprasional  .'
             ], 500);
         }
     }

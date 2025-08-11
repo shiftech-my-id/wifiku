@@ -74,7 +74,7 @@ class ProductController extends Controller
     {
         $validated =  $request->validate([
             'name'           => 'required|string|max:50',
-            'description'    => 'nullable|string|max:100',
+            'description'    => 'required|string|max:100',
             'active'         => 'required|boolean',
             'bill_period'    => 'required|in:' . implode(',', array_keys(Product::BillPeriods)),
             'price'          => 'required|numeric|min:0.01',
@@ -84,7 +84,7 @@ class ProductController extends Controller
         $item->fill($validated);
         $item->save();
 
-        return redirect(route('app.product.detail', ['id' => $item->id]))->with('success', "Layanan $item->name telah disimpan.");
+        return redirect(route('app.product.index', ['id' => $item->id]))->with('success', "Layanan $item->name telah disimpan.");
     }
 
     public function delete($id)
@@ -93,7 +93,7 @@ class ProductController extends Controller
         $item->delete();
 
         return response()->json([
-            'message' => "Produk $item->name telah dihapus."
+            'message' => "Layanan $item->name telah dihapus."
         ]);
     }
 
