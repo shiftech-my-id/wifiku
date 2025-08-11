@@ -74,7 +74,7 @@ class ProductController extends Controller
     {
         $validated =  $request->validate([
             'name'           => 'required|string|max:50',
-            'description'    => 'nullable|string|max:100',
+            'description'    => 'required|string|max:100',
             'active'         => 'required|boolean',
             'bill_period'    => 'required|in:' . implode(',', array_keys(Product::BillPeriods)),
             'price'          => 'required|numeric|min:0.01',

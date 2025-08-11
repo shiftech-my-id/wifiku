@@ -4,6 +4,7 @@ import { handleSubmit } from "@/helpers/client-req-handler";
 import { scrollToFirstErrorField } from "@/helpers/utils";
 import { createOptions } from "@/helpers/options";
 import DatePicker from "@/components/DatePicker.vue";
+import { ref } from "vue";
 
 const page = usePage();
 const title = (!!page.props.data.id ? "Edit" : "Tambah") + " Pelanggan";
@@ -25,7 +26,27 @@ const form = useForm({
   active: !!page.props.data.active,
 });
 
+// console.log(page.props.products);
+
 const submit = () => handleSubmit({ form, url: route("app.customer.save") });
+
+const products = ref(
+  (page.props.products ?? []).map(({ id, name }) => ({
+    label: name ?? "",
+    value: id,
+  }))
+);
+
+const filteredProducts = ref([...products.value]);
+
+const filterProducts = (val, update) => {
+  update(() => {
+    const search = val?.toLowerCase() ?? "";
+    filteredProducts.value = search
+      ? products.value.filter((c) => c.label.toLowerCase().includes(search))
+      : [...products.value];
+  });
+};
 </script>
 
 <template>
@@ -64,7 +85,26 @@ const submit = () => handleSubmit({ form, url: route("app.customer.save") });
                 :error-message="form.errors.name"
                 :rules="[(val) => !!val || 'Nama harus diisi.']"
               />
-
+              <date-picker
+                v-model="form.installation_date"
+                label="Tanggal Pemasangan"
+                :disable="form.processing"
+                :error="!!form.errors.installation_date"
+                :error-message="form.errors.installation_date"
+              />
+              <q-select
+                v-model="form.product_id"
+                label="Layanan"
+                use-input
+                input-debounce="300"
+                clearable
+                :options="filteredProducts"
+                map-options
+                emit-value
+                @filter="filterProducts"
+                :error="!!form.errors.product_id"
+                :disable="form.processing"
+              />
               <q-input
                 v-model="form.wa"
                 type="tel"
@@ -76,15 +116,16 @@ const submit = () => handleSubmit({ form, url: route("app.customer.save") });
               />
 
               <q-input
-                v-model.trim="form.phone"
-                type="tel"
-                label="No Telepon"
+                v-model.trim="form.address"
+                type="textarea"
+                autogrow
+                maxlength="255"
+                label="Alamat"
                 lazy-rules
                 :disable="form.processing"
-                :error="!!form.errors.phone"
-                :error-message="form.errors.phone"
+                :error="!!form.errors.address"
+                :error-message="form.errors.address"
               />
-
               <q-input
                 v-model="form.id_card_number"
                 type="tel"
@@ -95,32 +136,10 @@ const submit = () => handleSubmit({ form, url: route("app.customer.save") });
                 :error-message="form.errors.id_card_number"
               />
 
-              <date-picker
-                v-model="form.installation_date"
-                label="Tanggal Pemasangan"
-                :disable="form.processing"
-                :error="!!form.errors.installation_date"
-                :error-message="form.errors.installation_date"
-              />
-
-              <q-input
-                v-model.trim="form.address"
-                type="textarea"
-                autogrow
-                counter
-                maxlength="255"
-                label="Alamat"
-                lazy-rules
-                :disable="form.processing"
-                :error="!!form.errors.address"
-                :error-message="form.errors.address"
-              />
-
               <q-input
                 v-model.trim="form.notes"
                 type="textarea"
                 autogrow
-                counter
                 maxlength="255"
                 label="Catatan"
                 lazy-rules
