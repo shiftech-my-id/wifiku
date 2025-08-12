@@ -7,6 +7,8 @@ use App\Models\Product;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -72,15 +74,23 @@ class ProductController extends Controller
 
     public function save(Request $request)
     {
+        $item = !$request->id ? new Product() : Product::findOrFail($request->post('id', 0));
+
         $validated =  $request->validate([
-            'name'           => 'required|string|max:50',
+            'name' => [
+                'required',
+                'max:255',
+                Rule::unique('products', 'name')
+                    ->where(fn($query) => $query->where('company_id', Auth::user()->company->id))
+                    ->ignore($item->id, 'id'),
+            ],
             'description'    => 'required|string|max:100',
             'active'         => 'required|boolean',
             'bill_period'    => 'required|in:' . implode(',', array_keys(Product::BillPeriods)),
             'price'          => 'required|numeric|min:0.01',
         ]);
 
-        $item = !$request->id ? new Product() : Product::findOrFail($request->post('id', 0));
+
         $item->fill($validated);
         $item->save();
 
