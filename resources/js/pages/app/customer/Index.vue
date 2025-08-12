@@ -43,19 +43,11 @@ const columns = [
   },
   {
     name: "product",
-    label: "Layanan",
+    label: "Layanan Aktif",
     field: "product",
     align: "left",
     sortable: true,
   },
-  {
-    name: "no_hp",
-    label: "No Hp",
-    field: "no_hp",
-    align: "left",
-    sortable: true,
-  },
-
   { name: "action", label: "", align: "right" },
 ];
 
@@ -88,7 +80,7 @@ const fetchItems = (props = null) => {
     filter,
     props,
     rows,
-    url: route("app.customer.data"), // Pastikan ini endpoint yang benar
+    url: route("app.customer.data"),
     loading,
   });
 };
@@ -132,46 +124,6 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
         dense
         @click="showFilter = !showFilter"
       />
-      <q-btn
-        icon="file_export"
-        dense
-        class="q-ml-sm"
-        color="grey"
-        style=""
-        @click.stop
-      >
-        <q-menu
-          anchor="bottom right"
-          self="top right"
-          transition-show="scale"
-          transition-hide="scale"
-        >
-          <q-list style="width: 200px">
-            <q-item
-              clickable
-              v-ripple
-              v-close-popup
-              :href="route('app.customer.export', { format: 'pdf' })"
-            >
-              <q-item-section avatar>
-                <q-icon name="picture_as_pdf" color="red-9" />
-              </q-item-section>
-              <q-item-section>Export PDF</q-item-section>
-            </q-item>
-            <q-item
-              clickable
-              v-ripple
-              v-close-popup
-              :href="route('app.customer.export', { format: 'excel' })"
-            >
-              <q-item-section avatar>
-                <q-icon name="csv" color="green-9" />
-              </q-item-section>
-              <q-item-section>Export Excel</q-item-section>
-            </q-item>
-          </q-list>
-        </q-menu>
-      </q-btn>
     </template>
     <template #header v-if="showFilter">
       <q-toolbar class="filter-bar">

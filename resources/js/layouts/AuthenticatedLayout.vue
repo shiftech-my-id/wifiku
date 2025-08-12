@@ -165,6 +165,21 @@ onMounted(() => {
                     {{ $t("company_profile") }}</q-item-label
                   >
                 </q-item-section>
+                <q-separator />
+              </q-item>
+                            <q-item
+                clickable
+                v-close-popup
+                v-ripple
+                style="color: inherit"
+                :href="route('app.auth.logout')"
+              >
+                <q-item-section>
+                  <q-item-label
+                    ><q-icon name="logout" class="q-mr-sm" />
+                    {{ $t("logout") }}</q-item-label
+                  >
+                </q-item-section>
               </q-item>
             </q-list>
           </q-btn-dropdown>
@@ -282,7 +297,7 @@ onMounted(() => {
               $page.props.auth.user.role == $CONSTANTS.USER_ROLE_CASHIER
             "
             icon="business_center"
-            label="Oprasional"
+            label="Operasional"
             :default-opened="
               $page.url.startsWith('app/cost') ||
               $page.url.startsWith('app/cost-category')
@@ -325,9 +340,7 @@ onMounted(() => {
             "
             icon="tune"
             label="Sistem"
-            :default-opened="
-              $page.url.startsWith('/admin/sales-orders')
-            "
+            :default-opened="$page.url.startsWith('/admin/sales-orders')"
           >
             <q-item
               class="subnav"

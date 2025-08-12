@@ -25,9 +25,15 @@ const form = useForm({
   notes: page.props.data.notes,
   active: !!page.props.data.active,
 });
+const showAllFields = ref(false);
 
+function toggleFields() {
+  showAllFields.value = !showAllFields.value;
+}
 // console.log(page.props.products);
-
+const advanceMode = ref({
+  active: false,
+});
 const submit = () => handleSubmit({ form, url: route("app.customer.save") });
 
 const products = ref(
@@ -92,7 +98,7 @@ const filterProducts = (val, update) => {
                 :error="!!form.errors.installation_date"
                 :error-message="form.errors.installation_date"
               />
-              <q-select
+              <!-- <q-select
                 v-model="form.product_id"
                 label="Layanan"
                 use-input
@@ -104,7 +110,7 @@ const filterProducts = (val, update) => {
                 @filter="filterProducts"
                 :error="!!form.errors.product_id"
                 :disable="form.processing"
-              />
+              /> -->
               <q-input
                 v-model="form.wa"
                 type="tel"
@@ -114,39 +120,50 @@ const filterProducts = (val, update) => {
                 :error="!!form.errors.wa"
                 :error-message="form.errors.wa"
               />
-
-              <q-input
-                v-model.trim="form.address"
-                type="textarea"
-                autogrow
-                maxlength="255"
-                label="Alamat"
-                lazy-rules
-                :disable="form.processing"
-                :error="!!form.errors.address"
-                :error-message="form.errors.address"
-              />
-              <q-input
-                v-model="form.id_card_number"
-                type="tel"
-                label="No KTP"
-                lazy-rules
-                :disable="form.processing"
-                :error="!!form.errors.id_card_number"
-                :error-message="form.errors.id_card_number"
+              <q-btn
+                label="mode simple"
+                flat
+                type="button"
+                color="secondary"
+                :icon="showAllFields ? 'arrow_drop_up' : 'arrow_drop_down'"
+                @click="toggleFields"
               />
 
-              <q-input
-                v-model.trim="form.notes"
-                type="textarea"
-                autogrow
-                maxlength="255"
-                label="Catatan"
-                lazy-rules
-                :disable="form.processing"
-                :error="!!form.errors.notes"
-                :error-message="form.errors.notes"
-              />
+              <transition name="slide-fade">
+                <div v-if="showAllFields">
+                  <q-input
+                    v-model.trim="form.address"
+                    type="textarea"
+                    autogrow
+                    maxlength="255"
+                    label="Alamat"
+                    lazy-rules
+                    :disable="form.processing"
+                    :error="!!form.errors.address"
+                    :error-message="form.errors.address"
+                  />
+                  <q-input
+                    v-model="form.id_card_number"
+                    type="tel"
+                    label="No KTP"
+                    lazy-rules
+                    :disable="form.processing"
+                    :error="!!form.errors.id_card_number"
+                    :error-message="form.errors.id_card_number"
+                  />
+                  <q-input
+                    v-model.trim="form.notes"
+                    type="textarea"
+                    autogrow
+                    maxlength="255"
+                    label="Catatan"
+                    lazy-rules
+                    :disable="form.processing"
+                    :error="!!form.errors.notes"
+                    :error-message="form.errors.notes"
+                  />
+                </div>
+              </transition>
 
               <div style="margin-left: -10px">
                 <q-checkbox
@@ -179,3 +196,19 @@ const filterProducts = (val, update) => {
     </q-page>
   </authenticated-layout>
 </template>
+
+<style scoped>
+.slide-fade-enter-active {
+  transition: all 0.3s ease-in-out;
+}
+
+.slide-fade-leave-active {
+  transition: all 0.1s ease-in-out;
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateY(-10px);
+  opacity: 0;
+}
+</style>
