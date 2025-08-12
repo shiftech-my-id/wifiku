@@ -5,6 +5,7 @@ import { handleDelete, handleFetchItems } from "@/helpers/client-req-handler";
 import { useQuasar } from "quasar";
 import dayjs from "dayjs";
 import { formatNumber } from "@/helpers/formatter";
+import { createMonthOptions, createYearOptions } from "@/helpers/options";
 
 const title = "Biaya Operasional";
 const page = usePage();
@@ -16,14 +17,9 @@ const loading = ref(true);
 const currentYear = new Date().getFullYear();
 const currentMonth = new Date().getMonth() + 1;
 
-const years = [
-  { label: "Semua Tahun", value: null },
-  { label: `${currentYear}`, value: currentYear },
-];
+const years = createYearOptions(2024, currentYear);
 
-const months = [
-  { value: null, label: "Semua Bulan" },
-];
+const months = [{ value: null, label: "Semua Bulan" }, ...createMonthOptions()];
 
 const filter = reactive({
   search: "",
@@ -49,13 +45,6 @@ const columns = [
     field: "datetime",
     align: "left",
     sortable: true,
-  },
-  {
-    name: "company",
-    label: "Perusahaan",
-    field: (row) => row.company?.name,
-    align: "left",
-    sortable: false,
   },
   {
     name: "category",
@@ -90,18 +79,15 @@ const categories = ref([
   ...(page.props.categories || []).map((c) => ({ label: c.name, value: c.id })),
 ]);
 
-const companies = ref([
-  { value: "all", label: "Semua Perusahaan" },
-  ...(page.props.companies || []).map((c) => ({ label: c.name, value: c.id })),
-]);
-
 onMounted(() => {
   fetchItems();
 });
 
 const deleteItem = (row) =>
   handleDelete({
-    message: `Hapus biaya sebesar ${formatNumber(row.amount)} pada tanggal ${dayjs(row.datetime).format("DD/MM/YYYY")}?`,
+    message: `Hapus biaya sebesar ${formatNumber(
+      row.amount
+    )} pada tanggal ${dayjs(row.datetime).format("DD/MM/YYYY")}?`,
     url: route("app.cost.delete", row.id),
     fetchItemsCallback: fetchItems,
     loading,
@@ -124,7 +110,9 @@ const onFilterChange = () => {
 
 const computedColumns = computed(() => {
   if ($q.screen.gt.sm) return columns;
-  return columns.filter((col) => col.name === "datetime" || col.name === "action");
+  return columns.filter(
+    (col) => col.name === "datetime" || col.name === "action"
+  );
 });
 
 watch(
@@ -183,17 +171,7 @@ watch(
             :disable="filter.year === null"
             @update:model-value="onFilterChange"
           />
-          <q-select
-            v-model="filter.company_id"
-            :options="companies"
-            label="Perusahaan"
-            dense
-            class="col-xs-12 col-sm-3"
-            map-options
-            emit-value
-            outlined
-            @update:model-value="onFilterChange"
-          />
+
           <q-select
             v-model="filter.category_id"
             :options="categories"
@@ -245,14 +223,14 @@ watch(
             <q-td key="datetime" :props="props" class="wrap-column">
               <div class="flex items-center q-gutter-xs">
                 <q-icon name="event" />
-                <div>{{ dayjs(props.row.datetime).format("DD/MM/YY HH:mm") }}</div>
+                <div>
+                  {{ dayjs(props.row.datetime).format("DD/MM/YY HH:mm") }}
+                </div>
               </div>
               <template v-if="!$q.screen.gt.sm">
-                <div v-if="props.row.company" class="text-caption text-grey-8">
-                  <q-icon name="business" size="xs" /> {{ props.row.company.name }}
-                </div>
                 <div v-if="props.row.category" class="text-caption text-grey-8">
-                  <q-icon name="category" size="xs" /> {{ props.row.category.name }}
+                  <q-icon name="category" size="xs" />
+                  {{ props.row.category.name }}
                 </div>
                 <div v-if="props.row.notes">
                   <q-icon name="notes" size="xs" /> {{ props.row.notes }}
@@ -262,10 +240,6 @@ watch(
                   {{ formatNumber(props.row.amount) }}
                 </div>
               </template>
-            </q-td>
-
-            <q-td key="company" :props="props">
-              {{ props.row.company?.name || "-" }}
             </q-td>
 
             <q-td key="category" :props="props">
@@ -282,15 +256,24 @@ watch(
 
             <q-td key="action" :props="props">
               <div class="flex justify-end">
-                <q-btn icon="more_vert" dense flat>
+                <q-btn icon="more_vert" flat>
                   <q-menu auto-close anchor="bottom right" self="top right">
-                    <q-list dense>
-                      <q-item clickable @click="router.get(route('app.cost.edit', props.row.id))">
-                        <q-item-section avatar><q-icon name="edit" /></q-item-section>
+                    <q-list>
+                      <q-item
+                        clickable
+                        @click="
+                          router.get(route('app.cost.edit', props.row.id))
+                        "
+                      >
+                        <q-item-section avatar
+                          ><q-icon name="edit"
+                        /></q-item-section>
                         <q-item-section>Edit</q-item-section>
                       </q-item>
                       <q-item clickable @click="deleteItem(props.row)">
-                        <q-item-section avatar><q-icon name="delete" /></q-item-section>
+                        <q-item-section avatar
+                          ><q-icon name="delete"
+                        /></q-item-section>
                         <q-item-section>Hapus</q-item-section>
                       </q-item>
                     </q-list>

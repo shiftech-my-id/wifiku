@@ -18,7 +18,6 @@ class CostController extends Controller
     public function index()
     {
         return inertia('app/cost/Index', [
-            //eror
             'categories' => CostCategory::query()->orderBy('name', 'asc')->get()
         ]);
     }
@@ -33,6 +32,7 @@ class CostController extends Controller
 
         if (!empty($filter['search'])) {
             $q->where(function ($q) use ($filter) {
+                $q->orWhere('description', 'like', '%' . $filter['search'] . '%');
                 $q->orWhere('notes', 'like', '%' . $filter['search'] . '%');
             });
         }
@@ -72,6 +72,7 @@ class CostController extends Controller
             'id'          => 'nullable|exists:costs,id', // tambahkan ini
             'category_id' => 'required|exists:cost_categories,id',
             'datetime'    => 'required|date',
+            'description' => 'required|string|max:100',
             'amount'      => 'required|numeric|min:0.01',
             'notes'       => 'nullable|string|max:255',
         ]);
@@ -83,10 +84,10 @@ class CostController extends Controller
             $item->fill($validated);
             $item->save();
             return redirect(route('app.cost.index'))
-                ->with('success', "Biaya Oprasional $item->id telah disimpan.");
+                ->with('success', "Biaya Operasional telah disimpan.");
         } catch (\Throwable $e) {
             report($e);
-            return back()->withErrors(['error' => 'Gagal menyimpan Biaya Oprasional.']);
+            return back()->withErrors(['error' => 'Gagal menyimpan Biaya Operasional.']);
         }
     }
 
@@ -97,69 +98,70 @@ class CostController extends Controller
             $item->delete();
 
             return response()->json([
-                'message' => "Biaya Oprasional $item->id telah dihapus."
+                'message' => "Biaya Operasional telah dihapus."
             ]);
         } catch (\Throwable $e) {
             report($e);
             return response()->json([
-                'message' => 'Gagal menghapus Biaya Oprasional  .'
+                'message' => 'Gagal menghapus Biaya Operasional.'
             ], 500);
         }
     }
 
     /**
+     * FIXME: Saat ini fungsi belum digunakan
      * Mengekspor daftar kategori ke dalam format PDF atau Excel.
      */
-    public function export(Request $request)
-    {
-        $items = Cost::orderBy('datetime', 'desc')->get();
-        $title = 'Daftar Transaksi';
-        $filename = $title . ' - ' . env('APP_NAME') . Carbon::now()->format('dmY_His');
+    // public function export(Request $request)
+    // {
+    //     $items = Cost::orderBy('datetime', 'desc')->get();
+    //     $title = 'Daftar Transaksi';
+    //     $filename = $title . ' - ' . env('APP_NAME') . Carbon::now()->format('dmY_His');
 
-        if ($request->get('format') == 'pdf') {
-            $pdf = Pdf::loadView('export.cost-list-pdf', compact('items', 'title'));
-            return $pdf->download($filename . '.pdf');
-        }
+    //     if ($request->get('format') == 'pdf') {
+    //         $pdf = Pdf::loadView('export.cost-list-pdf', compact('items', 'title'));
+    //         return $pdf->download($filename . '.pdf');
+    //     }
 
-        if ($request->get('format') == 'excel') {
-            $spreadsheet = new Spreadsheet();
-            $sheet = $spreadsheet->getActiveSheet();
+    //     if ($request->get('format') == 'excel') {
+    //         $spreadsheet = new Spreadsheet();
+    //         $sheet = $spreadsheet->getActiveSheet();
 
-            // Tambahkan header
-            $sheet->setCellValue('A1', 'ID');
-            $sheet->setCellValue('B1', 'Waktu');
-            $sheet->setCellValue('C1', 'Pihak');
-            $sheet->setCellValue('D1', 'Jenis');
-            $sheet->setCellValue('E1', 'Kategori');
-            $sheet->setCellValue('F1', 'Jumlah');
-            $sheet->setCellValue('G1', 'Catatan');
+    //         // Tambahkan header
+    //         $sheet->setCellValue('A1', 'ID');
+    //         $sheet->setCellValue('B1', 'Waktu');
+    //         $sheet->setCellValue('C1', 'Pihak');
+    //         $sheet->setCellValue('D1', 'Jenis');
+    //         $sheet->setCellValue('E1', 'Kategori');
+    //         $sheet->setCellValue('F1', 'Jumlah');
+    //         $sheet->setCellValue('G1', 'Catatan');
 
-            // Tambahkan data ke Excel
-            $row = 2;
-            foreach ($items as $item) {
-                $sheet->setCellValue('A' . $row, $item->id);
-                $sheet->setCellValue('B' . $row, $item->datetime);
-                $sheet->setCellValue('C' . $row, $item->party?->name);
-                $sheet->setCellValue('D' . $row, Cost::Types[$item->type]);
-                $sheet->setCellValue('E' . $row, $item->category?->name);
-                $sheet->setCellValue('F' . $row, $item->amount);
-                $sheet->setCellValue('G' . $row, $item->notes);
-                $row++;
-            }
+    //         // Tambahkan data ke Excel
+    //         $row = 2;
+    //         foreach ($items as $item) {
+    //             $sheet->setCellValue('A' . $row, $item->id);
+    //             $sheet->setCellValue('B' . $row, $item->datetime);
+    //             $sheet->setCellValue('C' . $row, $item->party?->name);
+    //             $sheet->setCellValue('D' . $row, Cost::Types[$item->type]);
+    //             $sheet->setCellValue('E' . $row, $item->category?->name);
+    //             $sheet->setCellValue('F' . $row, $item->amount);
+    //             $sheet->setCellValue('G' . $row, $item->notes);
+    //             $row++;
+    //         }
 
-            // Kirim ke memori tanpa menyimpan file
-            $response = new StreamedResponse(function () use ($spreadsheet) {
-                $writer = new Xlsx($spreadsheet);
-                $writer->save('php://output');
-            });
+    //         // Kirim ke memori tanpa menyimpan file
+    //         $response = new StreamedResponse(function () use ($spreadsheet) {
+    //             $writer = new Xlsx($spreadsheet);
+    //             $writer->save('php://output');
+    //         });
 
-            // Atur header response untuk download
-            $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-            $response->headers->set('Content-Disposition', 'attachment; filename="' . $filename . '.xlsx"');
+    //         // Atur header response untuk download
+    //         $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    //         $response->headers->set('Content-Disposition', 'attachment; filename="' . $filename . '.xlsx"');
 
-            return $response;
-        }
+    //         return $response;
+    //     }
 
-        return abort(400, 'Format tidak didukung');
-    }
+    //     return abort(400, 'Format tidak didukung');
+    // }
 }

@@ -34,7 +34,7 @@ class CustomerController extends Controller
         $orderType = $request->get('order_type', 'asc');
         $filter = $request->get('filter', []);
 
-        $q = Customer::with(['product:id,name']);
+        $q = Customer::with(['product:id,name,price']);
 
         if (!empty($filter['search'])) {
             $q->where(function ($q) use ($filter) {

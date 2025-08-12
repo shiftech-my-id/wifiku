@@ -12,6 +12,7 @@ class Cost extends BaseModel
         'company_id',
         'category_id',
         'datetime',
+        'description',
         'amount',
         'notes',
     ];
