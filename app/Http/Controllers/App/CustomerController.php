@@ -34,7 +34,7 @@ class CustomerController extends Controller
         $orderType = $request->get('order_type', 'asc');
         $filter = $request->get('filter', []);
 
-        $q = Customer::query();
+        $q = Customer::with(['product:id,name']);
 
         if (!empty($filter['search'])) {
             $q->where(function ($q) use ($filter) {
@@ -101,6 +101,8 @@ class CustomerController extends Controller
         if (!$request->id) {
             $validated['customer_id'] = Customer::getNextCustomerId(Auth::user()->company_id);
         }
+
+        // TODO: tambahkan ke log aktivasi layanan
 
         $item->fill($validated);
         $item->save();

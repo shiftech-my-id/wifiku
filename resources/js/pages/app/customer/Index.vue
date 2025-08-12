@@ -1,4 +1,3 @@
-
 <!-- TODO: tolong cek apakah ada yang salah dari kode saya?  -->
 <script setup>
 import { computed, onMounted, reactive, ref, watch } from "vue";
@@ -43,9 +42,9 @@ const columns = [
     sortable: true,
   },
   {
-    name: "layanan",
+    name: "product",
     label: "Layanan",
-    field: (row) => row.service?.name || '-',
+    field: "product",
     align: "left",
     sortable: true,
   },
@@ -83,7 +82,6 @@ const deleteItem = (row) =>
     loading,
   });
 
-
 const fetchItems = (props = null) => {
   handleFetchItems({
     pagination,
@@ -102,9 +100,12 @@ const computedColumns = computed(() => {
   return columns;
 });
 
-watch(() => filter.search, () => {
+watch(
+  () => filter.search,
+  () => {
     onFilterChange();
-});
+  }
+);
 
 watch(showFilter, () => storage.set("show-filter", showFilter.value));
 watch(filter, () => storage.set("filter", filter), { deep: true });
@@ -260,7 +261,9 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
                 {{ props.row.name }}
               </div>
             </q-td>
-            <q-td key="layanan" :props="props"> {{ props.row.layanan }} </q-td>
+            <q-td key="product" :props="props">
+              {{ props.row.product?.name }}
+            </q-td>
 
             <q-td key="no_hp" :props="props"> {{ props.row.no_hp }} </q-td>
 
@@ -285,7 +288,9 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
                         v-ripple
                         v-close-popup
                         @click.stop="
-                          router.get(route('app.customer.duplicate', props.row.id))
+                          router.get(
+                            route('app.customer.duplicate', props.row.id)
+                          )
                         "
                       >
                         <q-item-section avatar>
