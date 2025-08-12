@@ -24,7 +24,7 @@ class CustomerController extends Controller
     public function detail($id = 0)
     {
         return inertia('app/customer/Detail', [
-            'data' => Customer::findOrFail($id),
+            'data' => Customer::with(['product'])->findOrFail($id),
         ]);
     }
 
