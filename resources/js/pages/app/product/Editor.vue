@@ -2,6 +2,8 @@
 import { useForm, usePage } from "@inertiajs/vue3";
 import { handleSubmit } from "@/helpers/client-req-handler";
 import { scrollToFirstErrorField } from "@/helpers/utils";
+import LocaleNumberInput from "@/components/LocaleNumberInput.vue";
+import { createBillPeriodOptions } from "@/helpers/options";
 
 const page = usePage();
 const title = (!!page.props.data.id ? "Edit" : "Tambah") + " Layanan";
@@ -16,10 +18,8 @@ const form = useForm({
   active: page.props.data.active ?? true,
 });
 
-const billPeriodOptions = [
-  { label: "Bulanan", value: "monthly" },
-  { label: "Tahunan", value: "yearly" }
-];
+const billPeriodOptions = createBillPeriodOptions();
+console.log(billPeriodOptions);
 
 const submit = () => handleSubmit({ form, url: route("app.product.save") });
 </script>
@@ -42,7 +42,11 @@ const submit = () => handleSubmit({ form, url: route("app.product.save") });
 
             <q-card-section class="q-pt-md">
               <input type="hidden" name="id" v-model="form.id" />
-              <input type="hidden" name="company_id" v-model="form.company_id" />
+              <input
+                type="hidden"
+                name="company_id"
+                v-model="form.company_id"
+              />
 
               <q-input
                 autofocus
@@ -55,11 +59,9 @@ const submit = () => handleSubmit({ form, url: route("app.product.save") });
                 :rules="[(val) => !!val || 'Nama harus diisi.']"
               />
 
-              <q-input
-                v-model.number="form.price"
-                type="number"
-                label="Harga"
-                prefix="Rp"
+              <LocaleNumberInput
+                v-model="form.price"
+                label="Harga (Rp)"
                 lazy-rules
                 :disable="form.processing"
                 :error="!!form.errors.price"

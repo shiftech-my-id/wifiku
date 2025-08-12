@@ -4,7 +4,11 @@ import { router, usePage } from "@inertiajs/vue3";
 import { handleDelete, handleFetchItems } from "@/helpers/client-req-handler";
 import { getQueryParams } from "@/helpers/utils";
 import { useQuasar } from "quasar";
-import { createMonthOptions, createYearOptions } from "@/helpers/options";
+import {
+  createMonthOptions,
+  createBillPeriodOptions,
+  createYearOptions,
+} from "@/helpers/options";
 // import { formatNumberWithSymbol } from "@/helpers/formatter";
 import { usePageStorage } from "@/composables/usePageStorage";
 
@@ -34,17 +38,12 @@ const formatCurrency = (value) => {
   return new Intl.NumberFormat("id-ID", {
     style: "currency",
     currency: "IDR",
-    minimumFractionDigits: 0, 
+    minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(value);
 };
 
-const bill_period = [
-  { value: "all", label: "Semua Periode" },
-  { value: "Bulanan", label: "Bulanan" },
-  { value: "Tahunan", label: "Tahunan" },
-  { value: "Sekali Bayar", label: "Sekali Bayar" },
-];
+const billPeriodOptions = createBillPeriodOptions(true);
 
 const filter = reactive(
   storage.get("filter", {
@@ -206,7 +205,7 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
 
           <q-select
             v-model="filter.bill_period"
-            :options="bill_period"
+            :options="billPeriodOptions"
             label="Periode"
             dense
             class="custom-select col-xs-6 col-sm-2"

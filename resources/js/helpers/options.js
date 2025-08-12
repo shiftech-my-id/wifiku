@@ -28,3 +28,14 @@ export function createOptions(data) {
   return Object.entries(data)
     .map(([key, value]) => ({ 'value': key, 'label': value }));
 }
+
+export function createBillPeriodOptions(includeAllOptions = false) {
+  if (includeAllOptions) {
+    return [
+      { value: "all", label: "Semua" },
+      ...createOptions(window.CONSTANTS.PRODUCT_BILL_PERIODS),
+    ];
+  }
+
+  return createOptions(window.CONSTANTS.PRODUCT_BILL_PERIODS);
+}
