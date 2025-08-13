@@ -268,6 +268,8 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
                         clickable
                         v-ripple
                         v-close-popup
+                        class="text-negative"
+
                       >
                         <q-item-section avatar>
                           <q-icon name="delete_forever" />
