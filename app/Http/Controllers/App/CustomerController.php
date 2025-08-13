@@ -117,7 +117,7 @@ class CustomerController extends Controller
         $item->delete();
 
         return response()->json([
-            'message' => "Pihak $item->name telah dihapus."
+            'message' => "Pelanggan $item->name telah dihapus."
         ]);
     }
 
@@ -128,7 +128,7 @@ class CustomerController extends Controller
     {
         $items = Customer::orderBy('name', 'asc')->get();
 
-        $title = 'Daftar Pihak';
+        $title = 'Daftar Pelanggan';
         $filename = $title . ' - ' . env('APP_NAME') . Carbon::now()->format('dmY_His');
 
         if ($request->get('format') == 'pdf') {

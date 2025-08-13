@@ -1,5 +1,5 @@
 <script setup>
-import { useForm, usePage } from "@inertiajs/vue3";
+import { useForm, usePage, router } from "@inertiajs/vue3";
 import { handleSubmit } from "@/helpers/client-req-handler";
 import { scrollToFirstErrorField } from "@/helpers/utils";
 import LocaleNumberInput from "@/components/LocaleNumberInput.vue";
@@ -19,7 +19,6 @@ const form = useForm({
 });
 
 const billPeriodOptions = createBillPeriodOptions();
-console.log(billPeriodOptions);
 
 const submit = () => handleSubmit({ form, url: route("app.product.save") });
 </script>
@@ -28,6 +27,16 @@ const submit = () => handleSubmit({ form, url: route("app.product.save") });
   <i-head :title="title" />
   <authenticated-layout>
     <template #title>{{ title }}</template>
+    <template #left-button>
+      <q-btn
+        icon="arrow_back"
+        dense
+        color="grey-7"
+        flat
+        rounded
+        @click="router.get(route('app.product.index'))"
+      />
+    </template>
     <q-page class="row justify-center">
       <div class="col col-md-6 q-pa-sm">
         <q-form
@@ -90,7 +99,6 @@ const submit = () => handleSubmit({ form, url: route("app.product.save") });
                 lazy-rules
                 :disable="form.processing"
                 :error="!!form.errors.description"
-                :error-message="form.errors.description"
               />
 
               <div style="margin-left: -10px">
