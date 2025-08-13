@@ -167,7 +167,7 @@ onMounted(() => {
                 </q-item-section>
                 <q-separator />
               </q-item>
-                            <q-item
+              <q-item
                 clickable
                 v-close-popup
                 v-ripple
@@ -227,7 +227,7 @@ onMounted(() => {
           <q-item
             clickable
             v-ripple
-            :active="$page.url.startsWith('/app/customer')"
+            :active="$page.url.startsWith('/app/customers')"
             @click="router.get(route('app.customer.index'))"
           >
             <q-item-section avatar>
@@ -292,22 +292,18 @@ onMounted(() => {
             </q-item>
           </q-expansion-item>
           <q-expansion-item
-            v-if="
-              $page.props.auth.user.role == $CONSTANTS.USER_ROLE_ADMIN ||
-              $page.props.auth.user.role == $CONSTANTS.USER_ROLE_CASHIER
-            "
             icon="business_center"
             label="Operasional"
             :default-opened="
-              $page.url.startsWith('app/cost') ||
-              $page.url.startsWith('app/cost-category')
+              $page.url.startsWith('/app/costs') ||
+              $page.url.startsWith('/app/cost-categories')
             "
           >
             <q-item
               class="subnav"
               clickable
               v-ripple
-              :active="$page.url.startsWith('/app/cost')"
+              :active="$page.url.startsWith('/app/costs')"
               @click="router.get(route('app.cost.index'))"
             >
               <q-item-section avatar>
@@ -321,7 +317,7 @@ onMounted(() => {
               class="subnav"
               clickable
               v-ripple
-              :active="$page.url.startsWith('/app/cost-category')"
+              :active="$page.url.startsWith('/app/cost-categories')"
               @click="router.get(route('app.cost-category.index'))"
             >
               <q-item-section avatar>
@@ -340,14 +336,14 @@ onMounted(() => {
             "
             icon="tune"
             label="Sistem"
-            :default-opened="$page.url.startsWith('/admin/sales-orders')"
+            :default-opened="$page.url.startsWith('/app/users')"
           >
             <q-item
               class="subnav"
               clickable
               v-ripple
-              :active="$page.url.startsWith('/app/user')"
-              @click="router.get(route('app.user.edit'))"
+              :active="$page.url.startsWith('/app/users')"
+              @click="router.get(route('app.user.index'))"
             >
               <q-item-section avatar>
                 <q-icon name="person" />
@@ -428,5 +424,8 @@ onMounted(() => {
 
 #profile-btn-popup .q-item--active {
   color: inherit !important;
+}
+#main-nav .q-item:hover {
+  background-color: #e9e9e9;
 }
 </style>

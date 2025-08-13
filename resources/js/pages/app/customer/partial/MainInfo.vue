@@ -57,38 +57,41 @@ const translatePeriod = (period) => {
         <td>:</td>
         <td>{{ page.props.data.active ? "Aktif" : "Tidak Aktif" }}</td>
       </tr>
-            <tr>
+      <tr>
         <td>Catatan</td>
         <td>:</td>
         <td>{{ page.props.data.notes }}</td>
       </tr>
-  <div class="text-subtitle1 text-bold text-grey-8">Info Layanan</div>
-
-      <template v-if="page.props.data.product">
-        <tr>
-          <td >Nama Layanan</td>
-          <td>:</td>
-          <td>{{ page.props.data.product.name }}</td>
-        </tr>
-        <tr>
-          <td >Harga</td>
-          <td>:</td>
-          <td>{{ formatCurrency(page.props.data.product.price) }}</td>
-        </tr>
-        <tr>
-          <td >Periode</td>
-          <td>:</td>
-          <td>{{ translatePeriod(page.props.data.product.bill_period) }}</td>
-        </tr>
-        <tr>
-          <td >Status Layanan</td>
-          <td>:</td>
-          <td>
-            {{ page.props.data.product.active ? "Aktif" : "Tidak Aktif" }}
+      <tr>
+        <td>
+          <div class="text-subtitle1 text-bold text-grey-8">Info Layanan</div>
           </td>
-        </tr>
-      </template>
 
+        <template v-if="page.props.data.product">
+          <tr>
+            <td>Nama Layanan</td>
+            <td>:</td>
+            <td>{{ page.props.data.product.name }}</td>
+          </tr>
+          <tr>
+            <td>Harga</td>
+            <td>:</td>
+            <td>{{ formatCurrency(page.props.data.product.price) }}</td>
+          </tr>
+          <tr>
+            <td>Periode</td>
+            <td>:</td>
+            <td>{{ translatePeriod(page.props.data.product.bill_period) }}</td>
+          </tr>
+          <tr>
+            <td>Status Layanan</td>
+            <td>:</td>
+            <td>
+              {{ page.props.data.product.active ? "Aktif" : "Tidak Aktif" }}
+            </td>
+          </tr>
+        </template>
+      </tr>
       <tr v-if="page.props.data.created_datetime">
         <td>Dibuat</td>
         <td>:</td>

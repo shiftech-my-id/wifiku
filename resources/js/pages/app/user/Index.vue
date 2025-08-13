@@ -7,7 +7,7 @@ import { useQuasar } from "quasar";
 
 const roles = [
   { value: "all", label: "Semua" },
-  ...create_options(window.CONSTANTS.USER_ROLES),
+  // ...create_options(window.CONSTANTS.USER_ROLES),
 ];
 
 const statuses = [
@@ -78,12 +78,12 @@ const fetchItems = (props = null) =>
     rows,
     loading,
     filter,
-    url: route("admin.user.data"),
+    url: route("app.user.data"),
   });
 
 const deleteItem = (row) =>
   handleDelete({
-    url: route("admin.user.delete", row.id),
+    url: route("app.user.delete", row.id),
     message: `Hapus pengguna ${row.username}?`,
     fetchItemsCallback: fetchItems,
     loading,
@@ -94,7 +94,7 @@ const computedColumns = computed(() => {
   return columns.filter((col) => col.name === "username" || col.name === "action");
 });
 
-const onRowClicked = (row) => router.get(route("admin.user.detail", row.id));
+const onRowClicked = (row) => router.get(route("app.user.detail", row.id));
 
 </script>
 
@@ -107,7 +107,7 @@ const onRowClicked = (row) => router.get(route("admin.user.detail", row.id));
         icon="add"
         dense
         color="primary"
-        @click="router.get(route('admin.user.add'))"
+        @click="router.get(route('app.user.add'))"
       />
       <q-btn
         class="q-ml-sm"
@@ -209,7 +209,7 @@ const onRowClicked = (row) => router.get(route("admin.user.detail", row.id));
             >
               <div class="flex justify-end">
                 <q-btn
-                  :disable="props.row.id == currentUser.id || props.row.username == 'admin'"
+                  :disable="props.row.id == currentUser.id || props.row.username == 'app'"
                   icon="more_vert"
                   dense
                   flat
@@ -227,7 +227,7 @@ const onRowClicked = (row) => router.get(route("admin.user.detail", row.id));
                         clickable
                         v-ripple
                         v-close-popup
-                        @click.stop="router.get(route('admin.user.duplicate', props.row.id))"
+                        @click.stop="router.get(route('app.user.duplicate', props.row.id))"
                       >
                         <q-item-section avatar>
                           <q-icon name="file_copy" />
@@ -238,7 +238,7 @@ const onRowClicked = (row) => router.get(route("admin.user.detail", row.id));
                         clickable
                         v-ripple
                         v-close-popup
-                        @click.stop="router.get(route('admin.user.edit', props.row.id))"
+                        @click.stop="router.get(route('app.user.edit', props.row.id))"
                       >
                         <q-item-section avatar>
                           <q-icon name="edit" />
