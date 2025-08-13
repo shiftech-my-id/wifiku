@@ -16,6 +16,7 @@ const form = useForm({
   company_id: data.company_id,
   datetime: data.datetime,
   notes: data.notes,
+  description: data.description,
   amount: data.amount ? parseFloat(data.amount) : 0,
 });
 
@@ -100,7 +101,15 @@ const filterCategories = (val, update) => {
                 label="Catatan"
                 :disable="form.processing"
                 :error="!!form.errors.notes"
-                :error-message="form.errors.notes"
+              />
+              <q-input
+                v-model.trim="form.description"
+                type="textarea"
+                autogrow
+                maxlength="1000"
+                label="Deskripsi"
+                :disable="form.processing"
+                :error="!!form.errors.description"
               />
             </q-card-section>
 

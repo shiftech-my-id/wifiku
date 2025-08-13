@@ -177,43 +177,6 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
     <template #header v-if="showFilter">
       <q-toolbar class="filter-bar">
         <div class="row q-col-gutter-xs items-center q-pa-sm full-width">
-          <q-select
-            v-model="filter.year"
-            :options="years"
-            label="Tahun"
-            dense
-            outlined
-            class="custom-select col-xs-6 col-sm-2"
-            emit-value
-            map-options
-            clearable
-            @update:model-value="onFilterChange"
-          />
-          <q-select
-            v-model="filter.month"
-            :options="months"
-            label="Bulan"
-            dense
-            outlined
-            class="custom-select col-xs-6 col-sm-2"
-            emit-value
-            map-options
-            clearable
-            :disable="!filter.year || filter.year === 'all'"
-            @update:model-value="onFilterChange"
-          />
-
-          <q-select
-            v-model="filter.bill_period"
-            :options="billPeriodOptions"
-            label="Periode"
-            dense
-            class="custom-select col-xs-6 col-sm-2"
-            map-options
-            emit-value
-            outlined
-            @update:model-value="onFilterChange"
-          />
           <q-input
             class="col"
             outlined

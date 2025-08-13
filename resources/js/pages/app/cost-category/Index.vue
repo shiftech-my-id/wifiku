@@ -105,7 +105,6 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
         dense
         @click="showFilter = !showFilter"
       />
-
     </template>
     <template #header v-if="showFilter">
       <q-toolbar class="filter-bar">
@@ -217,6 +216,7 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
                         clickable
                         v-ripple
                         v-close-popup
+                        class="text-negative"
                       >
                         <q-item-section avatar>
                           <q-icon name="delete_forever" />
