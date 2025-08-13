@@ -270,7 +270,13 @@ watch(
                         /></q-item-section>
                         <q-item-section>Edit</q-item-section>
                       </q-item>
-                      <q-item clickable @click="deleteItem(props.row)">
+
+                      <q-item
+                        clickable
+                        @click="deleteItem(props.row)"
+                        v-ripple
+                        class="text-negative"
+                      >
                         <q-item-section avatar
                           ><q-icon name="delete"
                         /></q-item-section>
