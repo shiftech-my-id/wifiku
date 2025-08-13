@@ -1,57 +1,25 @@
-# Shiftech CRM – Sistem Manajemen CRM dan Pelacakan Kunjungan Tim Marketing
+# Wifiku Billing v1 (MVP)
 
-Shiftech CRM adalah aplikasi berbasis web untuk membantu tim salesman dalam mengelola client, menjadwalkan dan merekam interaksi, serta memonitor progress pemasaran secara terstruktur dan terukur.
+Wifiku Billing adalah aplikasi manajemen tagihan WiFi yang dirancang modern dan mobile-first, dengan tujuan memudahkan ISP lokal atau penyedia layanan internet rumahan dalam:
 
-Sistem ini memudahkan manajemen dalam mengawasi aktivitas salesman, melihat performa tiap salesman, dan menganalisis status prospek hingga closing.
+-   Mengelola pelanggan dan paket layanan
+-   Mencatat dan memantau tagihan serta pembayaran
+-   Mengatur biaya operasional dan kategori
+-   Mencetak invoice melalui thermal printer Bluetooth
+-   Menyediakan dashboard dan laporan ringkas
 
----
+## Lingkup v1 (Minimum Viable Product)
 
-## 🚀 Fitur Utama
+-   Modul User & User Group (custom access role)
+-   Modul Layanan & Pelanggan
+-   Modul Tagihan & Pembayaran (manual)
+-   Modul Biaya Operasional & Kategori
+-   Dashboard dasar + laporan
+-   Print invoice thermal Bluetooth
+-   Desain mobile-first, siap konversi ke APK (web-to-app)
 
-- Manajemen Data Client
-- Penugasan Client kepada Salesman (Users)  
-- Penjadwalan dan Pencatatan Interaksi Sales (Interactions)  
-- Tracking Status Progress Prospek (pipeline status)  (belum diimplementasikan)
-- Dashboard performa tim salesman (kunjungan, konversi, follow-up)  (belum diimplementasikan)
-- Laporan detail interaksi per salesman (belum diimplementasikan)
-- Analisis status pelanggan dan sumber prospek (butuh review)
-- Notifikasi reminder follow-up pelanggan (butuh review)
+## Target Rilis
 
----
-
-## 💡 Tech Stack
-
-- **Backend**: Laravel 11 (PHP)  
-- **Frontend**: Vue.js 3 + Quasar 2
-- **Database**: MySQL  
-- **Charting & Dashboard**: ECharts / Chart.js  
-
----
-
-## 📈 Dashboard dan Laporan
-
-- **Dashboard Marketer**  
-  - Jumlah kunjungan hari ini / minggu / bulan  
-  - Status interaksi pelanggan
-  - Grafik performa per salesman  
-
-- **Laporan Kunjungan**  
-  - Daftar kunjungan per salesman dengan status hasil kunjungan (belum diimplementasikan) 
-  - Rangkuman aktivitas follow-up dan jadwal berikutnya (rencana)  
-
-- **Laporan Pipeline**  
-  - Visualisasi funnel penjualan dari prospek ke closing  
-  - Statistik sumber pelanggan dan konversi  
-
----
-
-## 🚀 Cara Instalasi
-
-1. Clone repository  
-2. Jalankan `composer install`  
-3. Setup `.env` dan konfigurasi database  
-4. Jalankan migrasi dan seeder:  
-   ```bash
-   php artisan migrate --seed
-5. Jalankan `npm install` untuk instalasi dependensi client side
-6. Jalankan `npm run dev` untuk memulai vite
+-   Fokus: Versi stabil pertama untuk penggunaan internal/klien pilot
+-   Periode: Agustus 2025
+-   Tolak ukur: Semua modul utama berjalan tanpa error kritis
