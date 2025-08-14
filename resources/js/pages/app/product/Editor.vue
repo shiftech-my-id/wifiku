@@ -14,7 +14,7 @@ const form = useForm({
   name: page.props.data.name ?? "",
   description: page.props.data.description ?? "",
   bill_period: page.props.data.bill_period ?? "monthly",
-  price: page.props.data.price ?? 0,
+  price: parseFloat(page.props.data.price ?? 0),
   active: page.props.data.active ?? true,
 });
 

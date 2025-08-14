@@ -1,13 +1,9 @@
 <script setup>
-import { router, usePage } from "@inertiajs/vue3";
-import { ref } from "vue";
-import MainInfo from "./partial/MainInfo.vue";
-import ActivationHistory from "./partial/ActivationHistory.vue";
-import BillHistory from "./partial/BillHistory.vue";
+import { formatNumber } from "@/helpers/formatter";
+import { usePage } from "@inertiajs/vue3";
 
 const page = usePage();
-const title = "Detail Layanan";
-const tab = ref("main");
+const title = "Rincian Layanan";
 </script>
 
 <template>
@@ -18,11 +14,11 @@ const tab = ref("main");
       <div class="q-gutter-sm">
         <q-btn
           icon="arrow_back"
-          densef
+          dense
           color="grey-7"
           flat
           rounded
-          @click="router.get(route('app.party.index'))"
+          @click="$inertia.get(route('app.product.index'))"
         />
       </div>
     </template>
@@ -33,37 +29,58 @@ const tab = ref("main");
           dense
           color="primary"
           @click="
-            router.get(route('app.party.edit', { id: page.props.data.id }))
+            $inertia.get(route('app.product.edit', { id: page.props.data.id }))
           "
         />
       </div>
     </template>
-    <q-page class="row justify-center">
+    <div class="row justify-center">
       <div class="col col-lg-6 q-pa-sm">
         <div class="row">
           <q-card square flat bordered class="col">
             <q-card-section>
-              <q-tabs v-model="tab" align="left">
-                <q-tab name="main" label="Info Utama" />
-                <q-tab name="historyBill" label="Riwayat Tagihan" />
-                <q-tab name="historyAktivation" label="Riwayat Aktivasi" />
-              </q-tabs>
-              <q-tab-panels v-model="tab">
-                <q-tab-panel name="main">
-                  <main-info />
-                </q-tab-panel>
-                <q-tab-panel name="historyBill">
-                  <bill-history />
-                </q-tab-panel>
-
-                <q-tab-panel name="historyActivation">
-                  <activation-history />
-                </q-tab-panel>
-              </q-tab-panels>
+              <div class="text-subtitle1 text-bold text-grey-9">Info Utama</div>
+              <table class="detail">
+                <tbody>
+                  <tr>
+                    <td style="width: 125px">Nama Layanan</td>
+                    <td style="width: 1px">:</td>
+                    <td>{{ page.props.data.name }}</td>
+                  </tr>
+                  <tr>
+                    <td>Deskripsi</td>
+                    <td>:</td>
+                    <td>{{ page.props.data.description }}</td>
+                  </tr>
+                  <tr>
+                    <td>Periode Tagihan</td>
+                    <td>:</td>
+                    <td>
+                      {{
+                        $CONSTANTS.PRODUCT_BILL_PERIODS[
+                          page.props.data.bill_period
+                        ]
+                      }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Biaya Layanan</td>
+                    <td>:</td>
+                    <td>Rp. {{ formatNumber(page.props.data.price) }}</td>
+                  </tr>
+                  <tr>
+                    <td>Status</td>
+                    <td>:</td>
+                    <td>
+                      {{ page.props.data.active ? "Aktif" : "Tidak Aktif" }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </q-card-section>
           </q-card>
         </div>
       </div>
-    </q-page>
+    </div>
   </authenticated-layout>
 </template>

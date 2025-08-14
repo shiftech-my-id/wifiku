@@ -1,53 +1,22 @@
 <script setup>
 import { computed, onMounted, reactive, ref, watch } from "vue";
-import { router, usePage } from "@inertiajs/vue3";
+import { router } from "@inertiajs/vue3";
 import { handleDelete, handleFetchItems } from "@/helpers/client-req-handler";
 import { getQueryParams } from "@/helpers/utils";
 import { useQuasar } from "quasar";
-import {
-  createMonthOptions,
-  createBillPeriodOptions,
-  createYearOptions,
-} from "@/helpers/options";
 import { usePageStorage } from "@/composables/usePageStorage";
+import { formatNumber } from "@/helpers/formatter";
 
 const storage = usePageStorage("product");
 const title = "Layanan";
-const page = usePage();
 const $q = useQuasar();
 const showFilter = ref(storage.get("show-filter", false));
 const rows = ref([]);
 const loading = ref(true);
 
-const currentYear = new Date().getFullYear();
-
-const years = [
-  { label: "Semua Tahun", value: "all" },
-  { label: `${currentYear}`, value: currentYear },
-  ...createYearOptions(currentYear - 2, currentYear - 1).reverse(),
-];
-
-const months = [
-  { value: "all", label: "Semua Bulan" },
-  ...createMonthOptions(),
-];
-
-const formatCurrency = (value) => {
-  if (value === null || value === undefined) return "";
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(value);
-};
-
-const billPeriodOptions = createBillPeriodOptions(true);
-
 const filter = reactive(
   storage.get("filter", {
     search: "",
-    bill_period: "all",
     active: "all",
     ...getQueryParams(),
   })
@@ -90,7 +59,7 @@ const columns = [
     label: "Biaya",
     field: "price",
     align: "right",
-    format: (val) => formatCurrency(val),
+    format: (val) => formatNumber(val),
     sortable: true,
   },
   {
@@ -114,7 +83,7 @@ onMounted(() => {
 
 const deleteItem = (row) =>
   handleDelete({
-    message: `Hapus layanan "${row.name}"?`,
+    message: `Hapus layanan ${row.name}?`,
     url: route("app.product.delete", row.id),
     fetchItemsCallback: fetchItems,
     loading,
@@ -135,6 +104,9 @@ const onFilterChange = () => {
   pagination.value.page = 1;
   fetchItems();
 };
+
+const onRowClicked = (row) =>
+  router.get(route("app.product.detail", { id: row.id }));
 
 const computedColumns = computed(() => {
   if ($q.screen.gt.sm) return columns;
@@ -197,7 +169,7 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
             dense
             debounce="300"
             v-model="filter.search"
-            placeholder="Cari nama atau deskripsi..."
+            placeholder="Cari"
             @update:model-value="onFilterChange"
             clearable
           >
@@ -234,7 +206,11 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
         </template>
 
         <template v-slot:body="props">
-          <q-tr :props="props">
+          <q-tr
+            :props="props"
+            class="cursor-pointer"
+            @click="onRowClicked(props.row)"
+          >
             <template v-if="$q.screen.gt.sm">
               <q-td key="name" :props="props">
                 {{ props.row.name }}
@@ -246,7 +222,7 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
                 {{ $CONSTANTS.PRODUCT_BILL_PERIODS[props.row.bill_period] }}
               </q-td>
               <q-td key="price" :props="props">
-                {{ formatCurrency(props.row.price) }}
+                {{ formatNumber(props.row.price) }}
               </q-td>
               <q-td key="active" :props="props" class="text-center">
                 <q-badge
@@ -267,7 +243,7 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
                 </div>
                 <div class="text-grey-8">
                   <q-icon name="payments" size="xs" />
-                  {{ formatCurrency(props.row.price) }}
+                  Rp. {{ formatNumber(props.row.price) }}
                 </div>
                 <div class="text-grey-8">
                   <q-icon name="notes" size="xs" />
