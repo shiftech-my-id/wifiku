@@ -1,5 +1,5 @@
 <script setup>
-import { dateTimeFromNow, formatDatetime } from "@/helpers/formatter";
+import { dateTimeFromNow, formatDateTime } from "@/helpers/formatter";
 import { usePage } from "@inertiajs/vue3";
 
 const page = usePage();
@@ -35,7 +35,7 @@ const page = usePage();
       <tr v-if="page.props.data.installation_date">
         <td>Tanggal Pemasangan</td>
         <td>:</td>
-        <td>{{ formatDatetime(page.props.data.installation_date) }}</td>
+        <td>{{ formatDateTime(page.props.data.installation_date) }}</td>
       </tr>
       <tr>
         <td>Harga</td>

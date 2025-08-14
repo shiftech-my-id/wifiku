@@ -116,6 +116,18 @@ Route::middleware([Auth::class])->group(function () {
                 Route::get('detail/{id}', [UserController::class, 'detail'])->name('admin.user.detail');
                 Route::get('export', [UserController::class, 'export'])->name('admin.user.export');
             });
+
+            Route::prefix('user-groups')->group(function () {
+                Route::get('', [UserController::class, 'index'])->name('admin.user.index');
+                Route::get('data', [UserController::class, 'data'])->name('admin.user.data');
+                Route::get('add', [UserController::class, 'editor'])->name('admin.user.add');
+                Route::get('edit/{id}', [UserController::class, 'editor'])->name('admin.user.edit');
+                Route::get('duplicate/{id}', [UserController::class, 'duplicate'])->name('admin.user.duplicate');
+                Route::post('save', [UserController::class, 'save'])->name('admin.user.save');
+                Route::post('delete/{id}', [UserController::class, 'delete'])->name('admin.user.delete');
+                Route::get('detail/{id}', [UserController::class, 'detail'])->name('admin.user.detail');
+                Route::get('export', [UserController::class, 'export'])->name('admin.user.export');
+            });
         });
     });
 });

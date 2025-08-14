@@ -5,7 +5,7 @@ import { quasar, transformAssetUrls } from "@quasar/vite-plugin";
 
 export default defineConfig({
   server: {
-    port: 9000,
+    port: 9500,
   },
   build: {
     rollupOptions: {

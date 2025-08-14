@@ -1,5 +1,5 @@
 <script setup>
-import { dateTimeFromNow, formatDatetime } from "@/helpers/formatter";
+import { dateTimeFromNow, formatDateTime } from "@/helpers/formatter";
 import { usePage } from "@inertiajs/vue3";
 
 const page = usePage();
@@ -45,7 +45,7 @@ const translatePeriod = (period) => {
       <tr v-if="page.props.data.installation_date">
         <td>Tanggal Pemasangan</td>
         <td>:</td>
-        <td>{{ formatDatetime(page.props.data.installation_date) }}</td>
+        <td>{{ formatDateTime(page.props.data.installation_date) }}</td>
       </tr>
       <tr>
         <td>Alamat</td>
@@ -65,39 +65,39 @@ const translatePeriod = (period) => {
       <tr>
         <td>
           <div class="text-subtitle1 text-bold text-grey-8">Info Layanan</div>
-          </td>
-
-        <template v-if="page.props.data.product">
-          <tr>
-            <td>Nama Layanan</td>
-            <td>:</td>
-            <td>{{ page.props.data.product.name }}</td>
-          </tr>
-          <tr>
-            <td>Harga</td>
-            <td>:</td>
-            <td>{{ formatCurrency(page.props.data.product.price) }}</td>
-          </tr>
-          <tr>
-            <td>Periode</td>
-            <td>:</td>
-            <td>{{ translatePeriod(page.props.data.product.bill_period) }}</td>
-          </tr>
-          <tr>
-            <td>Status Layanan</td>
-            <td>:</td>
-            <td>
-              {{ page.props.data.product.active ? "Aktif" : "Tidak Aktif" }}
-            </td>
-          </tr>
-        </template>
+        </td>
       </tr>
+      <template v-if="page.props.data.product">
+        <tr>
+          <td>Nama Layanan</td>
+          <td>:</td>
+          <td>{{ page.props.data.product.name }}</td>
+        </tr>
+        <tr>
+          <td>Harga</td>
+          <td>:</td>
+          <td>{{ formatCurrency(page.props.data.product.price) }}</td>
+        </tr>
+        <tr>
+          <td>Periode</td>
+          <td>:</td>
+          <td>{{ translatePeriod(page.props.data.product.bill_period) }}</td>
+        </tr>
+        <tr>
+          <td>Status Layanan</td>
+          <td>:</td>
+          <td>
+            {{ page.props.data.product.active ? "Aktif" : "Tidak Aktif" }}
+          </td>
+        </tr>
+      </template>
+
       <tr v-if="page.props.data.created_datetime">
         <td>Dibuat</td>
         <td>:</td>
         <td>
           {{ dateTimeFromNow(page.props.data.created_datetime) }} -
-          {{ formatDatetime(page.props.data.created_datetime) }}
+          {{ formatDateTime(page.props.data.created_datetime) }}
         </td>
       </tr>
       <tr v-if="page.props.data.updated_datetime">
@@ -105,7 +105,7 @@ const translatePeriod = (period) => {
         <td>:</td>
         <td>
           {{ dateTimeFromNow(page.props.data.updated_datetime) }} -
-          {{ formatDatetime(page.props.data.updated_datetime) }}
+          {{ formatDateTime(page.props.data.updated_datetime) }}
           <template v-if="page.props.data.updated_by_user">
             oleh
             <my-link
