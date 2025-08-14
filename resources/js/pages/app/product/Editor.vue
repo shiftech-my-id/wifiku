@@ -40,7 +40,7 @@ const submit = () => handleSubmit({ form, url: route("app.product.save") });
     <q-page class="row justify-center">
       <div class="col col-md-6 q-pa-sm">
         <q-form
-          class="row q-col-gutter-md"
+          class="row"
           @submit.prevent="submit"
           @validation-error="scrollToFirstErrorField"
         >

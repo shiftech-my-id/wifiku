@@ -210,6 +210,7 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
     </template>
     <div class="q-pa-sm">
       <q-table
+        class="full-height-table"
         flat
         bordered
         square
@@ -315,7 +316,7 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
                         v-ripple
                         v-close-popup
                         @click.stop="
-                          router.get(route('app.customer.edit', props.row.id))
+                          router.get(route('app.product.edit', props.row.id))
                         "
                       >
                         <q-item-section avatar>

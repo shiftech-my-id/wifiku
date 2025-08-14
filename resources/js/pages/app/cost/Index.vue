@@ -54,16 +54,24 @@ const columns = [
     sortable: false,
   },
   {
-    name: "notes",
-    label: "Catatan",
-    field: "notes",
-    align: "center",
+    name: "description",
+    label: "Deskripsi",
+    field: "description",
+    align: "right",
     sortable: true,
   },
+
   {
     name: "amount",
     label: "Jumlah (Rp.)",
     field: "amount",
+    align: "right",
+    sortable: true,
+  },
+  {
+    name: "notes",
+    label: "Catatan",
+    field: "notes",
     align: "right",
     sortable: true,
   },
@@ -232,8 +240,12 @@ watch(
                   <q-icon name="category" size="xs" />
                   {{ props.row.category.name }}
                 </div>
-                <div v-if="props.row.description" class="text-caption text-grey-8">
-                  <q-icon name="clarify" size="xs" /> {{ props.row.description }}
+                <div
+                  v-if="props.row.description"
+                  class="text-caption text-grey-8"
+                >
+                  <q-icon name="clarify" size="xs" />
+                  {{ props.row.description }}
                 </div>
                 <div>
                   <q-icon name="paid" size="xs" /> Rp.
@@ -248,41 +260,71 @@ watch(
             <q-td key="category" :props="props">
               {{ props.row.category?.name || "-" }}
             </q-td>
+            <q-td key="description" :props="props">
+              <div class="wrap-column">{{ props.row.description || "-" }}</div>
+            </q-td>
+            <q-td key="amount" :props="props" style="text-align: right">
+              {{ formatNumber(props.row.amount) }}
+            </q-td>
 
             <q-td key="notes" :props="props">
               <div class="wrap-column">{{ props.row.notes || "-" }}</div>
             </q-td>
 
-            <q-td key="amount" :props="props" style="text-align: right">
-              {{ formatNumber(props.row.amount) }}
-            </q-td>
-
             <q-td key="action" :props="props">
               <div class="flex justify-end">
-                <q-btn icon="more_vert" flat>
-                  <q-menu auto-close anchor="bottom right" self="top right">
-                    <q-list>
+                 <q-btn
+                  icon="more_vert"
+                  dense
+                  flat
+                  style="height: 40px; width: 30px"
+                  @click.stop
+                >
+                  <q-menu
+                    anchor="bottom right"
+                    self="top right"
+                    transition-show="scale"
+                    transition-hide="scale"
+                  >
+                    <q-list style="width: 200px">
                       <q-item
                         clickable
-                        @click="
+                        v-ripple
+                        v-close-popup
+                        @click.stop="
+                          router.get(
+                            route('app.cost.duplicate', props.row.id)
+                          )
+                        "
+                      >
+                        <q-item-section avatar>
+                          <q-icon name="file_copy" />
+                        </q-item-section>
+                        <q-item-section> Duplikat </q-item-section>
+                      </q-item>
+                      <q-item
+                        clickable
+                        v-ripple
+                        v-close-popup
+                        @click.stop="
                           router.get(route('app.cost.edit', props.row.id))
                         "
                       >
-                        <q-item-section avatar
-                          ><q-icon name="edit"
-                        /></q-item-section>
+                        <q-item-section avatar>
+                          <q-icon name="edit" />
+                        </q-item-section>
                         <q-item-section>Edit</q-item-section>
                       </q-item>
-
                       <q-item
+                        @click.stop="deleteItem(props.row)"
                         clickable
-                        @click="deleteItem(props.row)"
                         v-ripple
+                        v-close-popup
                         class="text-negative"
                       >
-                        <q-item-section avatar
-                          ><q-icon name="delete"
-                        /></q-item-section>
+                        <q-item-section avatar>
+                          <q-icon name="delete_forever" />
+                        </q-item-section>
                         <q-item-section>Hapus</q-item-section>
                       </q-item>
                     </q-list>

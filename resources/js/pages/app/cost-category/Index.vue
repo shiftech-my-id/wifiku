@@ -127,6 +127,7 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
     </template>
     <div class="q-pa-sm">
       <q-table
+        class="full-height-table"
         flat
         bordered
         square
