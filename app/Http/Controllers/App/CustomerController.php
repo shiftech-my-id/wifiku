@@ -18,7 +18,9 @@ class CustomerController extends Controller
 {
     public function index()
     {
-        return inertia('app/customer/Index');
+        return inertia('app/customer/Index', [
+            'products' => Product::where('active', '=', true)->orderBy('name')->get()
+        ]);
     }
 
     public function detail($id = 0)
