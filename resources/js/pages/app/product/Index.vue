@@ -263,18 +263,22 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
                 <div class="text-weight-bold">{{ props.row.name }}</div>
                 <div v-if="props.row.bill_period" class="text-grey-8">
                   <q-icon name="event_repeat" size="xs" />
-                  {{ props.row.bill_period }}
+                  {{ $CONSTANTS.PRODUCT_BILL_PERIODS[props.row.bill_period] }}
                 </div>
                 <div class="text-grey-8">
                   <q-icon name="payments" size="xs" />
                   {{ formatCurrency(props.row.price) }}
+                </div>
+                <div class="text-grey-8">
+                  <q-icon name="notes" size="xs" />
+                  {{ props.row.description }}
                 </div>
                 <div>
                   <q-badge
                     :color="props.row.active ? 'positive' : 'negative'"
                     text-color="white"
                   >
-                    {{ props.row.active ? "Aktif" : "Nonaktif" }}
+                    Status: {{ props.row.active ? "Aktif" : "Nonaktif" }}
                   </q-badge>
                 </div>
               </q-td>
