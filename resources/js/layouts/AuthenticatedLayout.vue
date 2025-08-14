@@ -22,15 +22,6 @@ const toggleLeftDrawer = () => {
   isToggleHovered.value = false;
 };
 
-const isAdminOrCashier = computed(() => {
-  const userRole = page.props.auth.user.role;
-  const CONSTANTS = page.props.constants;
-  return (
-    userRole === CONSTANTS.USER_ROLE_ADMIN ||
-    userRole === CONSTANTS.USER_ROLE_CASHIER
-  );
-});
-
 watch(leftDrawerOpen, (newValue) => {
   localStorage.setItem(LEFT_DRAWER_STORAGE_KEY, newValue);
 });
