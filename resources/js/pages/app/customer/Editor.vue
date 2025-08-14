@@ -87,7 +87,7 @@ const filterProducts = (val, update) => {
 
               <q-input
                 v-if="form.id"
-                v-model="form.id"
+                v-model="form.code"
                 label="Id Pelanggan"
                 readonly
                 disable
@@ -131,14 +131,6 @@ const filterProducts = (val, update) => {
                 :disable="form.processing"
                 :error="!!form.errors.wa"
                 :error-message="form.errors.wa"
-              />
-              <q-btn
-                label="mode simple"
-                flat
-                type="button"
-                color="secondary"
-                :icon="showAllFields ? 'arrow_drop_up' : 'arrow_drop_down'"
-                @click="toggleFields"
               />
 
               <transition name="slide-fade">
@@ -184,6 +176,16 @@ const filterProducts = (val, update) => {
                   :disable="form.processing"
                   label="Aktif"
                 />
+              </div>
+
+              <div
+                @click="toggleFields"
+                class="cursor-pointer q-mt-md text-grey-6"
+              >
+                <q-icon
+                  :name="showAllFields ? 'arrow_drop_up' : 'arrow_drop_down'"
+                />
+                {{ showAllFields ? "Mode Simple" : "Mode Lanjutan" }}
               </div>
             </q-card-section>
 

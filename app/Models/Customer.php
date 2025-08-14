@@ -44,11 +44,11 @@ class Customer extends BaseModel
 
     /**
      * Accessor untuk properti code (tidak disimpan di database)
-     * Output: CST-00000123
+     * Output: CST-00123
      */
     public function getCodeAttribute(): string
     {
-        return 'CST-' . str_pad((string) $this->customer_id, 8, '0', STR_PAD_LEFT);
+        return 'CST-' . str_pad((string) $this->customer_id, 5, '0', STR_PAD_LEFT);
     }
 
     /**
@@ -58,5 +58,15 @@ class Customer extends BaseModel
     {
         $maxCustomerId = self::where('company_id', $companyId)->max('customer_id');
         return ($maxCustomerId ?? 0) + 1;
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function updater()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
     }
 }

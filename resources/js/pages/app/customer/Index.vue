@@ -4,8 +4,6 @@ import { router } from "@inertiajs/vue3";
 import { handleDelete, handleFetchItems } from "@/helpers/client-req-handler";
 import { getQueryParams } from "@/helpers/utils";
 import { usePageStorage } from "@/composables/usePageStorage";
-import { createOptions } from "@/helpers/options";
-import { formatNumberWithSymbol } from "@/helpers/formatter";
 import { useQuasar } from "quasar";
 
 const storage = usePageStorage("customer");
@@ -56,11 +54,6 @@ const statuses = [
   { value: "all", label: "Semua" },
   { value: "active", label: "Aktif" },
   { value: "inactive", label: "Tidak Aktif" },
-];
-
-const types = [
-  { value: "all", label: "Semua" },
-  // ...createOptions(window.CONSTANTS.PARTY_TYPES),
 ];
 
 onMounted(() => {
@@ -136,18 +129,6 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
             v-model="filter.status"
             :options="statuses"
             label="Status"
-            dense
-            map-options
-            emit-value
-            outlined
-            @update:model-value="onFilterChange"
-          />
-          <q-select
-            class="custom-select col-xs-12 col-sm-2"
-            style="min-width: 150px"
-            v-model="filter.type"
-            :options="types"
-            label="Jenis"
             dense
             map-options
             emit-value

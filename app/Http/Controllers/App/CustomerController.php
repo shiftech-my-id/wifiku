@@ -24,7 +24,7 @@ class CustomerController extends Controller
     public function detail($id = 0)
     {
         return inertia('app/customer/Detail', [
-            'data' => Customer::with(['product'])->findOrFail($id),
+            'data' => Customer::with(['product', 'creator', 'updater'])->findOrFail($id),
         ]);
     }
 
@@ -38,7 +38,7 @@ class CustomerController extends Controller
 
         if (!empty($filter['search'])) {
             $q->where(function ($q) use ($filter) {
-                $q->where('code', 'like', '%' . $filter['search'] . '%');
+                $q->where('code', 'like', '%' . $filter['search'] . '%'); // FIXME: konversi kode ke customer_id dulu
                 $q->where('name', 'like', '%' . $filter['search'] . '%');
                 $q->orWhere('id_card_number', 'like', '%' . $filter['search'] . '%');
                 $q->orWhere('email', 'like', '%' . $filter['search'] . '%');
