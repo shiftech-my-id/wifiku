@@ -158,7 +158,7 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
               {{ props.row.name }}
               <template v-if="!$q.screen.gt.sm">
                 <div v-if="props.row.description" class="text-grey-8">
-                  <q-icon name="description" /> {{ props.row.description }}
+                  <q-icon name="clarify" /> {{ props.row.description }}
                 </div>
               </template>
             </q-td>

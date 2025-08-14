@@ -68,11 +68,10 @@ const translatePeriod = (period) => {
         </td>
       </tr>
       <template v-if="page.props.data.product">
-        <tr>
+
           <td>Nama Layanan</td>
           <td>:</td>
           <td>{{ page.props.data.product.name }}</td>
-        </tr>
         <tr>
           <td>Harga</td>
           <td>:</td>

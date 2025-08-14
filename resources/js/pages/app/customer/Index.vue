@@ -207,7 +207,7 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
             class="cursor-pointer"
             @click="onRowClicked(props.row)"
           >
-            <template v-if="$q.screen.lt.sm">
+            <template v-if="!$q.screen.lt.sm">
               <q-td key="name" :props="props" class="wrap-column">
                 {{ props.row.name }}
               </q-td>
@@ -220,15 +220,10 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
             <template v-else>
               <q-td key="name" :props="props">
                 <div class="text-weight-bold">{{ props.row.name }}</div>
-
                 <div v-if="props.row.product" class="text-grey-8">
                   <q-icon name="inventory_2" size="xs" />
                   {{ props.row.product.name }}
                 </div>
-              </q-td>
-
-              <q-td key="product" :props="props">
-                {{ props.row.product?.name }}
               </q-td>
             </template>
 

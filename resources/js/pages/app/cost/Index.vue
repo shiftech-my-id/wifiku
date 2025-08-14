@@ -232,12 +232,15 @@ watch(
                   <q-icon name="category" size="xs" />
                   {{ props.row.category.name }}
                 </div>
-                <div v-if="props.row.notes">
-                  <q-icon name="notes" size="xs" /> {{ props.row.notes }}
+                <div v-if="props.row.description" class="text-caption text-grey-8">
+                  <q-icon name="clarify" size="xs" /> {{ props.row.description }}
                 </div>
                 <div>
                   <q-icon name="paid" size="xs" /> Rp.
                   {{ formatNumber(props.row.amount) }}
+                </div>
+                <div v-if="props.row.notes" class="text-caption text-grey-8">
+                  <q-icon name="notes" size="xs" /> {{ props.row.notes }}
                 </div>
               </template>
             </q-td>

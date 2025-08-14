@@ -63,6 +63,12 @@ const filterCategories = (val, update) => {
           <q-card square flat bordered class="col">
             <q-card-section class="q-pt-none">
               <input type="hidden" name="id" v-model="form.id" />
+              <DateTimePicker
+                v-model="form.datetime"
+                label="Tanggal"
+                :error="!!form.errors.datetime"
+                :disable="form.processing"
+              />
 
               <q-select
                 v-model="form.category_id"
@@ -78,11 +84,14 @@ const filterCategories = (val, update) => {
                 :disable="form.processing"
               />
 
-              <DateTimePicker
-                v-model="form.datetime"
-                label="Tanggal"
-                :error="!!form.errors.datetime"
+              <q-input
+                v-model.trim="form.description"
+                type="textarea"
+                autogrow
+                maxlength="1000"
+                label="Deskripsi"
                 :disable="form.processing"
+                :error="!!form.errors.description"
               />
 
               <LocaleNumberInput
@@ -93,15 +102,6 @@ const filterCategories = (val, update) => {
                 :errorMessage="form.errors.amount"
               />
               <q-input
-                v-model.trim="form.description"
-                type="textarea"
-                autogrow
-                maxlength="1000"
-                label="Deskripsi"
-                :disable="form.processing"
-                :error="!!form.errors.description"
-              />
-              <q-input
                 v-model.trim="form.notes"
                 type="textarea"
                 autogrow
@@ -110,7 +110,6 @@ const filterCategories = (val, update) => {
                 :disable="form.processing"
                 :error="!!form.errors.notes"
               />
-
             </q-card-section>
 
             <q-card-section class="q-gutter-sm">
