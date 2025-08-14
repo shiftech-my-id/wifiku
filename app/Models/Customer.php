@@ -59,14 +59,4 @@ class Customer extends BaseModel
         $maxCustomerId = self::where('company_id', $companyId)->max('customer_id');
         return ($maxCustomerId ?? 0) + 1;
     }
-
-    public function creator()
-    {
-        return $this->belongsTo(User::class, 'created_by');
-    }
-
-    public function updater()
-    {
-        return $this->belongsTo(User::class, 'updated_by');
-    }
 }

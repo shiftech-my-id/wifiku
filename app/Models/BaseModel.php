@@ -3,9 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Schema;
 
 abstract class BaseModel extends Model
 {
@@ -58,29 +56,6 @@ abstract class BaseModel extends Model
                 $model->updated_by = $auth->id;
             }
         });
-
-        static::deleting(function ($model) {
-            if ($model->usesSoftDeletes()) {
-                $now = now();
-                $auth = Auth::user();
-
-                $changed = false;
-
-                if ($model->hasColumn('deleted_at')) {
-                    $model->deleted_at = $now;
-                    $changed = true;
-                }
-
-                if ($auth && $model->hasColumn('deleted_by')) {
-                    $model->deleted_by = $auth->id;
-                    $changed = true;
-                }
-
-                if ($changed) {
-                    $model->save();
-                }
-            }
-        });
     }
 
     protected static function hasColumn(string $column): bool
@@ -96,22 +71,17 @@ abstract class BaseModel extends Model
         return in_array($column, $columnsCache[$table]);
     }
 
-    protected function usesSoftDeletes(): bool
-    {
-        return in_array(SoftDeletes::class, class_uses_recursive(static::class));
-    }
-
-    public function createdBy()
+    public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function updatedBy()
+    public function updater()
     {
         return $this->belongsTo(User::class, 'updated_by');
     }
 
-    public function deletedBy()
+    public function deleter()
     {
         return $this->belongsTo(User::class, 'deleted_by');
     }

@@ -25,7 +25,7 @@ class CostController extends Controller
     public function detail($id = 0)
     {
         return inertia('app/cost/Detail', [
-            'data' => Cost::with(['category'])->findOrFail($id),
+            'data' => Cost::with(['category', 'creator', 'updater'])->findOrFail($id),
         ]);
     }
 
