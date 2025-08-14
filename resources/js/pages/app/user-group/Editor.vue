@@ -1,18 +1,13 @@
 <script setup>
 import { handleSubmit } from "@/helpers/client-req-handler";
-import { validateUsername } from "@/helpers/validations";
 import { router, useForm, usePage } from "@inertiajs/vue3";
 
-// const roles = create_options(window.CONSTANTS.USER_ROLES);
 const page = usePage();
 const title = !!page.props.data.id ? "Edit Pengguna" : "Tambah Pengguna";
 const form = useForm({
   id: page.props.data.id,
   name: page.props.data.name,
-  username: page.props.data.username,
-  password: "",
-  group_id: page.props.data.group_id ?? null,
-  active: !!page.props.data.active,
+  description: page.props.data.description,
 });
 
 const submit = () => handleSubmit({ form, url: route("app.user.save") });
@@ -43,60 +38,27 @@ const submit = () => handleSubmit({ form, url: route("app.user.save") });
               <q-input
                 autofocus
                 v-model.trim="form.name"
-                label="Nama"
+                label="Nama Grup"
                 lazy-rules
                 :error="!!form.errors.name"
                 :disable="form.processing"
                 :error-message="form.errors.name"
                 :rules="[
-                  (val) => (val && val.length > 0) || 'Nama harus diisi.',
+                  (val) => (val && val.length > 0) || 'Nama grup harus diisi.',
                 ]"
               />
               <q-input
-                v-model.trim="form.username"
-                type="text"
-                label="ID Pengguna"
+                v-model.trim="form.description"
+                type="textarea"
+                autogrow
+                counter
+                maxlength="500"
+                label="Deskripsi"
                 lazy-rules
                 :disable="form.processing"
-                :error="!!form.errors.username"
-                :error-message="form.errors.username"
-                :rules="[
-                  (val) =>
-                    (val && val.length > 0) || 'ID Pengguna harus diisi.',
-                  (val) => validateUsername(val) || 'ID Pengguna tidak valid.',
-                ]"
+                :error="!!form.errors.description"
+                :error-message="form.errors.description"
               />
-              <q-input
-                v-model="form.password"
-                type="password"
-                label="Kata Sandi"
-                lazy-rules
-                :disable="form.processing"
-                :error="!!form.errors.password"
-                :error-message="form.errors.password"
-              />
-              <!-- <q-select
-                v-model="form.role"
-                label="Hak Akses"
-                :options="roles"
-                map-options
-                emit-value
-                lazy-rules
-                :disable="form.processing"
-                transition-show="jump-up"
-                transition-hide="jump-up"
-                :error="!!form.errors.role"
-                :error-message="form.errors.role"
-              >
-              </q-select> -->
-              <div style="margin-left: -10px">
-                <q-checkbox
-                  class="full-width"
-                  v-model="form.active"
-                  :disable="form.processing"
-                  label="Aktif"
-                />
-              </div>
             </q-card-section>
             <q-card-section class="q-gutter-sm">
               <q-btn

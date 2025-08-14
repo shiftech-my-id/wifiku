@@ -4,14 +4,9 @@ namespace App\Http\Controllers\App;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Barryvdh\DomPDF\Facade\Pdf;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-use Symfony\Component\HttpFoundation\StreamedResponse;
+use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
@@ -49,7 +44,7 @@ class UserController extends Controller
         if (!empty($filter['search'])) {
             $q->where(function ($query) use ($filter) {
                 $query->where('name', 'like', '%' . $filter['search'] . '%')
-                    ->orWhere('email', 'like', '%' . $filter['search'] . '%');
+                    ->orWhere('username', 'like', '%' . $filter['search'] . '%');
             });
         }
 
@@ -86,43 +81,46 @@ class UserController extends Controller
 
     public function save(Request $request)
     {
+        $isNew = empty($request->id);
+        $companyId = auth()->user()->company_id;
+
         $rules = [
-            'name' => 'required|max:255',
-            'password' => 'required|min:5|max:40',
-            'role' => 'required',
+            'name'     => 'required|max:255',
+            'username' => [
+                'required',
+                'alpha_num',
+                'max:255',
+                Rule::unique('users', 'username')
+                    ->where('company_id', $companyId)
+                    ->ignore($request->id),
+            ],
+            'active'   => 'required|boolean',
         ];
 
-        $user = null;
-        $message = '';
-        $fields = ['name', 'email', 'role', 'active'];
-        $password = $request->get('password');
-        if (!$request->id) {
-            // email harus unik
-            $rules['email'] = "required|alpha_num|max:255|unique:users,email,NULL,id";
-            $request->validate($rules);
-            $user = new User();
-        } else {
-            // email harus unik, exclude id
-            $rules['email'] = "required|alpha_num|max:255|unique:users,email,{$request->id},id";
-            if (empty($request->get('password'))) {
-                // kalau password tidak diisi, skip validation dan jangan update password
-                unset($rules['password']);
-                unset($fields['password']);
-            }
-            $request->validate($rules);
-            $user = User::findOrFail($request->id);
+        if ($isNew) {
+            $rules['password'] = 'required|min:5|max:40';
+        } elseif ($request->filled('password')) {
+            $rules['password'] = 'min:5|max:40';
         }
 
-        if (!empty($password)) {
-            $user->password = Hash::make($password);
+        $validated = $request->validate($rules);
+
+        $user = $isNew ? new User() : User::findOrFail($request->id);
+
+        // Kalau update dan password kosong, buang supaya tidak mengisi ulang
+        if (!$request->filled('password')) {
+            unset($validated['password']);
         }
-        $user->fill($request->only($fields));
+
+        $user->fill($validated);
+        $user->company_id = $companyId;
         $user->save();
 
-        $message = "Pengguna {$user->email} telah " . ($request->id ? 'diperbarui' : 'ditambahkan') . '.';
+        $message = "Pengguna {$user->username} telah " . ($isNew ? 'ditambahkan' : 'diperbarui') . '.';
 
-        return redirect(route('app.user.index'))->with('success', $message);
+        return redirect()->route('app.user.index')->with('success', $message);
     }
+
 
     public function delete($id)
     {
@@ -139,55 +137,5 @@ class UserController extends Controller
         return response()->json([
             'message' => "Pengguna {$user->email} telah dihapus!"
         ]);
-    }
-
-    /**
-     * Mengekspor daftar pengguna ke dalam format PDF atau Excel.
-     */
-    public function export(Request $request)
-    {
-        $items = User::orderBy('name', 'asc')->get();
-        $title = 'Daftar Pengguna';
-        $filename = $title . ' - ' . env('APP_NAME') . Carbon::now()->format('dmY_His');
-
-        if ($request->get('format') == 'pdf') {
-            $pdf = Pdf::loadView('export.user-list-pdf', compact('items', 'title'));
-            return $pdf->download($filename . '.pdf');
-        }
-
-        if ($request->get('format') == 'excel') {
-            $spreadsheet = new Spreadsheet();
-            $sheet = $spreadsheet->getActiveSheet();
-
-            // Tambahkan header
-            $sheet->setCellValue('A1', 'No');
-            $sheet->setCellValue('B1', 'Username');
-            $sheet->setCellValue('C1', 'Nama Lengkap');
-            $sheet->setCellValue('D1', 'Status');
-
-            // Tambahkan data ke Excel
-            $row = 2;
-            foreach ($items as $num => $item) {
-                $sheet->setCellValue('A' . $row, $num + 1);
-                $sheet->setCellValue('B' . $row, $item->email);
-                $sheet->setCellValue('C' . $row, $item->name);
-                $sheet->setCellValue('D' . $row, $item->active ? 'Aktif' : 'Tidak Aktif');
-                $row++;
-            }
-
-            // Kirim ke memori tanpa menyimpan file
-            $response = new StreamedResponse(function () use ($spreadsheet) {
-                $writer = new Xlsx($spreadsheet);
-                $writer->save('php://output');
-            });
-
-            // Atur header response untuk download
-            $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-            $response->headers->set('Content-Disposition', 'attachment; filename="' . $filename . '.xlsx"');
-
-            return $response;
-        }
-
-        return abort(400, 'Format tidak didukung');
     }
 }

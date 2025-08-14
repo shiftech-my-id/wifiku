@@ -5,24 +5,14 @@ import { handleFetchItems, handleDelete } from "@/helpers/client-req-handler";
 import i18n from "@/i18n";
 import { useQuasar } from "quasar";
 
-const roles = [{ value: "all", label: "Semua" }];
-
-const statuses = [
-  { value: "all", label: "Semua" },
-  { value: "active", label: "Aktif" },
-  { value: "inactive", label: "Tidak Aktif" },
-];
-
 const page = usePage();
 const $q = useQuasar();
 const currentUser = page.props.auth.user;
-const title = i18n.global.t("users");
+const title = "Grup Pengguna";
 const rows = ref([]);
 const loading = ref(true);
 const showFilter = ref(false);
 const filter = reactive({
-  role: "all",
-  status: "active",
   search: "",
 });
 
@@ -30,30 +20,16 @@ const pagination = ref({
   page: 1,
   rowsPerPage: 10,
   rowsNumber: 10,
-  sortBy: "username",
+  sortBy: "name",
   descending: false,
 });
 
 const columns = [
   {
-    name: "username",
-    label: "ID Pengguna",
-    field: "username",
-    align: "left",
-    sortable: true,
-  },
-  {
     name: "name",
-    label: "Nama",
+    label: "Nama Grup",
     field: "name",
     align: "left",
-    sortable: true,
-  },
-  {
-    name: "group",
-    label: "Grup",
-    field: "group",
-    align: "center",
     sortable: true,
   },
   {
@@ -75,25 +51,24 @@ const fetchItems = (props = null) =>
     rows,
     loading,
     filter,
-    url: route("app.user.data"),
+    url: route("app.user-group.data"),
   });
 
 const deleteItem = (row) =>
   handleDelete({
-    url: route("app.user.delete", row.id),
-    message: `Hapus pengguna ${row.username}?`,
+    url: route("app.user-group.delete", row.id),
+    message: `Hapus grup pengguna ${row.username}?`,
     fetchItemsCallback: fetchItems,
     loading,
   });
 
 const computedColumns = computed(() => {
   if ($q.screen.gt.sm) return columns;
-  return columns.filter(
-    (col) => col.name === "username" || col.name === "action"
-  );
+  return columns.filter((col) => col.name === "name" || col.name === "action");
 });
 
-const onRowClicked = (row) => router.get(route("app.user.detail", row.id));
+const onRowClicked = (row) =>
+  router.get(route("app.user-group.detail", row.id));
 </script>
 
 <template>
@@ -105,7 +80,7 @@ const onRowClicked = (row) => router.get(route("app.user.detail", row.id));
         icon="add"
         dense
         color="primary"
-        @click="router.get(route('app.user.add'))"
+        @click="router.get(route('app.user-group.add'))"
       />
       <q-btn
         class="q-ml-sm"
@@ -234,7 +209,9 @@ const onRowClicked = (row) => router.get(route("app.user.detail", row.id));
                         v-ripple
                         v-close-popup
                         @click.stop="
-                          router.get(route('app.user.duplicate', props.row.id))
+                          router.get(
+                            route('app.user-group.duplicate', props.row.id)
+                          )
                         "
                       >
                         <q-item-section avatar>
@@ -247,7 +224,7 @@ const onRowClicked = (row) => router.get(route("app.user.detail", row.id));
                         v-ripple
                         v-close-popup
                         @click.stop="
-                          router.get(route('app.user.edit', props.row.id))
+                          router.get(route('app.user-group.edit', props.row.id))
                         "
                       >
                         <q-item-section avatar>

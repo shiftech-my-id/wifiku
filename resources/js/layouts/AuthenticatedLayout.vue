@@ -168,7 +168,7 @@ onMounted(() => {
                 <q-item-section>
                   <q-item-label
                     ><q-icon name="logout" class="q-mr-sm" />
-                    {{ $t("logout") }}</q-item-label
+                    Logout</q-item-label
                   >
                 </q-item-section>
               </q-item>
@@ -200,7 +200,7 @@ onMounted(() => {
               <q-item-label>Dashboard</q-item-label>
             </q-item-section>
           </q-item>
-          <q-separator />
+
           <q-item
             clickable
             v-ripple
@@ -275,7 +275,7 @@ onMounted(() => {
                 <q-icon name="business_center" />
               </q-item-section>
               <q-item-section>
-                <q-item-label>Biaya Oprasional</q-item-label>
+                <q-item-label>Biaya Operasional</q-item-label>
               </q-item-section>
             </q-item>
             <q-item
@@ -293,6 +293,8 @@ onMounted(() => {
               </q-item-section>
             </q-item>
           </q-expansion-item>
+
+          <q-separator />
 
           <q-item
             clickable
@@ -321,14 +323,15 @@ onMounted(() => {
             </q-item-section>
           </q-item>
 
+          <q-separator />
           <q-expansion-item
-            v-if="
-              $page.props.auth.user.role == $CONSTANTS.USER_ROLE_ADMIN ||
-              $page.props.auth.user.role == $CONSTANTS.USER_ROLE_CASHIER
-            "
             icon="tune"
-            label="Sistem"
-            :default-opened="$page.url.startsWith('/app/users')"
+            label="Pengaturan"
+            :default-opened="
+              $page.url.startsWith('/app/users') ||
+              $page.url.startsWith('/app/user-groups') ||
+              $page.url.startsWith('/app/settings')
+            "
           >
             <q-item
               class="subnav"
@@ -348,8 +351,8 @@ onMounted(() => {
               class="subnav"
               clickable
               v-ripple
-              :active="$page.url.startsWith('/app/profile')"
-              @click="router.get(route('app.profile.edit'))"
+              :active="$page.url.startsWith('/app/user-groups')"
+              @click="router.get(route('app.user-group.index'))"
             >
               <q-item-section avatar>
                 <q-icon name="diversity_2" />
@@ -366,13 +369,39 @@ onMounted(() => {
               @click="router.get(route('app.profile.edit'))"
             >
               <q-item-section avatar>
-                <q-icon name="settings" />
+                <q-icon name="manage_accounts" />
               </q-item-section>
               <q-item-section>
-                <q-item-label>Setting</q-item-label>
+                <q-item-label>Profil Saya</q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-item
+              class="subnav"
+              clickable
+              v-ripple
+              :active="$page.url.startsWith('/app/settings/company-profile')"
+              @click="router.get(route('app.profile.edit'))"
+            >
+              <q-item-section avatar>
+                <q-icon name="domain" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>Perusahaan</q-item-label>
               </q-item-section>
             </q-item>
           </q-expansion-item>
+          <q-item
+            clickable
+            v-ripple
+            @click="router.post(route('app.auth.logout'))"
+          >
+            <q-item-section avatar>
+              <q-icon name="logout" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Logout</q-item-label>
+            </q-item-section>
+          </q-item>
           <q-separator />
           <div class="absolute-bottom text-grey-6 q-pa-md">
             &copy; 2025 -

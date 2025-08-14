@@ -6,9 +6,9 @@ use App\Http\Controllers\App\CustomerController;
 use App\Http\Controllers\App\ProfileController;
 use App\Http\Controllers\App\CostCategoryController;
 use App\Http\Controllers\App\CostController;
-use App\Http\Controllers\App\UserController as AppUserController;
-use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\App\UserController;
 use App\Http\Controllers\App\ProductController;
+use App\Http\Controllers\App\UserGroupController;
 use App\Http\Middleware\Auth;
 use App\Http\Middleware\NonAuthenticated;
 use Illuminate\Support\Facades\Route;
@@ -89,15 +89,25 @@ Route::middleware([Auth::class])->group(function () {
         });
 
         Route::prefix('users')->group(function () {
-            Route::get('', [AppUserController::class, 'index'])->name('app.user.index');
-            Route::get('data', [AppUserController::class, 'data'])->name('app.user.data');
-            Route::get('add', [AppUserController::class, 'editor'])->name('app.user.add');
-            Route::get('edit/{id}', [AppUserController::class, 'editor'])->name('app.user.edit');
-            Route::get('duplicate/{id}', [AppUserController::class, 'duplicate'])->name('app.user.duplicate');
-            Route::post('save', [AppUserController::class, 'save'])->name('app.user.save');
-            Route::post('delete/{id}', [AppUserController::class, 'delete'])->name('app.user.delete');
-            Route::get('detail/{id}', [AppUserController::class, 'detail'])->name('app.user.detail');
-            Route::get('export', [AppUserController::class, 'export'])->name('app.user.export');
+            Route::get('', [UserController::class, 'index'])->name('app.user.index');
+            Route::get('data', [UserController::class, 'data'])->name('app.user.data');
+            Route::get('add', [UserController::class, 'editor'])->name('app.user.add');
+            Route::get('edit/{id}', [UserController::class, 'editor'])->name('app.user.edit');
+            Route::get('duplicate/{id}', [UserController::class, 'duplicate'])->name('app.user.duplicate');
+            Route::post('save', [UserController::class, 'save'])->name('app.user.save');
+            Route::post('delete/{id}', [UserController::class, 'delete'])->name('app.user.delete');
+            Route::get('detail/{id}', [UserController::class, 'detail'])->name('app.user.detail');
+        });
+
+        Route::prefix('user-groups')->group(function () {
+            Route::get('', [UserGroupController::class, 'index'])->name('app.user-group.index');
+            Route::get('data', [UserGroupController::class, 'data'])->name('app.user-group.data');
+            Route::get('add', [UserGroupController::class, 'editor'])->name('app.user-group.add');
+            Route::get('edit/{id}', [UserGroupController::class, 'editor'])->name('app.user-group.edit');
+            Route::get('duplicate/{id}', [UserGroupController::class, 'duplicate'])->name('app.user-group.duplicate');
+            Route::post('save', [UserGroupController::class, 'save'])->name('app.user-group.save');
+            Route::post('delete/{id}', [UserGroupController::class, 'delete'])->name('app.user-group.delete');
+            Route::get('detail/{id}', [UserGroupController::class, 'detail'])->name('app.user-group.detail');
         });
 
         Route::prefix('settings')->group(function () {

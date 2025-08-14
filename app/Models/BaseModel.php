@@ -9,8 +9,6 @@ use Illuminate\Support\Facades\Schema;
 
 abstract class BaseModel extends Model
 {
-    use SoftDeletes;
-
     // Nonaktifkan default timestamps bawaan Laravel
     public $timestamps = false;
 
@@ -24,13 +22,6 @@ abstract class BaseModel extends Model
                 $query->where('company_id', Auth::user()->company_id);
             }
         });
-
-        // // Optional: auto-scope untuk user_id
-        // static::addGlobalScope('user', function ($query) {
-        //     if (Auth::check() && Schema::hasColumn((new static)->getTable(), 'user_id')) {
-        //         $query->where('user_id', Auth::id());
-        //     }
-        // });
 
         static::creating(function ($model) {
             $now = now();
