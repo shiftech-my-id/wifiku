@@ -11,11 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('user_groups', function (Blueprint $table) {
+        Schema::create('cost_categories', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('company_id')->nullable()->constrained('companies')->onDelete('cascade');
-            $table->string('name');
-            $table->string('description')->nullable();
+            $table->createCompanyIdField();
+            $table->string('name', 100);
+            $table->text('description')->nullable();
+            $table->createdUpdatedTimestamps();
         });
     }
 
@@ -24,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('user_groups');
+        Schema::dropIfExists('cost_categories');
     }
 };

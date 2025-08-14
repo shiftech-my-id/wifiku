@@ -14,18 +14,19 @@ return new class extends Migration
 
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            // company_id ditambahkan setelah table companies di buat , ada di migration script create_companies_table
-            $table->string('email')->nullable();
+            $table->createCompanyIdField();
+            // $table->string('email')->nullable(); // jangan dulu pakai
             $table->string('name');
             $table->string('username'); // unik untuk masing-masing company, by default root akun punya nama admin
-            $table->string('google_id', 100)->nullable();
+            // $table->string('google_id', 100)->nullable();
             $table->string('password');
             $table->boolean('active')->default(false);
+            $table->boolean('is_root')->default(false);
             $table->datetime('last_login_datetime')->nullable();
             $table->string('last_activity_description')->default('');
             $table->datetime('last_activity_datetime')->nullable();
             $table->rememberToken();
-            $table->timestamps();
+            $table->createdUpdatedTimestamps();
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

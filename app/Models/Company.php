@@ -9,6 +9,7 @@ class Company extends BaseModel
     use HasFactory;
 
     protected $fillable = [
+        'code',
         'name',
         'owner_name',
         'phone',

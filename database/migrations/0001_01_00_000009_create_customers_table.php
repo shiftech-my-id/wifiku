@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('customers', function (Blueprint $table) {
             $table->id();
+            $table->createCompanyIdField();
             $table->unsignedInteger('customer_id')->default(0);
-            $table->foreignId('company_id')->nullable()->constrained('companies')->onDelete('cascade');
             $table->foreignId('product_id')->nullable()->constrained('products')->onDelete('restrict');
             $table->string('name');
             $table->string('id_card_number')->nullable()->default('');
@@ -28,7 +28,7 @@ return new class extends Migration
             $table->string('lat_long')->nullable();
             $table->text('notes')->nullable();
 
-            $table->createdUpdatedDeletedTimestamps();
+            $table->createdUpdatedTimestamps();
             $table->index('customer_id');
         });
     }

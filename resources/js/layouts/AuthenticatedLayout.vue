@@ -2,17 +2,17 @@
 import { defineComponent, onMounted, ref, watch, computed } from "vue";
 import { router, usePage } from "@inertiajs/vue3";
 import { useQuasar } from "quasar";
+import { usePageStorage } from "@/composables/usePageStorage";
 
 defineComponent({
   name: "AuthenticatedLayout",
 });
 
-const LEFT_DRAWER_STORAGE_KEY = "advanta-report.layout.left-drawer-open";
+const storage = usePageStorage("auth-layout");
+
 const $q = useQuasar();
 const page = usePage();
-const leftDrawerOpen = ref(
-  JSON.parse(localStorage.getItem(LEFT_DRAWER_STORAGE_KEY) || "false")
-);
+const leftDrawerOpen = ref(storage.get("left-drawer-open"));
 const isDropdownOpen = ref(false);
 
 const isToggleHovered = ref(false);
@@ -23,7 +23,7 @@ const toggleLeftDrawer = () => {
 };
 
 watch(leftDrawerOpen, (newValue) => {
-  localStorage.setItem(LEFT_DRAWER_STORAGE_KEY, newValue);
+  storage.set("left-drawer-open", newValue);
 });
 
 onMounted(() => {
@@ -51,16 +51,15 @@ onMounted(() => {
             <q-icon
               v-if="isToggleHovered"
               class="material-symbols-outlined"
-              name="dock_to_right"
+              name="dock_to_left"
             />
             <q-avatar v-else size="32px">
               <img src="/assets/img/app-logo-wifi.png" alt="Logo" />
             </q-avatar>
             <q-tooltip> Buka Menu </q-tooltip>
           </template>
-
           <template v-else>
-            <q-icon name="menu" />
+            <q-icon name="dock_to_left" />
           </template>
         </q-btn>
         <slot name="left-button"></slot>
@@ -102,7 +101,7 @@ onMounted(() => {
             v-model="isDropdownOpen"
             class="profile-btn text-bold"
             flat
-            :label="$config.APP_NAME"
+            :label="page.props.auth.company.name"
             style="
               justify-content: space-between;
               flex-grow: 1;
@@ -119,7 +118,9 @@ onMounted(() => {
                   <q-item-label>
                     <div class="text-bold">{{ page.props.auth.user.name }}</div>
                     <div class="text-grey-8 text-caption">
-                      {{ page.props.auth.user.email }}
+                      {{ page.props.auth.user.username }}@{{
+                        page.props.auth.company.code
+                      }}
                     </div>
                   </q-item-label>
                 </q-item-section>
@@ -130,8 +131,8 @@ onMounted(() => {
                 class="subnav"
                 clickable
                 v-ripple
-                :active="$page.url.startsWith('/admin/settings/profile')"
-                @click="router.get(route('admin.profile.edit'))"
+                :active="$page.url.startsWith('/app/settings/profile')"
+                @click="router.get(route('app.profile.edit'))"
               >
                 <q-item-section>
                   <q-item-label
@@ -145,14 +146,12 @@ onMounted(() => {
                 class="subnav"
                 clickable
                 v-ripple
-                :active="
-                  $page.url.startsWith('/admin/settings/company-profile')
-                "
-                @click="router.get(route('admin.company-profile.edit'))"
+                :active="$page.url.startsWith('/app/settings/company-profile')"
+                @click="router.get(route('app.company-profile.edit'))"
               >
                 <q-item-section>
                   <q-item-label
-                    ><q-icon name="home_work" class="q-mr-sm" />
+                    ><q-icon name="domain" class="q-mr-sm" />
                     {{ $t("company_profile") }}</q-item-label
                   >
                 </q-item-section>
@@ -217,10 +216,6 @@ onMounted(() => {
 
           <q-separator />
           <q-expansion-item
-            v-if="
-              $page.props.auth.user.role == $CONSTANTS.USER_ROLE_ADMIN ||
-              $page.props.auth.user.role == $CONSTANTS.USER_ROLE_CASHIER
-            "
             icon="credit_score"
             label="Tagihan"
             :default-opened="
@@ -380,13 +375,13 @@ onMounted(() => {
               clickable
               v-ripple
               :active="$page.url.startsWith('/app/settings/company-profile')"
-              @click="router.get(route('app.profile.edit'))"
+              @click="router.get(route('app.company-profile.edit'))"
             >
               <q-item-section avatar>
                 <q-icon name="domain" />
               </q-item-section>
               <q-item-section>
-                <q-item-label>Perusahaan</q-item-label>
+                <q-item-label>Profil Perusahaan</q-item-label>
               </q-item-section>
             </q-item>
           </q-expansion-item>

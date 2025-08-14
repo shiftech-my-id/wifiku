@@ -13,14 +13,13 @@ return new class extends Migration
     {
         Schema::create('costs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('company_id')->nullable()->constrained('companies')->onDelete('cascade');
+            $table->createCompanyIdField();
             $table->foreignId('category_id')->nullable()->constrained('cost_categories')->onDelete('cascade');
             $table->string('description', 100);
             $table->datetime('datetime')->nullable();
             $table->decimal('amount', 12, 2)->default(0.);
             $table->text('notes')->nullable();
-
-            $table->createdUpdatedDeletedTimestamps();
+            $table->createdUpdatedTimestamps();
         });
     }
 

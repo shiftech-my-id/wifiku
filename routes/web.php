@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\App\AuthController;
+use App\Http\Controllers\App\CompanyProfileController;
 use App\Http\Controllers\App\DashboardController;
 use App\Http\Controllers\App\CustomerController;
 use App\Http\Controllers\App\ProfileController;
@@ -114,6 +115,9 @@ Route::middleware([Auth::class])->group(function () {
             Route::get('profile/edit', [ProfileController::class, 'edit'])->name('app.profile.edit');
             Route::post('profile/update', [ProfileController::class, 'update'])->name('app.profile.update');
             Route::post('profile/update-password', [ProfileController::class, 'updatePassword'])->name('app.profile.update-password');
+
+            Route::get('company-profile/edit', [CompanyProfileController::class, 'edit'])->name('app.company-profile.edit');
+            Route::post('company-profile/update', [CompanyProfileController::class, 'update'])->name('app.company-profile.update');
 
             Route::prefix('users')->group(function () {
                 Route::get('', [UserController::class, 'index'])->name('admin.user.index');

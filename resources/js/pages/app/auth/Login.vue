@@ -4,7 +4,8 @@ import { useForm } from "@inertiajs/vue3";
 import { ref } from "vue";
 
 let form = useForm({
-  email: window.CONFIG.APP_DEMO ? "john@example.com" : "",
+  company_code: window.CONFIG.APP_DEMO ? "shiftnet" : "",
+  username: window.CONFIG.APP_DEMO ? "admin" : "",
   password: window.CONFIG.APP_DEMO ? "123456" : "",
   remember: true,
 });
@@ -26,16 +27,35 @@ const showPassword = ref(false);
               </q-card-section>
               <q-card-section>
                 <q-input
-                  v-model.trim="form.email"
-                  label="Email"
+                  v-model.trim="form.company_code"
+                  label="Kode Perusahaan"
                   lazy-rules
-                  :error="!!form.errors.email"
-                  autocomplete="email"
-                  :error-message="form.errors.email"
+                  :error="!!form.errors.company_code"
+                  :error-message="form.errors.company_code"
                   :disable="form.processing"
                   :rules="[
-                    (val) => (val && val.length > 0) || 'Masukkan alamat email',
+                    (val) =>
+                      (val && val.length > 0) || 'Masukkan Kode Perusahaan',
                   ]"
+                  hide-bottom-space
+                >
+                  <template v-slot:append>
+                    <q-icon name="domain" />
+                  </template>
+                </q-input>
+                <q-input
+                  v-model.trim="form.username"
+                  label="Username"
+                  lazy-rules
+                  :error="!!form.errors.username"
+                  autocomplete="username"
+                  :error-message="form.errors.username"
+                  :disable="form.processing"
+                  :rules="[
+                    (val) =>
+                      (val && val.length > 0) || 'Masukkan alamat username',
+                  ]"
+                  hide-bottom-space
                 >
                   <template v-slot:append>
                     <q-icon name="person" />
@@ -53,6 +73,7 @@ const showPassword = ref(false);
                   :rules="[
                     (val) => (val && val.length > 0) || 'Masukkan kata sandi',
                   ]"
+                  hide-bottom-space
                 >
                   <template v-slot:append>
                     <q-btn
@@ -84,31 +105,11 @@ const showPassword = ref(false);
                   />
                 </div>
               </q-card-actions>
-              <q-card-section
-                class="flex justify-center items-center q-px-sm q-py-xs"
-              >
-                <hr class="col line" />
-                <span class="col-auto q-mx-sm">Atau</span>
-                <hr class="col line" />
-              </q-card-section>
-              <q-card-actions>
-                <div class="full-width">
-                  <q-btn
-                    icon="login"
-                    href="/auth/google/redirect"
-                    color="accent"
-                    class="full-width"
-                    label="Gunakan akun Google"
-                    :disable="form.processing"
-                  />
-                </div>
-              </q-card-actions>
+
               <q-card-section class="text-center q-pa-none q-mt-md">
                 <p class="q-my-xs text-grey-7">
                   Belum punya akun?
-                  <i-link :href="route('app.auth.register-options')"
-                    >Daftar</i-link
-                  >
+                  <i-link :href="route('app.auth.register')">Daftar</i-link>
                 </p>
                 <p class="q-my-xs text-grey-7">
                   Lupa kata sandi?

@@ -13,13 +13,13 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('company_id')->nullable()->constrained('companies')->onDelete('cascade');
+            $table->createCompanyIdField();
             $table->string('name');
             $table->string('description')->default('');
             $table->string('bill_period')->default('monthly');
             $table->decimal('price', 10, 2)->default(0.);
             $table->boolean('active')->default(true);
-            $table->createdUpdatedDeletedTimestamps();
+            $table->createdUpdatedTimestamps();
         });
     }
 

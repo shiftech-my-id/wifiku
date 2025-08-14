@@ -3,53 +3,91 @@
 namespace App\Http\Controllers\App\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\App\Auth\LoginRequest;
-use Illuminate\Http\RedirectResponse;
+use App\Models\Company;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Inertia\Inertia;
-use Inertia\Response;
+use Illuminate\Support\Facades\Validator;
 
 class AuthenticatedSessionController extends Controller
 {
     /**
-     * Display the login view.
+     * Menampilkan form login atau memproses permintaan login.
+     *
+     * @param Request $request
+     * @return \Inertia\Response|\Illuminate\Http\RedirectResponse
      */
-    public function create(): Response
+    public function login(Request $request)
     {
-        return Inertia::render('app/auth/Login', [
-            // 'canResetPassword' => Route::has('password.request'),
-            // 'status' => session('status'),
-        ]);
-    }
+        if ($request->getMethod() === 'GET') {
+            return inertia('app/auth/Login');
+        }
 
-    /**
-     * Handle an incoming authentication request.
-     */
-    public function store(LoginRequest $request): RedirectResponse
-    {
-        $request->authenticate();
+        $validator = Validator::make($request->all(), [
+            'company_code'  => 'required|string',
+            'username'      => 'required|string',
+            'password'      => 'required|string',
+        ], [
+            'company_code.required' => 'Kode Perusahaan harus diisi.',
+            'username.required'     => 'Username harus diisi.',
+            'password.required'     => 'Kata sandi harus diisi.',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withInput()->withErrors($validator);
+        }
+
+        $company = Company::where('code', $request->company_code)->first();
+
+        if (!$company) {
+            $validator->errors()->add('username', 'Username atau kata sandi salah untuk perusahaan ini!');
+            return redirect()->back()->withInput()->withErrors($validator);
+        }
+
+        $credentials = [
+            'username' => $request->username,
+            'password' => $request->password,
+            'company_id' => $company->id,
+        ];
+
+        if (!Auth::attempt($credentials, $request->has('remember'))) {
+            $validator->errors()->add('username', 'Username atau kata sandi salah untuk perusahaan ini!');
+            return redirect()->back()->withInput()->withErrors($validator);
+        }
+
+
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        if (!$user->active) {
+            $validator->errors()->add('username', 'Akun Anda tidak aktif. Silakan hubungi penyedia layanan!');
+            Auth::logout(); // Logout user yang tidak aktif
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+            return redirect()->back()->withInput()->withErrors($validator);
+        }
+
+        $user->setLastLogin();
+        $user->setLastActivity('Login');
 
         $request->session()->regenerate();
-
-        $request->session()->flash('success', __('messages.login-success'));
-
-        return redirect()->intended(route('app.dashboard', absolute: false));
+        return redirect(route('app.dashboard'));
     }
 
-    /**
-     * Destroy an authenticated session.
-     */
-    public function destroy(Request $request): RedirectResponse
+    public function logout(Request $request)
     {
-        Auth::guard('web')->logout();
+        $this->_logout($request);
+        return redirect('/')->with('success', 'Anda telah logout.');
+    }
 
+    private function _logout(Request $request)
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        if ($user) {
+            $user->setLastActivity('Logout');
+        }
+        Auth::logout();
         $request->session()->invalidate();
-
         $request->session()->regenerateToken();
-
-        $request->session()->flash('success', __('messages.logout-success'));
-
-        return redirect(route('app.auth.login'));
     }
 }

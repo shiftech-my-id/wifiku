@@ -13,13 +13,13 @@ return new class extends Migration
     {
         Schema::create('product_activations', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('company_id')->constrained('companies')->onDelete('cascade');
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->createCompanyIdField();
             $table->foreignId('customer_id')->constrained('customers')->onDelete('cascade');
             $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
             $table->datetime('datetime');
             $table->decimal('price', 10, 2);
             $table->string('bill_period');
+            $table->createdUpdatedTimestamps();
         });
     }
 

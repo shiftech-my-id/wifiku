@@ -7,7 +7,7 @@ const page = usePage();
 const user = page.props.auth.user;
 const form = useForm({
   name: user.name,
-  email: user.email,
+  username: user.username,
 });
 
 const submit = () => handleSubmit({ form, url: route("app.profile.update") });
@@ -28,8 +28,8 @@ const submit = () => handleSubmit({ form, url: route("app.profile.update") });
         <p class="text-caption text-grey-9">Perbarui profil anda.</p>
         <q-input
           readonly
-          v-model="form.email"
-          label="Alamat Email"
+          v-model="form.username"
+          label="Username"
           :disable="form.processing"
         />
         <q-input
@@ -40,6 +40,7 @@ const submit = () => handleSubmit({ form, url: route("app.profile.update") });
           :error="!!form.errors.name"
           :error-message="form.errors.name"
           :rules="[(val) => (val && val.length > 0) || 'Name harus diisi.']"
+          hide-bottom-space
         />
       </q-card-section>
       <q-card-section>

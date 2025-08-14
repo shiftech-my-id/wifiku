@@ -44,7 +44,7 @@ export function handleSubmit(data) {
       const firstErrorMessage = Object.values(errors)[0];
       if (firstErrorMessage) {
         Notify.create({
-          message: 'Gagal menyimpan, ada kesalahan input!',
+          message: 'Gagal memproses, ada kesalahan input!',
           icon: "error",
           color: "negative",
           actions: [

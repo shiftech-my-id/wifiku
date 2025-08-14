@@ -12,17 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('settings', function (Blueprint $table) {
-            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('cascade');
+            $table->createCompanyIdField();
             $table->string('key')->primary();
             $table->text('value');
-
-            $table->datetime('created_at')->nullable();
-            $table->datetime('updated_at')->nullable();
-
-            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
-            $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
-
-            $table->unique(['user_id', 'key']);
+            $table->createdUpdatedTimestamps();
+            $table->unique(['company_id', 'key']);
         });
     }
 

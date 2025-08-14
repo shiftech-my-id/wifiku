@@ -11,13 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('cost_categories', function (Blueprint $table) {
+        Schema::create('permissions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('company_id')->nullable()->constrained('companies')->onDelete('cascade');
-            $table->string('name', 100);
-            $table->text('description')->nullable();
-
-            $table->createdUpdatedDeletedTimestamps();
+            $table->createCompanyIdField();
+            $table->foreignId('group_id')->constrained('user_groups')->onDelete('cascade');
+            $table->string('resource', 100);
+            $table->boolean('allowed')->default(true);
         });
     }
 
@@ -26,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('cost_categories');
+        Schema::dropIfExists('permissions');
     }
 };

@@ -18,14 +18,12 @@ class UserSeeder extends Seeder
                 'id' => 1,
                 'username' => 'admin',
                 'name' => 'Fahmi Fauzi Rahman',
-                'email' => 'fahmi@example.com',
                 'company_id' => 1,
             ],
             [
                 'id' => 2,
                 'username' => 'admin',
                 'name' => 'John Doe',
-                'email' => 'john@example.com',
                 'company_id' => 2,
             ],
         ];

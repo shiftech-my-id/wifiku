@@ -29,10 +29,10 @@ Route::middleware(NonAuthenticated::class)->group(function () {
 
         Route::post('register', [RegisteredUserController::class, 'store']);
 
-        Route::get('login', [AuthenticatedSessionController::class, 'create'])
+        Route::get('login', [AuthenticatedSessionController::class, 'login'])
             ->name('app.auth.login');
 
-        Route::post('login', [AuthenticatedSessionController::class, 'store']);
+        Route::post('login', [AuthenticatedSessionController::class, 'login']);
 
         Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
             ->name('app.auth.forgot-password');
@@ -71,7 +71,7 @@ Route::middleware([Auth::class])->group(function () {
 
         Route::put('password', [PasswordController::class, 'update'])->name('app.auth.password.update');
 
-        Route::match(['get', 'post'], 'logout', [AuthenticatedSessionController::class, 'destroy'])
+        Route::match(['get', 'post'], 'logout', [AuthenticatedSessionController::class, 'logout'])
             ->name('app.auth.logout');
     });
 });

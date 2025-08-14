@@ -18,20 +18,13 @@ return new class extends Migration
             $table->string('owner_name');
             $table->string('phone')->nullable();
             $table->string('address')->nullable();
-
             $table->datetime('registration_datetime')->nullable();
             $table->datetime('activation_datetime')->nullable();
             $table->string('activation_code')->nullable();
             $table->boolean('active')->default(true);
-
-            $table->createdUpdatedDeletedTimestamps();
-        });
-
-        Schema::table('users', function (Blueprint $table) {
-            $table->foreignId('company_id')->nullable()->after('id')->constrained('companies')->onDelete('set null');
+            $table->timestamps();
         });
     }
-
 
     /**
      * Reverse the migrations.
