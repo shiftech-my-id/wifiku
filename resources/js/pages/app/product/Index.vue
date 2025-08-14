@@ -315,7 +315,7 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
                         v-ripple
                         v-close-popup
                         @click.stop="
-                          router.get(route('app.customer.edit', props.row.id))
+                          router.get(route('app.product.edit', props.row.id))
                         "
                       >
                         <q-item-section avatar>
