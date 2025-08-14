@@ -242,7 +242,7 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
                 {{ props.row.description }}
               </q-td>
               <q-td key="bill_period" :props="props">
-                {{ props.row.bill_period }}
+                {{ $CONSTANTS.PRODUCT_BILL_PERIODS[props.row.bill_period] }}
               </q-td>
               <q-td key="price" :props="props">
                 {{ formatCurrency(props.row.price) }}
