@@ -23,12 +23,12 @@ class Product extends BaseModel
         'active' => 'boolean',
     ];
 
-    const BillPeriod_Monthly   = 'monthly';
-    const BillPeriod_Yearly   = 'yearly';
+    const BillPeriod_Monthly = 'monthly';
+    const BillPeriod_Yearly  = 'yearly';
 
     const BillPeriods = [
-        self::BillPeriod_Monthly   => 'Bulanan',
-        self::BillPeriod_Yearly => 'Tahunan',
+        self::BillPeriod_Monthly => 'Bulanan',
+        self::BillPeriod_Yearly  => 'Tahunan',
     ];
 
     public function company()
