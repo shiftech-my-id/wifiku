@@ -24,25 +24,27 @@ export function handleSubmit(data) {
   form.post(url, {
     preserveScroll: true,
     onSuccess: (page) => {
-      if (page.props.flash && page.props.flash.success) {
-        Notify.create({
-          message: page.props.flash.success,
-          icon: "check_circle",
-          color: "positive",
-          actions: [
-            { icon: "close", color: "white", round: true, dense: true },
-          ],
-        });
-      }
+      // flash sudah ditangani di flash-message.js, jadi serharusnya gak usah ditampilkan disini
+      // if (page.props.flash && page.props.flash.success) {
+      // Notify.create({
+      //   message: page.props.flash.success,
+      //   icon: "check_circle",
+      //   color: "positive",
+      //   actions: [
+      //     { icon: "close", color: "white", round: true, dense: true },
+      //   ],
+      // });
+      // }
     },
     onError: (errors) => {
       _scrollToFirstError();
 
+      // Ini juga sama, seharusnya gak ditampilkan karena wajib ditangani oleh field,
+      // kecuali kita buat mekanisme untuk menampilkan error khusus diluar validasi
       const firstErrorMessage = Object.values(errors)[0];
-
       if (firstErrorMessage) {
         Notify.create({
-          message: firstErrorMessage,
+          message: 'Gagal menyimpan, ada kesalahan input!',
           icon: "error",
           color: "negative",
           actions: [
