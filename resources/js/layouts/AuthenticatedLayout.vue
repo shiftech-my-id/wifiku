@@ -215,32 +215,6 @@ onMounted(() => {
             </q-item-section>
           </q-item>
 
-          <q-item
-            clickable
-            v-ripple
-            :active="$page.url.startsWith('/app/customers')"
-            @click="router.get(route('app.customer.index'))"
-          >
-            <q-item-section avatar>
-              <q-icon name="diversity_3" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Pelanggan</q-item-label>
-            </q-item-section>
-          </q-item>
-          <q-item
-            clickable
-            v-ripple
-            :active="$page.url.startsWith('/app/product')"
-            @click="router.get(route('app.product.index'))"
-          >
-            <q-item-section avatar>
-              <q-icon name="construction" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Layanan</q-item-label>
-            </q-item-section>
-          </q-item>
           <q-separator />
           <q-expansion-item
             v-if="
@@ -319,6 +293,33 @@ onMounted(() => {
               </q-item-section>
             </q-item>
           </q-expansion-item>
+
+          <q-item
+            clickable
+            v-ripple
+            :active="$page.url.startsWith('/app/customers')"
+            @click="router.get(route('app.customer.index'))"
+          >
+            <q-item-section avatar>
+              <q-icon name="diversity_3" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Pelanggan</q-item-label>
+            </q-item-section>
+          </q-item>
+          <q-item
+            clickable
+            v-ripple
+            :active="$page.url.startsWith('/app/product')"
+            @click="router.get(route('app.product.index'))"
+          >
+            <q-item-section avatar>
+              <q-icon name="construction" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Layanan</q-item-label>
+            </q-item-section>
+          </q-item>
 
           <q-expansion-item
             v-if="
