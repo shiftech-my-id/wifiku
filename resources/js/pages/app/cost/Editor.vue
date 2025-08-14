@@ -92,16 +92,6 @@ const filterCategories = (val, update) => {
                 :error="!!form.errors.amount"
                 :errorMessage="form.errors.amount"
               />
-
-              <q-input
-                v-model.trim="form.notes"
-                type="textarea"
-                autogrow
-                maxlength="1000"
-                label="Catatan"
-                :disable="form.processing"
-                :error="!!form.errors.notes"
-              />
               <q-input
                 v-model.trim="form.description"
                 type="textarea"
@@ -111,6 +101,16 @@ const filterCategories = (val, update) => {
                 :disable="form.processing"
                 :error="!!form.errors.description"
               />
+              <q-input
+                v-model.trim="form.notes"
+                type="textarea"
+                autogrow
+                maxlength="1000"
+                label="Catatan"
+                :disable="form.processing"
+                :error="!!form.errors.notes"
+              />
+
             </q-card-section>
 
             <q-card-section class="q-gutter-sm">
