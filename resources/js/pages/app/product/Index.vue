@@ -102,6 +102,11 @@ const columns = [
   },
   { name: "action", align: "right" },
 ];
+const statuses = [
+  { value: "all", label: "Semua" },
+  { value: "active", label: "Aktif" },
+  { value: "inactive", label: "Tidak Aktif" },
+];
 
 onMounted(() => {
   fetchItems();
@@ -137,11 +142,9 @@ const computedColumns = computed(() => {
 });
 
 watch(
-  () => filter.year,
-  (newVal) => {
-    if (newVal === null) {
-      filter.month = null;
-    }
+  () => filter.search,
+  () => {
+    onFilterChange();
   }
 );
 
@@ -176,6 +179,18 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
     <template #header v-if="showFilter">
       <q-toolbar class="filter-bar">
         <div class="row q-col-gutter-xs items-center q-pa-sm full-width">
+          <q-select
+            class="custom-select col-xs-12 col-sm-2"
+            style="min-width: 150px"
+            v-model="filter.status"
+            :options="statuses"
+            label="Status"
+            dense
+            map-options
+            emit-value
+            outlined
+            @update:model-value="onFilterChange"
+          />
           <q-input
             class="col"
             outlined
@@ -266,27 +281,20 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
 
             <q-td key="action" :props="props">
               <div class="flex justify-end">
-                <q-btn icon="more_vert" dense flat round @click.stop>
+                <q-btn
+                  icon="more_vert"
+                  dense
+                  flat
+                  style="height: 40px; width: 30px"
+                  @click.stop
+                >
                   <q-menu
                     anchor="bottom right"
                     self="top right"
                     transition-show="scale"
                     transition-hide="scale"
                   >
-                    <q-list dense style="min-width: 150px">
-                      <q-item
-                        clickable
-                        v-ripple
-                        v-close-popup
-                        @click.stop="
-                          router.get(route('app.product.edit', props.row.id))
-                        "
-                      >
-                        <q-item-section avatar>
-                          <q-icon name="edit" />
-                        </q-item-section>
-                        <q-item-section>Edit</q-item-section>
-                      </q-item>
+                    <q-list style="width: 200px">
                       <q-item
                         clickable
                         v-ripple
@@ -302,7 +310,19 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
                         </q-item-section>
                         <q-item-section> Duplikat </q-item-section>
                       </q-item>
-                      <q-separator />
+                      <q-item
+                        clickable
+                        v-ripple
+                        v-close-popup
+                        @click.stop="
+                          router.get(route('app.customer.edit', props.row.id))
+                        "
+                      >
+                        <q-item-section avatar>
+                          <q-icon name="edit" />
+                        </q-item-section>
+                        <q-item-section>Edit</q-item-section>
+                      </q-item>
                       <q-item
                         @click.stop="deleteItem(props.row)"
                         clickable
