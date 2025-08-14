@@ -2,7 +2,7 @@
 import { usePage } from "@inertiajs/vue3";
 
 const page = usePage();
-const title = "Rincian Pengguna";
+const title = "Rincian Grup Pengguna";
 </script>
 
 <template>
@@ -17,7 +17,7 @@ const title = "Rincian Pengguna";
           color="grey-7"
           flat
           rounded
-          @click="$inertia.get(route('app.user.index'))"
+          @click="$inertia.get(route('app.user-group.index'))"
         />
       </div>
     </template>
@@ -28,7 +28,9 @@ const title = "Rincian Pengguna";
           dense
           color="primary"
           @click="
-            $inertia.get(route('admin.user.edit', { id: page.props.data.id }))
+            $inertia.get(
+              route('app.user-group.edit', { id: page.props.data.id })
+            )
           "
         />
       </div>
@@ -38,27 +40,22 @@ const title = "Rincian Pengguna";
         <div class="row">
           <q-card square flat bordered class="col">
             <q-card-section>
-              <div class="text-subtitle1 text-bold text-grey-9">
-                Profil Pengguna
-              </div>
+              <div class="text-subtitle1 text-bold text-grey-9">Info Utama</div>
               <table class="detail">
                 <tbody>
                   <tr>
-                    <td style="width: 125px">ID Pengguna</td>
+                    <td style="width: 125px">Nama Grup</td>
                     <td style="width: 1px">:</td>
-                    <td>{{ page.props.data.username }}</td>
-                  </tr>
-                  <tr>
-                    <td>Nama Pengguna</td>
-                    <td>:</td>
                     <td>{{ page.props.data.name }}</td>
                   </tr>
-                  <!-- <tr>
-                    <td>Hak Akses</td>
-                    <td>:</td>
-                    <td>{{ $CONSTANTS.USER_ROLES[page.props.data.role] }}</td>
-                  </tr> -->
                   <tr>
+                    <td>Deskripsi</td>
+                    <td>:</td>
+                    <td>{{ page.props.data.description }}</td>
+                  </tr>
+
+                  <!-- <tr>
+                    FIXME: cek ulang di database apakah punya timestamp???
                     <td>Dibuat</td>
                     <td>:</td>
                     <td>
@@ -68,43 +65,7 @@ const title = "Rincian Pengguna";
                         )
                       }}
                     </td>
-                  </tr>
-                  <tr>
-                    <td>Diperbarui</td>
-                    <td>:</td>
-                    <td>
-                      {{
-                        $dayjs(page.props.data.updated_datetime).format(
-                          "DD MMMM YY HH:mm:ss"
-                        )
-                      }}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Terakhir login</td>
-                    <td>:</td>
-                    <td>
-                      {{
-                        page.props.data.last_login_datetime
-                          ? $dayjs(page.props.data.last_login_datetime).format(
-                              "DD MMMM YYYY HH:mm:ss"
-                            )
-                          : "Belum pernah login"
-                      }}
-                    </td>
-                  </tr>
-                  <tr v-if="page.props.data.last_activity_datetime">
-                    <td>Aktifitas Terakhir</td>
-                    <td>:</td>
-                    <td>
-                      {{
-                        $dayjs(page.props.data.last_activity_datetime).format(
-                          "DD MMMM YYYY HH:mm:ss"
-                        )
-                      }}
-                      <br />{{ page.props.data.last_activity_description }}
-                    </td>
-                  </tr>
+                  </tr> -->
                 </tbody>
               </table>
             </q-card-section>

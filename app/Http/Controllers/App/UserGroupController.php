@@ -15,6 +15,14 @@ class UserGroupController extends Controller
         return inertia('app/user-group/Index');
     }
 
+    public function detail($id = 0)
+    {
+        return inertia('app/user-group/Detail', [
+            'data' => UserGroup::query()
+                ->findOrFail($id),
+        ]);
+    }
+
     public function data(Request $request)
     {
         $orderBy = $request->get('order_by', 'name');

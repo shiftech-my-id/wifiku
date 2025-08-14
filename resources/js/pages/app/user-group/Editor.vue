@@ -3,14 +3,16 @@ import { handleSubmit } from "@/helpers/client-req-handler";
 import { router, useForm, usePage } from "@inertiajs/vue3";
 
 const page = usePage();
-const title = !!page.props.data.id ? "Edit Pengguna" : "Tambah Pengguna";
+const title = !!page.props.data.id
+  ? "Edit Grup Pengguna"
+  : "Tambah Grup Pengguna";
 const form = useForm({
   id: page.props.data.id,
   name: page.props.data.name,
   description: page.props.data.description,
 });
 
-const submit = () => handleSubmit({ form, url: route("app.user.save") });
+const submit = () => handleSubmit({ form, url: route("app.user-group.save") });
 </script>
 
 <template>
@@ -25,7 +27,7 @@ const submit = () => handleSubmit({ form, url: route("app.user.save") });
           color="grey-7"
           flat
           rounded
-          @click="$inertia.get(route('admin.user.index'))"
+          @click="$inertia.get(route('admin.user-group.index'))"
         />
       </div>
     </template>

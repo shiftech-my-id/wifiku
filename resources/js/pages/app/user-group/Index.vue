@@ -1,13 +1,10 @@
 <script setup>
 import { computed, onMounted, reactive, ref } from "vue";
-import { router, usePage } from "@inertiajs/vue3";
+import { router } from "@inertiajs/vue3";
 import { handleFetchItems, handleDelete } from "@/helpers/client-req-handler";
-import i18n from "@/i18n";
 import { useQuasar } from "quasar";
 
-const page = usePage();
 const $q = useQuasar();
-const currentUser = page.props.auth.user;
 const title = "Grup Pengguna";
 const rows = ref([]);
 const loading = ref(true);
@@ -42,8 +39,6 @@ onMounted(() => {
   fetchItems();
 });
 
-const onFilterChange = () => fetchItems();
-
 const fetchItems = (props = null) =>
   handleFetchItems({
     pagination,
@@ -57,7 +52,7 @@ const fetchItems = (props = null) =>
 const deleteItem = (row) =>
   handleDelete({
     url: route("app.user-group.delete", row.id),
-    message: `Hapus grup pengguna ${row.username}?`,
+    message: `Hapus grup pengguna ${row.name}?`,
     fetchItemsCallback: fetchItems,
     loading,
   });
@@ -93,30 +88,6 @@ const onRowClicked = (row) =>
     <template #header v-if="showFilter">
       <q-toolbar class="filter-bar">
         <div class="row q-col-gutter-xs items-center q-pa-sm full-width">
-          <q-select
-            v-model="filter.role"
-            class="custom-select col-xs-12 col-sm-2"
-            :options="roles"
-            label="Role"
-            dense
-            map-options
-            emit-value
-            outlined
-            style="min-width: 150px"
-            @update:model-value="onFilterChange"
-          />
-          <q-select
-            v-model="filter.status"
-            class="custom-select col-xs-12 col-sm-2"
-            :options="statuses"
-            label="Status"
-            dense
-            map-options
-            emit-value
-            outlined
-            style="min-width: 150px"
-            @update:model-value="onFilterChange"
-          />
           <q-input
             class="col"
             outlined
@@ -164,7 +135,6 @@ const onRowClicked = (row) =>
         <template v-slot:body="props">
           <q-tr
             :props="props"
-            :class="!props.row.active ? 'bg-red-1' : ''"
             @click="onRowClicked(props.row)"
             class="cursor-pointer"
           >
@@ -187,10 +157,6 @@ const onRowClicked = (row) =>
             <q-td key="action" :props="props">
               <div class="flex justify-end">
                 <q-btn
-                  :disable="
-                    props.row.id == currentUser.id ||
-                    props.row.username == 'app'
-                  "
                   icon="more_vert"
                   dense
                   flat
