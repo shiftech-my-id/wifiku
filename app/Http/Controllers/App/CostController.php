@@ -22,6 +22,13 @@ class CostController extends Controller
         ]);
     }
 
+    public function detail($id = 0)
+    {
+        return inertia('app/cost/Detail', [
+            'data' => Cost::with(['category'])->findOrFail($id),
+        ]);
+    }
+
     public function data(Request $request)
     {
         $orderBy = $request->get('order_by', 'id');
