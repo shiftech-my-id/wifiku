@@ -13,7 +13,7 @@ const form = useForm({
   company_id: page.props.data.company_id ?? null,
   name: page.props.data.name ?? "",
   description: page.props.data.description ?? "",
-  bill_period: page.props.data.bill_period ?? "monthly",
+  bill_period: page.props.data.bill_period ?? "bulanan",
   price: page.props.data.price ?? 0,
   active: page.props.data.active ?? true,
 });

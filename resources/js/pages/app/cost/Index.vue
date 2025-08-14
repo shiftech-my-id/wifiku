@@ -57,7 +57,7 @@ const columns = [
     name: "notes",
     label: "Catatan",
     field: "notes",
-    align: "left",
+    align: "center",
     sortable: true,
   },
   {
