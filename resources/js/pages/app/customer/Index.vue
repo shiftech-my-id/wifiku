@@ -1,4 +1,3 @@
-<!-- TODO: tolong cek apakah ada yang salah dari kode saya?  -->
 <script setup>
 import { computed, onMounted, reactive, ref, watch } from "vue";
 import { router } from "@inertiajs/vue3";
@@ -7,12 +6,14 @@ import { getQueryParams } from "@/helpers/utils";
 import { usePageStorage } from "@/composables/usePageStorage";
 import { createOptions } from "@/helpers/options";
 import { formatNumberWithSymbol } from "@/helpers/formatter";
+import { useQuasar } from "quasar";
 
 const storage = usePageStorage("customer");
 const title = "Pelanggan";
 const showFilter = ref(storage.get("show-filter", false));
 const rows = ref([]);
 const loading = ref(true);
+const $q = useQuasar();
 
 const filter = reactive(
   storage.get("filter", {
@@ -89,7 +90,8 @@ const onRowClicked = (row) =>
   router.get(route("app.customer.detail", { id: row.id }));
 
 const computedColumns = computed(() => {
-  return columns;
+  if ($q.screen.gt.sm) return columns;
+  return columns.filter((col) => col.name === "name" || col.name === "action");
 });
 
 watch(
@@ -205,19 +207,30 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
             class="cursor-pointer"
             @click="onRowClicked(props.row)"
           >
-            <q-td key="name" :props="props" class="wrap-column">
-              <div>
-                <q-icon
-                  :name="props.row.type == 'company' ? 'domain' : 'person'"
-                />
+            <template v-if="$q.screen.lt.sm">
+              <q-td key="name" :props="props" class="wrap-column">
                 {{ props.row.name }}
-              </div>
-            </q-td>
-            <q-td key="product" :props="props">
-              {{ props.row.product?.name }}
-            </q-td>
+              </q-td>
 
-            <q-td key="no_hp" :props="props"> {{ props.row.no_hp }} </q-td>
+              <q-td key="product" :props="props">
+                {{ props.row.product?.name }}
+              </q-td>
+            </template>
+
+            <template v-else>
+              <q-td key="name" :props="props">
+                <div class="text-weight-bold">{{ props.row.name }}</div>
+
+                <div v-if="props.row.product" class="text-grey-8">
+                  <q-icon name="inventory_2" size="xs" />
+                  {{ props.row.product.name }}
+                </div>
+              </q-td>
+
+              <q-td key="product" :props="props">
+                {{ props.row.product?.name }}
+              </q-td>
+            </template>
 
             <q-td key="action" :props="props">
               <div class="flex justify-end">
@@ -269,7 +282,6 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
                         v-ripple
                         v-close-popup
                         class="text-negative"
-
                       >
                         <q-item-section avatar>
                           <q-icon name="delete_forever" />

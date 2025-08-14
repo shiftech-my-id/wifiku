@@ -9,7 +9,6 @@ import {
   createBillPeriodOptions,
   createYearOptions,
 } from "@/helpers/options";
-// import { formatNumberWithSymbol } from "@/helpers/formatter";
 import { usePageStorage } from "@/composables/usePageStorage";
 
 const storage = usePageStorage("product");
