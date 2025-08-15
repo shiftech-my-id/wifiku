@@ -34,9 +34,24 @@ const pagination = ref(
 
 const columns = [
   {
+    name: "code",
+    label: "Id Pelanggan",
+    field: "code",
+    align: "left",
+    sortable: true,
+  },
+  {
     name: "name",
     label: "Nama Pelanggan",
     field: "name",
+    align: "left",
+    sortable: true,
+  },
+
+  {
+    name: "wa",
+    label: "No WhatsApp",
+    field: "wa",
     align: "left",
     sortable: true,
   },
@@ -55,7 +70,6 @@ const statuses = [
   { value: "active", label: "Aktif" },
   { value: "inactive", label: "Tidak Aktif" },
 ];
-
 onMounted(() => {
   fetchItems();
 });
@@ -190,8 +204,15 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
             @click="onRowClicked(props.row)"
           >
             <template v-if="!$q.screen.lt.sm">
+              <q-td key="code" :props="props">
+                {{ props.row.code }}
+              </q-td>
               <q-td key="name" :props="props" class="wrap-column">
                 {{ props.row.name }}
+              </q-td>
+
+              <q-td key="wa" :props="props">
+                {{ props.row.wa }}
               </q-td>
 
               <q-td key="product" :props="props">
@@ -202,6 +223,14 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
             <template v-else>
               <q-td key="name" :props="props">
                 <div class="text-weight-bold">{{ props.row.name }}</div>
+                <div v-if="props.row.code" class="text-grey-8">
+                  <q-icon name="code_blocks" size="xs" />
+                  {{ props.row.code }}
+                </div>
+                <div v-if="props.row.wa" class="text-grey-8">
+                  <q-icon name="contacts" size="xs" />
+                  {{ props.row.wa }}
+                </div>
                 <div v-if="props.row.product" class="text-grey-8">
                   <q-icon name="inventory_2" size="xs" />
                   {{ props.row.product.name }}
