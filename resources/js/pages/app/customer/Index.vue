@@ -1,11 +1,12 @@
 <script setup>
 import { computed, onMounted, reactive, ref, watch } from "vue";
-import { router } from "@inertiajs/vue3";
+import { router, usePage } from "@inertiajs/vue3";
 import { handleDelete, handleFetchItems } from "@/helpers/client-req-handler";
 import { getQueryParams } from "@/helpers/utils";
 import { usePageStorage } from "@/composables/usePageStorage";
 import { useQuasar } from "quasar";
 
+const page = usePage();
 const storage = usePageStorage("customer");
 const title = "Pelanggan";
 const showFilter = ref(storage.get("show-filter", false));
@@ -17,6 +18,7 @@ const filter = reactive(
   storage.get("filter", {
     search: "",
     status: "all",
+    product_id: "all",
     type: "all",
     ...getQueryParams(),
   })
@@ -70,6 +72,15 @@ const statuses = [
   { value: "active", label: "Aktif" },
   { value: "inactive", label: "Tidak Aktif" },
 ];
+
+const productOptions = computed(() => {
+  const options = (page.props.products || []).map((p) => ({
+    label: p.name,
+    value: p.id,
+  }));
+  return [{ label: "Semua Layanan", value: "all" }, ...options];
+});
+
 onMounted(() => {
   fetchItems();
 });
@@ -142,7 +153,19 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
             style="min-width: 150px"
             v-model="filter.status"
             :options="statuses"
-            label="Status"
+            label="Status Pelanggan"
+            dense
+            map-options
+            emit-value
+            outlined
+            @update:model-value="onFilterChange"
+          />
+          <q-select
+            class="custom-select col-xs-12 col-sm-2"
+            style="min-width: 150px"
+            v-model="filter.product_id"
+            :options="productOptions"
+            label="Layanan"
             dense
             map-options
             emit-value

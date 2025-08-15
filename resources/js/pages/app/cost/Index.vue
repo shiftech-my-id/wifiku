@@ -115,6 +115,8 @@ const fetchItems = (props = null) => {
 const onFilterChange = () => {
   fetchItems();
 };
+const onRowClicked = (row) =>
+  router.get(route("app.cost.detail", { id: row.id }));
 
 const computedColumns = computed(() => {
   if ($q.screen.gt.sm) return columns;
@@ -227,7 +229,11 @@ watch(
         binary-state-sort
       >
         <template v-slot:body="props">
-          <q-tr :props="props">
+          <q-tr
+            :props="props"
+            class="cursor-pointer"
+            @click="onRowClicked(props.row)"
+          >
             <q-td key="datetime" :props="props" class="wrap-column">
               <div class="flex items-center q-gutter-xs">
                 <q-icon name="event" />
@@ -247,7 +253,7 @@ watch(
                   <q-icon name="clarify" size="xs" />
                   {{ props.row.description }}
                 </div>
-                <div>
+                <div class="text-caption text-grey-8">
                   <q-icon name="paid" size="xs" /> Rp.
                   {{ formatNumber(props.row.amount) }}
                 </div>
@@ -273,7 +279,7 @@ watch(
 
             <q-td key="action" :props="props">
               <div class="flex justify-end">
-                 <q-btn
+                <q-btn
                   icon="more_vert"
                   dense
                   flat
@@ -292,9 +298,7 @@ watch(
                         v-ripple
                         v-close-popup
                         @click.stop="
-                          router.get(
-                            route('app.cost.duplicate', props.row.id)
-                          )
+                          router.get(route('app.cost.duplicate', props.row.id))
                         "
                       >
                         <q-item-section avatar>

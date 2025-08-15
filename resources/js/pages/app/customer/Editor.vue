@@ -110,7 +110,7 @@ const filterProducts = (val, update) => {
                 :error="!!form.errors.installation_date"
                 :error-message="form.errors.installation_date"
               />
-              <!-- <q-select
+              <q-select
                 v-model="form.product_id"
                 label="Layanan"
                 use-input
@@ -122,7 +122,7 @@ const filterProducts = (val, update) => {
                 @filter="filterProducts"
                 :error="!!form.errors.product_id"
                 :disable="form.processing"
-              /> -->
+              />
               <q-input
                 v-model="form.wa"
                 type="tel"
