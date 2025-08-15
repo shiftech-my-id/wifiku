@@ -194,21 +194,32 @@ const onRowClicked = (row) => router.get(route("app.user.detail", row.id));
             class="cursor-pointer"
           >
             <q-td key="username" :props="props">
-              <div>{{ props.row.username }}</div>
               <template v-if="!$q.screen.gt.sm">
+                <div><q-icon name="id_card" /> {{ props.row.username }}</div>
                 <div><q-icon name="person" /> {{ props.row.name }}</div>
                 <div class="elipsis" style="max-width: 200px">
-                  <q-icon name="group" />
-                  <span>-</span>
+                  <q-icon name="crowdsource" />
+                  <span class="q-ml-xs">{{ props.row.group?.name }}</span>
                 </div>
               </template>
+              <template v-else>
+                {{ props.row.username }}
+              </template>
             </q-td>
-            <q-td key="name" :props="props">
+
+            <q-td key="name" :props="props" v-if="$q.screen.gt.sm">
               {{ props.row.name }}
             </q-td>
-            <q-td key="group" :props="props" align="center">
-              <span>--</span>
+
+            <q-td
+              key="group"
+              :props="props"
+              align="center"
+              v-if="$q.screen.gt.sm"
+            >
+              {{ props.row.group?.name }}
             </q-td>
+
             <q-td key="action" :props="props">
               <div class="flex justify-end">
                 <q-btn

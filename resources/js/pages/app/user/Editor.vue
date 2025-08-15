@@ -2,7 +2,7 @@
 import { handleSubmit } from "@/helpers/client-req-handler";
 import { validateUsername } from "@/helpers/validations";
 import { router, useForm, usePage } from "@inertiajs/vue3";
-
+import { ref } from 'vue';
 // const roles = create_options(window.CONSTANTS.USER_ROLES);
 const page = usePage();
 const title = !!page.props.data.id ? "Edit Pengguna" : "Tambah Pengguna";
@@ -14,6 +14,24 @@ const form = useForm({
   group_id: page.props.data.group_id ?? null,
   active: !!page.props.data.active,
 });
+
+const groups = ref(
+  (page.props.groups ?? []).map(({ id, name }) => ({
+    label: name ?? "",
+    value: id,
+  }))
+);
+
+const filteredGroups = ref([...groups.value]);
+
+const filterGroups = (val, update) => {
+  update(() => {
+    const search = val?.toLowerCase() ?? "";
+    filteredGroups.value = search
+      ? groups.value.filter((c) => c.label.toLowerCase().includes(search))
+      : [...groups.value];
+  });
+};
 
 const submit = () => handleSubmit({ form, url: route("app.user.save") });
 </script>
@@ -51,6 +69,7 @@ const submit = () => handleSubmit({ form, url: route("app.user.save") });
                 :rules="[
                   (val) => (val && val.length > 0) || 'Nama harus diisi.',
                 ]"
+                hide-bottom-space
               />
               <q-input
                 v-model.trim="form.username"
@@ -65,6 +84,7 @@ const submit = () => handleSubmit({ form, url: route("app.user.save") });
                     (val && val.length > 0) || 'ID Pengguna harus diisi.',
                   (val) => validateUsername(val) || 'ID Pengguna tidak valid.',
                 ]"
+                hide-bottom-space
               />
               <q-input
                 v-model="form.password"
@@ -74,6 +94,20 @@ const submit = () => handleSubmit({ form, url: route("app.user.save") });
                 :disable="form.processing"
                 :error="!!form.errors.password"
                 :error-message="form.errors.password"
+                hide-bottom-space
+              />
+              <q-select
+                v-model="form.group_id"
+                label="Grup"
+                use-input
+                input-debounce="300"
+                clearable
+                :options="filteredGroups"
+                map-options
+                emit-value
+                @filter="filterGroups"
+                :error="!!form.errors.group_id"
+                :disable="form.processing"
               />
               <!-- <q-select
                 v-model="form.role"

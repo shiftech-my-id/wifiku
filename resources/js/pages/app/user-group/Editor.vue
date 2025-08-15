@@ -48,6 +48,7 @@ const submit = () => handleSubmit({ form, url: route("app.user-group.save") });
                 :rules="[
                   (val) => (val && val.length > 0) || 'Nama grup harus diisi.',
                 ]"
+                hide-bottom-space
               />
               <q-input
                 v-model.trim="form.description"
@@ -60,6 +61,7 @@ const submit = () => handleSubmit({ form, url: route("app.user-group.save") });
                 :disable="form.processing"
                 :error="!!form.errors.description"
                 :error-message="form.errors.description"
+                hide-bottom-space
               />
             </q-card-section>
             <q-card-section class="q-gutter-sm">
