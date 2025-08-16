@@ -1,13 +1,25 @@
 <template>
-  <q-input v-model="pickedDate" :label="props.label" :readonly="props.readonly" :disable="props.disable"
-    :error="props.error" :rules="[...props.rules]" :error-message="errorMessage" :mask="props.mask"
-    :clearable="props.clearable" @clear="clearDate"
-    >
+  <q-input
+    v-model="pickedDate"
+    :label="props.label"
+    :readonly="props.readonly"
+    :disable="props.disable"
+    :error="props.error"
+    :rules="[...props.rules]"
+    :error-message="errorMessage"
+    :mask="props.mask"
+    :clearable="props.clearable"
+    @clear="clearDate"
+  >
     <template v-slot:append>
       <!-- Date Picker Icon -->
       <q-icon name="event" class="cursor-pointer">
         <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-          <q-date v-model="dateValue" mask="YYYY-MM-DD" @update:model-value="updateDate">
+          <q-date
+            v-model="dateValue"
+            mask="YYYY-MM-DD"
+            @update:model-value="updateDate"
+          >
             <div class="row items-center justify-end">
               <q-btn v-close-popup label="Close" color="primary" flat />
             </div>
@@ -19,7 +31,7 @@
 </template>
 
 <script setup>
-import { ref, watch, defineEmits } from 'vue';
+import { ref, watch, defineEmits } from "vue";
 
 // Props passed from the parent
 const props = defineProps({
@@ -29,7 +41,7 @@ const props = defineProps({
   },
   label: {
     type: String,
-    default: '',
+    default: "",
   },
   readonly: {
     type: Boolean,
@@ -45,7 +57,7 @@ const props = defineProps({
   },
   errorMessage: {
     type: String,
-    default: '',
+    default: "",
   },
   rules: {
     type: Array,
@@ -53,19 +65,19 @@ const props = defineProps({
   },
   mask: {
     type: String,
-    default: '####-##-##',
+    default: "####-##-##",
   },
   clearable: {
     type: Boolean,
     default: false,
-  }
+  },
 });
 
 // Emits to update parent value
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits(["update:modelValue"]);
 
 // Internal states for date and time
-const dateValue = ref('');
+const dateValue = ref("");
 
 // // Watch for changes to modelValue (pickedDate) and sync with internal states
 // watch(() => props.modelValue, (newValue) => {
@@ -78,28 +90,41 @@ const pickedDate = ref(props.modelValue);
 
 // Update modelValue when either date or time changes
 const updateDate = () => {
-  let val = '';
+  let val = "";
   if (dateValue.value) {
     val = `${dateValue.value} 00:00`;
   }
 
-  emit('update:modelValue', val);
+  emit("update:modelValue", val);
   pickedDate.value = val;
 };
 
 const clearDate = () => {
-  dateValue.value = '';
-  pickedDate.value = '';
-  emit('update:modelValue', '');
+  dateValue.value = "";
+  pickedDate.value = "";
+  emit("update:modelValue", "");
 };
 
-watch(() => props.modelValue, (newValue) => {
-  const [date] = (newValue || '').split(' ');
-  dateValue.value = date || '';
-  pickedDate.value = newValue || '';
-});
+watch(
+  () => props.modelValue,
+  (newValue) => {
+    if (newValue) {
+      // Gunakan objek Date untuk mengurai string, termasuk yang memiliki timezone
+      const dateObj = new Date(newValue);
 
+      // Dapatkan tanggal dalam format YYYY-MM-DD
+      const year = dateObj.getFullYear();
+      const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+      const day = String(dateObj.getDate()).padStart(2, "0");
+      dateValue.value = `${year}-${month}-${day}`;
 
+      // Dapatkan waktu dalam format HH:mm
+      const hours = String(dateObj.getHours()).padStart(2, "0");
+      const minutes = String(dateObj.getMinutes()).padStart(2, "0");
+      timeValue.value = `${hours}:${minutes}`;
+    }
+  }
+);
 </script>
 
 <style scoped>
@@ -107,4 +132,3 @@ watch(() => props.modelValue, (newValue) => {
   cursor: pointer;
 }
 </style>
-

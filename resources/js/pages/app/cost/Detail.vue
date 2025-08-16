@@ -1,8 +1,9 @@
 <script setup>
+import { formatDateTime } from "@/helpers/formatter";
 import { router, usePage } from "@inertiajs/vue3";
 
 const page = usePage();
-const title = "Rincian Teknisi";
+const title = "Rincian Biaya Operasional";
 </script>
 
 <template>
@@ -29,9 +30,7 @@ const title = "Rincian Teknisi";
           dense
           color="primary"
           @click="
-            router.get(
-              route('admin.operational-cost.edit', { id: page.props.data.id })
-            )
+            router.get(route('app.cost.edit', { id: page.props.data.id }))
           "
         />
       </div>
@@ -42,30 +41,13 @@ const title = "Rincian Teknisi";
         <div class="row">
           <q-card square flat bordered class="col">
             <q-card-section>
-              <div class="text-subtitle1 text-bold text-grey-8">
-                Profil Teknisi
-              </div>
+              <div class="text-subtitle1 text-bold text-grey-8">Info Biaya</div>
               <table class="detail">
                 <tbody>
                   <tr>
-                    <td style="width: 125px">Akun Pengguna</td>
+                    <td style="width: 125px">Waktu</td>
                     <td style="width: 1px">:</td>
-                    <td>
-                      <template v-if="!!page.props.data.user">
-                        <i-link
-                          :href="
-                            route('admin.user.detail', {
-                              id: page.props.data.user.id,
-                            })
-                          "
-                        >
-                          {{ page.props.data.user.username }}
-                        </i-link>
-                      </template>
-                      <template v-else>
-                        <span class="text-grey-9">Tidak terhubung</span>
-                      </template>
-                    </td>
+                    <td>{{ formatDateTime(page.props.data.datetime) }}</td>
                   </tr>
                   <tr>
                     <td>Nama Teknisi</td>

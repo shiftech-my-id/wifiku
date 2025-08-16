@@ -4,7 +4,7 @@ import { router, usePage } from "@inertiajs/vue3";
 import { handleDelete, handleFetchItems } from "@/helpers/client-req-handler";
 import { useQuasar } from "quasar";
 import dayjs from "dayjs";
-import { formatNumber } from "@/helpers/formatter";
+import { formatDateTime, formatNumber } from "@/helpers/formatter";
 import { createMonthOptions, createYearOptions } from "@/helpers/options";
 
 const title = "Biaya Operasional";
@@ -95,7 +95,7 @@ const deleteItem = (row) =>
   handleDelete({
     message: `Hapus biaya sebesar ${formatNumber(
       row.amount
-    )} pada tanggal ${dayjs(row.datetime).format("DD/MM/YYYY")}?`,
+    )} pada tanggal ${formatDateTime(row.datetime)}?`,
     url: route("app.cost.delete", row.id),
     fetchItemsCallback: fetchItems,
     loading,
@@ -238,7 +238,7 @@ watch(
               <div class="flex items-center q-gutter-xs">
                 <q-icon name="event" />
                 <div>
-                  {{ dayjs(props.row.datetime).format("DD/MM/YY HH:mm") }}
+                  {{ formatDateTime(props.row.datetime) }}
                 </div>
               </div>
               <template v-if="!$q.screen.gt.sm">

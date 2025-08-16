@@ -25,6 +25,14 @@ export function formatNumberWithSymbol(num) {
   return plusMinusSymbol(num) + formatNumber(num);
 }
 
+export function formatDateForEditing(val) {
+  return formatDate(val, 'YYYY-MM-DD');
+}
+
+export function formatDateTimeForEditing(val) {
+  return formatDate(val, 'YYYY-MM-DD HH:mm:ss');
+}
+
 export function formatDateTime(val, fmt = 'DD/MM/YYYY HH:mm:ss', locale = 'id-ID') {
   let date;
   if (val instanceof Date) {

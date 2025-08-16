@@ -2,6 +2,8 @@
 import { ref } from "vue";
 import { router, useForm, usePage } from "@inertiajs/vue3";
 import { handleSubmit } from "@/helpers/client-req-handler";
+import { formatDateTimeForEditing } from "@/helpers/formatter";
+
 import LocaleNumberInput from "@/components/LocaleNumberInput.vue";
 import DateTimePicker from "@/components/DateTimePicker.vue";
 
@@ -14,11 +16,13 @@ const form = useForm({
   id: data.id,
   category_id: data.category_id,
   company_id: data.company_id,
-  datetime: data.datetime,
+  datetime: formatDateTimeForEditing(data.datetime),
   notes: data.notes,
   description: data.description,
   amount: data.amount ? parseFloat(data.amount) : 0,
 });
+
+console.log(data.datetime);
 
 const submit = () => handleSubmit({ form, url: route("app.cost.save") });
 

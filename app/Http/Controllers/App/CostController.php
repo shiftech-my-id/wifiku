@@ -35,7 +35,7 @@ class CostController extends Controller
         $orderType = $request->get('order_type', 'desc');
         $filter = $request->get('filter', []);
 
-        $q = Cost::with(['company', 'category']);
+        $q = Cost::with(['category']);
 
         if (!empty($filter['search'])) {
             $q->where(function ($q) use ($filter) {
@@ -67,6 +67,7 @@ class CostController extends Controller
     {
         $item = $id ? Cost::findOrFail($id) : new Cost(['datetime' => Carbon::now()]);
         $item->amount = abs($item->amount);
+        // dd($item->toArray());
         return inertia('app/cost/Editor', [
             'data' => $item,
             'categories' => CostCategory::query()->orderBy('name', 'asc')->get()
