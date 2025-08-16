@@ -39,7 +39,7 @@ const title = "Rincian Pengguna";
           <q-card square flat bordered class="col">
             <q-card-section>
               <div class="text-subtitle1 text-bold text-grey-9">
-                Profil Pengguna
+                Info Pengguna
               </div>
               <table class="detail">
                 <tbody>
@@ -53,11 +53,11 @@ const title = "Rincian Pengguna";
                     <td>:</td>
                     <td>{{ page.props.data.name }}</td>
                   </tr>
-                  <!-- <tr>
-                    <td>Hak Akses</td>
+                  <tr>
+                    <td>Grup</td>
                     <td>:</td>
-                    <td>{{ $CONSTANTS.USER_ROLES[page.props.data.role] }}</td>
-                  </tr> -->
+                    <td>{{ page.props.data.group?.name }}</td>
+                  </tr>
                   <tr>
                     <td>Dibuat</td>
                     <td>:</td>
