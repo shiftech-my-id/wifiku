@@ -19,7 +19,6 @@ const filter = reactive(
     search: "",
     status: "all",
     product_id: "all",
-    type: "all",
     ...getQueryParams(),
   })
 );

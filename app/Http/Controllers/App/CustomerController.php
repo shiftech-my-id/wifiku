@@ -40,19 +40,41 @@ class CustomerController extends Controller
 
         if (!empty($filter['search'])) {
             $q->where(function ($q) use ($filter) {
-                $q->where('code', 'like', '%' . $filter['search'] . '%'); // FIXME: konversi kode ke customer_id dulu
-                $q->where('name', 'like', '%' . $filter['search'] . '%');
-                $q->orWhere('id_card_number', 'like', '%' . $filter['search'] . '%');
-                $q->orWhere('email', 'like', '%' . $filter['search'] . '%');
-                $q->orWhere('phone', 'like', '%' . $filter['search'] . '%');
-                $q->orWhere('wa', 'like', '%' . $filter['search'] . '%');
-                $q->orWhere('address', 'like', '%' . $filter['search'] . '%');
-                $q->orWhere('notes', 'like', '%' . $filter['search'] . '%');
+                $search = $filter['search'];
+
+                // 1. Coba cocokkan pola lengkap "CST-angka"
+                if (preg_match('/^CST-(\d+)$/i', $search, $matches)) {
+                    $customerId = (int) $matches[1];
+                    $q->where('id', $customerId);
+                    return; // Hentikan eksekusi, karena sudah menemukan kecocokan
+                }
+
+                // 2. Jika bukan pola lengkap, cek apakah string adalah angka saja
+                if (is_numeric($search)) {
+                    $customerId = (int) $search;
+                    $q->where('id', $customerId);
+                    return; // Hentikan eksekusi
+                }
+
+                // 3. Jika bukan kedua pola di atas, lakukan pencarian teks normal
+                $q->where(function ($q) use ($search) {
+                    $q->where('name', 'like', '%' . $search . '%');
+                    $q->orWhere('id_card_number', 'like', '%' . $search . '%');
+                    $q->orWhere('email', 'like', '%' . $search . '%');
+                    $q->orWhere('phone', 'like', '%' . $search . '%');
+                    $q->orWhere('wa', 'like', '%' . $search . '%');
+                    $q->orWhere('address', 'like', '%' . $search . '%');
+                    $q->orWhere('notes', 'like', '%' . $search . '%');
+                });
             });
         }
 
         if (!empty($filter['status']) && (in_array($filter['status'], ['active', 'inactive']))) {
             $q->where('active', '=', $filter['status'] == 'active' ? true : false);
+        }
+
+        if (!empty($filter['product_id']) && $filter['product_id'] !== 'all') {
+            $q->where('product_id', '=', $filter['product_id']);
         }
 
         $q->orderBy($orderBy, $orderType);
