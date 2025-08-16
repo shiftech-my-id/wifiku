@@ -92,6 +92,7 @@ const filterCategories = (val, update) => {
                 label="Deskripsi"
                 :disable="form.processing"
                 :error="!!form.errors.description"
+                hide-bottom-space
               />
 
               <LocaleNumberInput
@@ -100,6 +101,7 @@ const filterCategories = (val, update) => {
                 :disable="form.processing"
                 :error="!!form.errors.amount"
                 :errorMessage="form.errors.amount"
+                hide-bottom-space
               />
               <q-input
                 v-model.trim="form.notes"
@@ -109,6 +111,7 @@ const filterCategories = (val, update) => {
                 label="Catatan"
                 :disable="form.processing"
                 :error="!!form.errors.notes"
+                hide-bottom-space
               />
             </q-card-section>
 

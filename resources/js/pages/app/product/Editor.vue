@@ -66,6 +66,7 @@ const submit = () => handleSubmit({ form, url: route("app.product.save") });
                 :disable="form.processing"
                 :error-message="form.errors.name"
                 :rules="[(val) => !!val || 'Nama harus diisi.']"
+                hide-bottom-space
               />
 
               <LocaleNumberInput
@@ -76,6 +77,7 @@ const submit = () => handleSubmit({ form, url: route("app.product.save") });
                 :error="!!form.errors.price"
                 :error-message="form.errors.price"
                 :rules="[(val) => val >= 0 || 'Harga tidak boleh negatif.']"
+                hide-bottom-space
               />
 
               <q-select
@@ -99,6 +101,7 @@ const submit = () => handleSubmit({ form, url: route("app.product.save") });
                 lazy-rules
                 :disable="form.processing"
                 :error="!!form.errors.description"
+                hide-bottom-space
               />
 
               <div style="margin-left: -10px">

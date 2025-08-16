@@ -33,6 +33,7 @@ class User extends BaseModel implements
         'active',
         'is_root',
         'password',
+        'group_id',
         'last_login_datetime',
         'last_activity_description',
         'last_activity_datetime'

@@ -51,6 +51,7 @@ const submit = () =>
                 :rules="[
                   (val) => (val && val.length > 0) || 'Nama harus diisi.',
                 ]"
+                hide-bottom-space
               />
               <q-input
                 v-model.trim="form.description"
@@ -63,6 +64,7 @@ const submit = () =>
                 :disable="form.processing"
                 :error="!!form.errors.description"
                 :error-message="form.errors.description"
+                hide-bottom-space
               />
             </q-card-section>
             <q-card-section class="q-gutter-sm">

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\App;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\UserGroup;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -12,14 +13,16 @@ class UserController extends Controller
 {
     public function index()
     {
-        return inertia('app/user/Index');
+        return inertia('app/user/Index', [
+        'groups' => UserGroup::query()->orderBy('name')->get()
+        ]);
     }
 
     public function detail($id = 0)
     {
         // tambahkan jumlah client yang ditangani oleh user ini
         return inertia('app/user/Detail', [
-            'data' => User::findOrFail($id),
+            'data' => User::with(['group'])->findOrFail($id),
         ]);
     }
 
@@ -30,7 +33,7 @@ class UserController extends Controller
         $filter = $request->get('filter', []);
 
         // tambahkan jumlah client yang ditangani oleh user ini
-        $q = User::query();
+        $q = User::with(['group']);
         $q->orderBy($orderBy, $orderType);
 
         if (!empty($filter['role'] && $filter['role'] != 'all')) {
@@ -49,6 +52,12 @@ class UserController extends Controller
         }
 
         $users = $q->paginate($request->get('per_page', 10))->withQueryString();
+
+        // Transform the collection to include the group name
+        $users->getCollection()->transform(function ($user) {
+            $user->group = $user->group?->name;
+            return $user;
+        });
 
         return response()->json($users);
     }
@@ -76,6 +85,7 @@ class UserController extends Controller
 
         return inertia('app/user/Editor', [
             'data' => $user,
+            'groups' => UserGroup::query()->orderBy('name')->get()
         ]);
     }
 
@@ -95,6 +105,7 @@ class UserController extends Controller
                     ->ignore($request->id),
             ],
             'active'   => 'required|boolean',
+            'group_id' => 'nullable|exists:user_groups,id',
         ];
 
         if ($isNew) {

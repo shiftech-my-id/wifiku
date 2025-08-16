@@ -102,6 +102,7 @@ const filterProducts = (val, update) => {
                 :disable="form.processing"
                 :error-message="form.errors.name"
                 :rules="[(val) => !!val || 'Nama harus diisi.']"
+                hide-bottom-space
               />
               <date-picker
                 v-model="form.installation_date"
@@ -131,6 +132,7 @@ const filterProducts = (val, update) => {
                 :disable="form.processing"
                 :error="!!form.errors.wa"
                 :error-message="form.errors.wa"
+                hide-bottom-space
               />
 
               <transition name="slide-fade">
@@ -145,6 +147,7 @@ const filterProducts = (val, update) => {
                     :disable="form.processing"
                     :error="!!form.errors.address"
                     :error-message="form.errors.address"
+                    hide-bottom-space
                   />
                   <q-input
                     v-model="form.id_card_number"
@@ -154,6 +157,7 @@ const filterProducts = (val, update) => {
                     :disable="form.processing"
                     :error="!!form.errors.id_card_number"
                     :error-message="form.errors.id_card_number"
+                    hide-bottom-space
                   />
                   <q-input
                     v-model.trim="form.notes"
@@ -165,6 +169,7 @@ const filterProducts = (val, update) => {
                     :disable="form.processing"
                     :error="!!form.errors.notes"
                     :error-message="form.errors.notes"
+                    hide-bottom-space
                   />
                 </div>
               </transition>
