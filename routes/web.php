@@ -49,6 +49,7 @@ Route::middleware([Auth::class])->group(function () {
             Route::get('add', [CostController::class, 'editor'])->name('app.cost.add');
             Route::get('edit/{id}', [CostController::class, 'editor'])->name('app.cost.edit');
             Route::get('detail/{id}', [CostController::class, 'detail'])->name('app.cost.detail');
+            Route::get('duplicate/{id}', [CostController::class, 'duplicate'])->name('app.cost.duplicate');
             Route::post('save', [CostController::class, 'save'])->name('app.cost.save');
             Route::post('delete/{id}', [CostController::class, 'delete'])->name('app.cost.delete');
             Route::get('export', [CostController::class, 'export'])->name('app.cost.export');

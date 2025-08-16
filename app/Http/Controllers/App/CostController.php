@@ -73,6 +73,14 @@ class CostController extends Controller
         ]);
     }
 
+    public function duplicate($id)
+    {
+        return inertia('app/cost/Editor', [
+            'data' => Cost::findOrFail($id)->replicate(),
+            'categories' => CostCategory::query()->orderBy('name', 'asc')->get()
+        ]);
+    }
+
     public function save(Request $request)
     {
         $validated = $request->validate([
