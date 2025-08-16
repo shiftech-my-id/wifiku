@@ -67,7 +67,6 @@ class CostController extends Controller
     {
         $item = $id ? Cost::findOrFail($id) : new Cost(['datetime' => Carbon::now()]);
         $item->amount = abs($item->amount);
-        // dd($item->toArray());
         return inertia('app/cost/Editor', [
             'data' => $item,
             'categories' => CostCategory::query()->orderBy('name', 'asc')->get()
