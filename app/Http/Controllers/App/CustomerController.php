@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Customer;
 use App\Models\Product;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Support\Str;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -88,6 +87,7 @@ class CustomerController extends Controller
     {
         $item = Customer::findOrFail($id);
         $item->id = null;
+        $item->customer_id = Customer::getNextCustomerId(Auth::user()->company_id);
         $item->created_at = null;
         return inertia('app/customer/Editor', [
             'data' => $item,

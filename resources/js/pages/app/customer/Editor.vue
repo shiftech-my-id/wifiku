@@ -2,7 +2,6 @@
 import { useForm, usePage, router } from "@inertiajs/vue3";
 import { handleSubmit } from "@/helpers/client-req-handler";
 import { scrollToFirstErrorField } from "@/helpers/utils";
-import { createOptions } from "@/helpers/options";
 import DatePicker from "@/components/DatePicker.vue";
 import { ref } from "vue";
 
@@ -30,10 +29,7 @@ const showAllFields = ref(false);
 function toggleFields() {
   showAllFields.value = !showAllFields.value;
 }
-// console.log(page.props.products);
-const advanceMode = ref({
-  active: false,
-});
+
 const submit = () => handleSubmit({ form, url: route("app.customer.save") });
 
 const products = ref(
@@ -84,27 +80,25 @@ const filterProducts = (val, update) => {
             </q-inner-loading>
             <q-card-section class="q-pt-md">
               <input type="hidden" name="id" v-model="form.id" />
-
               <q-input
-                v-if="form.id"
+                readonly
                 v-model="form.code"
                 label="Id Pelanggan"
-                readonly
-                disable
+                :disable="form.processing"
               />
-
               <q-input
                 autofocus
-                v-model.trim="form.name"
-                label="Nama"
                 lazy-rules
+                hide-bottom-space
+                label="Nama"
+                v-model.trim="form.name"
                 :error="!!form.errors.name"
                 :disable="form.processing"
                 :error-message="form.errors.name"
                 :rules="[(val) => !!val || 'Nama harus diisi.']"
-                hide-bottom-space
               />
               <date-picker
+                hide-bottom-space
                 v-model="form.installation_date"
                 label="Tanggal Pemasangan"
                 :disable="form.processing"
@@ -112,17 +106,19 @@ const filterProducts = (val, update) => {
                 :error-message="form.errors.installation_date"
               />
               <q-select
-                v-model="form.product_id"
-                label="Layanan"
+                v-if="!form.id"
                 use-input
-                input-debounce="300"
                 clearable
-                :options="filteredProducts"
-                map-options
                 emit-value
+                map-options
+                hide-bottom-space
+                label="Layanan"
+                input-debounce="300"
                 @filter="filterProducts"
-                :error="!!form.errors.product_id"
+                v-model="form.product_id"
                 :disable="form.processing"
+                :options="filteredProducts"
+                :error="!!form.errors.product_id"
               />
               <q-input
                 v-model="form.wa"
@@ -134,7 +130,6 @@ const filterProducts = (val, update) => {
                 :error-message="form.errors.wa"
                 hide-bottom-space
               />
-
               <transition name="slide-fade">
                 <div v-if="showAllFields">
                   <q-input
@@ -173,7 +168,6 @@ const filterProducts = (val, update) => {
                   />
                 </div>
               </transition>
-
               <div style="margin-left: -10px">
                 <q-checkbox
                   class="full-width q-pl-none"
@@ -182,7 +176,6 @@ const filterProducts = (val, update) => {
                   label="Aktif"
                 />
               </div>
-
               <div
                 @click="toggleFields"
                 class="cursor-pointer q-mt-md text-grey-6"
@@ -193,7 +186,6 @@ const filterProducts = (val, update) => {
                 {{ showAllFields ? "Mode Simple" : "Mode Lanjutan" }}
               </div>
             </q-card-section>
-
             <q-card-section class="q-gutter-sm">
               <q-btn
                 icon="save"

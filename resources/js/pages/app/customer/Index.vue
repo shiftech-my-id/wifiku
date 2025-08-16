@@ -35,9 +35,9 @@ const pagination = ref(
 
 const columns = [
   {
-    name: "code",
+    name: "customer_id",
     label: "Id Pelanggan",
-    field: "code",
+    field: "customer_id",
     align: "left",
     sortable: true,
   },
@@ -48,18 +48,16 @@ const columns = [
     align: "left",
     sortable: true,
   },
-
   {
     name: "wa",
     label: "No WhatsApp",
     field: "wa",
     align: "left",
-    sortable: true,
   },
   {
-    name: "product",
+    name: "product_id",
     label: "Layanan Aktif",
-    field: "product",
+    field: "product_id",
     align: "left",
     sortable: true,
   },
@@ -226,7 +224,7 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
             @click="onRowClicked(props.row)"
           >
             <template v-if="!$q.screen.lt.sm">
-              <q-td key="code" :props="props">
+              <q-td key="customer_id" :props="props">
                 {{ props.row.code }}
               </q-td>
               <q-td key="name" :props="props" class="wrap-column">
@@ -237,7 +235,7 @@ watch(pagination, () => storage.set("pagination", pagination.value), {
                 {{ props.row.wa }}
               </q-td>
 
-              <q-td key="product" :props="props">
+              <q-td key="product_id" :props="props">
                 {{ props.row.product?.name }}
               </q-td>
             </template>
