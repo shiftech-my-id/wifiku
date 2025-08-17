@@ -18,7 +18,7 @@ const title = "Rincian Biaya Operasional";
           color="grey-7"
           flat
           rounded
-          @click="$inertia.get(route('admin.operational-cost.index'))"
+          @click="router.get(route('app.cost.index'))"
         />
       </div>
     </template>
@@ -41,7 +41,9 @@ const title = "Rincian Biaya Operasional";
         <div class="row">
           <q-card square flat bordered class="col">
             <q-card-section>
-              <div class="text-subtitle1 text-bold text-grey-8">Info Biaya</div>
+              <div class="text-subtitle1 text-bold text-grey-8">
+                Info Biaya Operasional
+              </div>
               <table class="detail">
                 <tbody>
                   <tr>
@@ -50,52 +52,29 @@ const title = "Rincian Biaya Operasional";
                     <td>{{ formatDateTime(page.props.data.datetime) }}</td>
                   </tr>
                   <tr>
-                    <td>Nama Teknisi</td>
+                    <td>Kategori</td>
                     <td>:</td>
-                    <td>{{ page.props.data.name }}</td>
+                    <td>{{ page.props.data.category.name }}</td>
                   </tr>
                   <tr>
-                    <td>No. Telepon</td>
+                    <td>Jumlah (Rp.)</td>
                     <td>:</td>
-                    <td>{{ page.props.data.phone }}</td>
+                    <td>{{ page.props.data.amount }}</td>
                   </tr>
                   <tr>
-                    <td>Email</td>
+                    <td>Deskripsi</td>
                     <td>:</td>
-                    <td>{{ page.props.data.email }}</td>
+                    <td>{{ page.props.data.description }}</td>
                   </tr>
                   <tr>
-                    <td>Alamat</td>
+                    <td>Catatan</td>
                     <td>:</td>
-                    <td>{{ page.props.data.address }}</td>
+                    <td>{{ page.props.data.notes }}</td>
                   </tr>
                 </tbody>
               </table>
             </q-card-section>
-            <q-card-section>
-              <div class="text-subtitle1 text-bold text-grey-8">
-                Statistik Servis
-              </div>
-              <table class="detail">
-                <tbody>
-                  <tr>
-                    <td style="width: 125px">Servis Ditangani</td>
-                    <td style="width: 1px">:</td>
-                    <td>0</td>
-                  </tr>
-                  <tr>
-                    <td>Servis Sukses</td>
-                    <td>:</td>
-                    <td>0</td>
-                  </tr>
-                  <tr>
-                    <td>Servis Gagal</td>
-                    <td>:</td>
-                    <td>0</td>
-                  </tr>
-                </tbody>
-              </table>
-            </q-card-section>
+
             <q-card-section>
               <div class="text-subtitle1 text-bold text-grey-8">
                 Informasi Ekstra
