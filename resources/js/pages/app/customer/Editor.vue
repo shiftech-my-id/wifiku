@@ -89,21 +89,21 @@ const filterProducts = (val, update) => {
               <q-input
                 autofocus
                 lazy-rules
-                hide-bottom-space
                 label="Nama"
                 v-model.trim="form.name"
                 :error="!!form.errors.name"
                 :disable="form.processing"
                 :error-message="form.errors.name"
                 :rules="[(val) => !!val || 'Nama harus diisi.']"
+                hide-bottom-space
               />
               <date-picker
-                hide-bottom-space
                 v-model="form.installation_date"
                 label="Tanggal Pemasangan"
                 :disable="form.processing"
                 :error="!!form.errors.installation_date"
                 :error-message="form.errors.installation_date"
+                hide-bottom-space
               />
               <q-select
                 v-if="!form.id"
@@ -111,7 +111,6 @@ const filterProducts = (val, update) => {
                 clearable
                 emit-value
                 map-options
-                hide-bottom-space
                 label="Layanan"
                 input-debounce="300"
                 @filter="filterProducts"
@@ -119,6 +118,7 @@ const filterProducts = (val, update) => {
                 :disable="form.processing"
                 :options="filteredProducts"
                 :error="!!form.errors.product_id"
+                hide-bottom-space
               />
               <q-input
                 v-model="form.wa"
