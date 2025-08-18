@@ -1,5 +1,10 @@
 <script setup>
-import { formatDateTime } from "@/helpers/formatter";
+import {
+  dateTimeFromNow,
+  formatDate,
+  formatDateTime,
+  formatNumber,
+} from "@/helpers/formatter";
 import { router, usePage } from "@inertiajs/vue3";
 
 const page = usePage();
@@ -7,6 +12,7 @@ const title = "Rincian Biaya Operasional";
 </script>
 
 <template>
+  c
   <i-head :title="title" />
   <authenticated-layout>
     <template #title>{{ title }}</template>
@@ -59,7 +65,7 @@ const title = "Rincian Biaya Operasional";
                   <tr>
                     <td>Jumlah (Rp.)</td>
                     <td>:</td>
-                    <td>{{ page.props.data.amount }}</td>
+                    <td>Rp. {{ formatNumber(page.props.data.amount) }}</td>
                   </tr>
                   <tr>
                     <td>Deskripsi</td>
@@ -71,11 +77,58 @@ const title = "Rincian Biaya Operasional";
                     <td>:</td>
                     <td>{{ page.props.data.notes }}</td>
                   </tr>
+                  <tr>
+                    <td>
+                      <div class="text-subtitle1 text-bold text-grey-8">
+                        Info Rekaman
+                      </div>
+                    </td>
+                  </tr>
+                  <tr v-if="page.props.data.created_at">
+                    <td>Dibuat</td>
+                    <td>:</td>
+                    <td>
+                      {{ dateTimeFromNow(page.props.data.created_at) }} -
+                      {{ formatDateTime(page.props.data.created_at) }}
+                      <template v-if="page.props.data.created_by">
+                        oleh
+                        <my-link
+                          :href="
+                            route('app.user.detail', {
+                              id: page.props.data.creator.id,
+                            })
+                          "
+                        >
+                          {{ page.props.data.creator.name }}
+                        </my-link>
+                      </template>
+                    </td>
+                  </tr>
+                  <tr v-if="page.props.data.updated_at">
+                    <td>Diperbarui</td>
+                    <td>:</td>
+                    <td>
+                      {{ dateTimeFromNow(page.props.data.updated_at) }} -
+                      {{ formatDateTime(page.props.data.updated_at) }}
+                      <template v-if="page.props.data.updated_by">
+                        oleh
+                        <my-link
+                          :href="
+                            route('app.user.detail', {
+                              id: page.props.data.updater.id,
+                            })
+                          "
+                        >
+                          {{ page.props.data.updater.name }}
+                        </my-link>
+                      </template>
+                    </td>
+                  </tr>
                 </tbody>
               </table>
             </q-card-section>
 
-            <q-card-section>
+            <!-- <q-card-section>
               <div class="text-subtitle1 text-bold text-grey-8">
                 Informasi Ekstra
               </div>
@@ -105,7 +158,7 @@ const title = "Rincian Biaya Operasional";
                   </tr>
                 </tbody>
               </table>
-            </q-card-section>
+            </q-card-section> -->
           </q-card>
         </div>
       </div>
